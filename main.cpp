@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 15:53:11 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/13 13:51:37 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/14 19:18:57 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,8 @@
 
 int main (int argc, char *argv[])
 {
-	if (argc == 2)
+	if (argc == 1) // !2
 	{
-	
 		sockaddr_in sockaddr;
 		sockaddr.sin_family = AF_INET;
 		sockaddr.sin_addr.s_addr = INADDR_ANY;
@@ -52,18 +51,15 @@ int main (int argc, char *argv[])
 			static int  bytesRead = read(connection, buffer, 100); //* Read from the connection
 			std::cout << "The message was: " << buffer;
 
-			// Send a message to the connection
 			std::string response = "Good talking to you\n";
-			send(connection, response.c_str(), response.size(), 0);
+			send(connection, response.c_str(), response.size(), 0); //* Send a message to the connection
 
-			// Close the connections
-			close(connection);
+			close(connection); //* Close the connections
 			close(tcp_socket);
 		}
 	}
-	else 
-	{
-		
+	else {
+		std::cout << RED << "ARG ERROR" << std::endl;
 	}
 	return 0;
 }

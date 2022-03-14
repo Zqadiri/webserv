@@ -1,25 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstnew_bonus.c                                  :+:      :+:    :+:   */
+/*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/21 16:56:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2019/10/24 21:01:16 by zqadiri          ###   ########.fr       */
+/*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
+/*   Updated: 2022/03/14 16:32:45 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+// #include "../includes/webserv.hpp"
+#include "config.hpp"
 
-t_list		*ft_lstnew(void *content)
+
+config::config(/* args */)
 {
-	t_list		*new;
+}
 
-	new = (t_list *)malloc(sizeof(t_list) * 1);
-	if (new == NULL)
-		return (NULL);
-	new->content = content;
-	new->next = NULL;
-	return (new);
+config::~config()
+{
 }

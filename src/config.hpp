@@ -1,27 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstadd_back_bonus.c                             :+:      :+:    :+:   */
+/*   config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/21 16:53:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2019/10/24 21:04:42 by zqadiri          ###   ########.fr       */
+/*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
+/*   Updated: 2022/03/14 16:33:00 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef CONFIG_HPP_
+#define CONFIG_HPP_
 
-void		ft_lstadd_back(t_list **aslt, t_list *new)
+class config
 {
-	t_list		*last_lst;
+    private:
 
-	if (*aslt == NULL)
-	{
-		*aslt = new;
-		return ;
-	}
-	last_lst = *aslt;
-	ft_lstlast(last_lst);
-	last_lst->next = new;
-}
+    public:
+        config(/* args */);
+        ~config();
+};
+
+
+#endif
