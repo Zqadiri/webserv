@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/15 13:31:11 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/15 19:25:48 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ Config::Config(const Config &conf){
 
 /*---- Operators -------*/
 
-
 Config	&Config::operator=(const Config&){
 	
 	return *this;
@@ -42,9 +41,38 @@ Config	&Config::operator=(const Config&){
 
 /*---- Member Functions ----*/
 
+configFile	Config::slitTokens(configFile con, std::string delim)
+{
+	configFile	tokens;
+
+	// std::cout << str << std::endl;
+	for (size_t i = 0; i < con.size(); i++)
+	{
+		std::string str(con[i]);
+		size_t end = 0;
+		size_t start = 0;
+		str += delim[0];
+		while (true)
+		{
+			end = str.find_first_of(delim, start);
+			if (end == std::string::npos)
+				break;
+			// std::cout  << start << ":" << end << std::endl;
+			std::string token = str.substr(start, end - start);
+			// std::cout <<  " -> " << token << std::endl;
+			tokens.push_back(token);
+			start = str.find_first_not_of(delim, end);
+			if (start == std::string::npos)
+				break ;
+		}
+	}
+	return tokens;
+}
+
 configFile	Config::readFile(const char *fileName){
 	
 	configFile con;
+	configFile tokens;
 	std::string str;
 
 	std::string file(fileName);
@@ -57,16 +85,23 @@ configFile	Config::readFile(const char *fileName){
 			continue;
 		con.push_back(str);
 	}
-	return con;
+	// ! split to tokens
+	return	(Config::slitTokens(con, " "));
 }
 
-void   		Config::parseFile(const char *fileName){
-	
+void   		Config::parseFile(const char *fileName)
+{
 	configFile confFile;
+	unsigned int	confSize;
 
 	if (open(fileName, O_RDONLY) < 0)
 		throw Config::FileCorrupted();
 	confFile = Config::readFile(fileName);
-	std::cout << confFile.size();
+	confSize = confFile.size();
+	for (unsigned int  i = 0; i < confSize; i++)
+ 
+	
+	// for(size_t i = 0; i < confFile.size(); i++)
+	// 	std::cout << confFile[i] << std::endl;
 }
 

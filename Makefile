@@ -6,13 +6,13 @@
 #    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/03/10 16:31:52 by zqadiri          ###   ########.fr        #
+#    Updated: 2022/03/15 19:16:11 by zqadiri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		=	webserv
 
-SRCS		=  	main.cpp
+SRCS		=  	webserv.cpp ./src/*.cpp
 
 OBJS		= $(SRCS:.cpp=.o)
 
@@ -25,7 +25,7 @@ all:		$(NAME)
 $(NAME):	$(SRCS)
 			@ $(CC) $(FLAGS) $(SRCS) -o $(NAME)
 
-clean:
+clean:		
 			@ rm -f $(OBJS)
 
 fclean:		clean
@@ -33,4 +33,4 @@ fclean:		clean
 
 re:			fclean $(NAME)
 
-.PHONY:		all clean fclean re
+.PHONY: 		all fclean clean re

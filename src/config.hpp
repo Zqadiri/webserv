@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/15 13:29:00 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/15 18:59:10 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 #define CONFIG_HPP_
 
 #include "../includes/webserv.hpp"
-#include "server.hpp"
-
 
 #define BUFFER_SIZE	1024
 
@@ -33,13 +31,18 @@ class Config
 		
 		void		parseFile(const char *fileName);
 		configFile	readFile(const char *fileName);
+		configFile	slitTokens(configFile, std::string);
 		
 		class	FileCorrupted : public std::exception
 		{
 			public:
 				virtual const char* what() const throw();
 		};
+
+		class	FileNotWellFormated : public std::exception
+		{
+			public:
+				virtual const char* what() const throw();
+		};
 };
-
-
 #endif
