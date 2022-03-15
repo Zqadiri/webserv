@@ -1,41 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/15 13:16:21 by zqadiri          ###   ########.fr       */
+/*   Created: 2022/03/15 11:05:42 by zqadiri           #+#    #+#             */
+/*   Updated: 2022/03/15 13:29:16 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP_
-#define WEBSERV_HPP_
+#include "./includes/webserv.hpp"
+#include "./src/server.hpp"
 
-// Libft
-#include "../libft/libft.h"
-
-// CPP
-#include <iostream>
-#include <string>
-#include <vector>
-#include <fstream>
-
-// C 
-#include <unistd.h>
-#include <fcntl.h>
-
-// Network 
-#include <sys/socket.h>
-#include <netinet/in.h>
-
-// Colors
-# define RED "\033[31m"
-# define GREEN "\033[32m"
-# define YELLOW "\033[33m"
-# define RESET "\033[0m"
-
-
-
-#endif 
+int main(int argc, char *argv[])
+{
+	if (argc == 2)
+	{
+		Server  serv;
+		try
+		{
+			serv.conf(argv);
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << RED << e.what() << '\n';
+		}
+		
+	}
+	else 
+		std::cout << RED << "ARG ERROR" << std::endl;
+	return EXIT_SUCCESS;
+}

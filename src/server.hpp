@@ -1,41 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/15 13:16:21 by zqadiri          ###   ########.fr       */
+/*   Created: 2022/03/15 11:10:10 by zqadiri           #+#    #+#             */
+/*   Updated: 2022/03/15 13:39:23 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP_
-#define WEBSERV_HPP_
+#ifndef SERVER_HPP_
+#define SERVER_HPP_
 
-// Libft
-#include "../libft/libft.h"
+#include "../includes/webserv.hpp"
+#include "config.hpp"
 
-// CPP
-#include <iostream>
-#include <string>
-#include <vector>
-#include <fstream>
+// class Config;
 
-// C 
-#include <unistd.h>
-#include <fcntl.h>
+class Server
+{
+	private:
+    	Config  config;		
+	public:
+		Server();
+		~Server();
+		Server(const Server&);
+		Server	&operator=(const Server&);
+		void	conf(char **);
+};
 
-// Network 
-#include <sys/socket.h>
-#include <netinet/in.h>
-
-// Colors
-# define RED "\033[31m"
-# define GREEN "\033[32m"
-# define YELLOW "\033[33m"
-# define RESET "\033[0m"
-
-
-
-#endif 
+#endif
