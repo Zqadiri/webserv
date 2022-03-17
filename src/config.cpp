@@ -6,17 +6,16 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/15 19:25:48 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/16 15:34:55 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "config.hpp"
-#include "server.hpp"
+// #include "server.hpp"
 
 /*----- Exceptions-----*/
 
-const char* Config::FileCorrupted::what() const throw()
-{
+const char* Config::FileCorrupted::what() const throw() {
 	return "File Corrupted";
 }
 
@@ -98,10 +97,25 @@ void   		Config::parseFile(const char *fileName)
 		throw Config::FileCorrupted();
 	confFile = Config::readFile(fileName);
 	confSize = confFile.size();
-	for (unsigned int  i = 0; i < confSize; i++)
+	for (unsigned int i = 0; i < confSize; i++)
+	{
+		if (!confFile[i].compare("server"))
+		{
+			serverConfig server;
+			++i;
+			// if (confFile[i].compare("{"))
+			// 	throw Config::FileNotWellFormated();
+			// Config::parseServer();
+			i = server.parseServer(confFile, i);
+		}
+	}
  
 	
 	// for(size_t i = 0; i < confFile.size(); i++)
 	// 	std::cout << confFile[i] << std::endl;
 }
 
+// void		Config::parseServer(configFile con, unsigned int index)
+// {
+	
+// }

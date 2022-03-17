@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:10 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/15 14:11:12 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/16 12:49:47 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,9 @@
 #include "../includes/webserv.hpp"
 #include "config.hpp"
 
-// class Config;
-
 class Server
 {
-    Config  config;	
+	Config  config;	
 	
 	public:
 		Server();

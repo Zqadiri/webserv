@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/15 18:59:10 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/16 15:33:41 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 #define CONFIG_HPP_
 
 #include "../includes/webserv.hpp"
+#include "./serverConfig.hpp"
 
 #define BUFFER_SIZE	1024
 
-typedef	std::vector<std::string>	configFile;
 
 class Config
 {
@@ -32,7 +32,7 @@ class Config
 		void		parseFile(const char *fileName);
 		configFile	readFile(const char *fileName);
 		configFile	slitTokens(configFile, std::string);
-		
+		// void		parseServer(configFile con, unsigned int index);
 		class	FileCorrupted : public std::exception
 		{
 			public:

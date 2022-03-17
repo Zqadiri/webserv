@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/15 15:22:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/16 15:33:47 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@
 # define YELLOW "\033[33m"
 # define RESET "\033[0m"
 
+typedef	std::vector<std::string>	configFile;
 
 
 #endif 
