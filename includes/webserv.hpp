@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/16 15:33:47 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/17 16:10:31 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <list>
+#include <iterator>
 
 // C 
 #include <unistd.h>
@@ -38,6 +40,5 @@
 # define RESET "\033[0m"
 
 typedef	std::vector<std::string>	configFile;
-
 
 #endif 

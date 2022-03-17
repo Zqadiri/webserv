@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/16 15:55:04 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/17 18:40:09 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,22 @@
 #define SERVERCONFIG_HPP_
 
 #include "../includes/webserv.hpp"
-#include "./config.hpp"
-
-// typedef	std::vector<std::string>	configFile;
 
 class serverConfig
 {
 	private:
-		std::vector<configFile>		_servers;
-		std::vector<std::string>	server_name;
+		std::string					server_name;
+		std::string					root;
+		std::list<std::string>		allow_methods;
+		std::vector<std::string>	locations;
+		
 	public:
 		serverConfig();
 		~serverConfig();
 		serverConfig(const serverConfig &obj);
 		serverConfig	&operator=(const serverConfig&);
-		size_t			parseServer(std::vector<std::string> con,unsigned int &);
-		std::vector<std::string>::iterator	curlLevel(std::vector<std::string> con,  unsigned int &);
+		size_t serverName(const serverConfig&, configFile);
+
 };
 
 #endif

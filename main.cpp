@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 15:53:11 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/16 19:23:37 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/17 14:42:55 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <vector>
 int main (int argc, char *argv[])
 {
-	if (argc == 1) // !2
+	if (argc == 1)	// !2
 	{
 		sockaddr_in sockaddr;
 		sockaddr.sin_family = AF_INET;

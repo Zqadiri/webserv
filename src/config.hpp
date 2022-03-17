@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/16 15:33:41 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/17 18:45:50 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,10 @@
 
 #define BUFFER_SIZE	1024
 
-
 class Config
 {
 	private:
-		// std::vector<std::string>	configFile;
+		std::vector<serverConfig>	servers;
 	public:
 		Config();
 		~Config();
@@ -32,7 +31,9 @@ class Config
 		void		parseFile(const char *fileName);
 		configFile	readFile(const char *fileName);
 		configFile	slitTokens(configFile, std::string);
-		// void		parseServer(configFile con, unsigned int index);
+		size_t		parseServer(configFile , unsigned int);
+		std::string	removeSpace(std::string);
+		configFile::iterator	curlLevel(configFile , unsigned int &);
 		class	FileCorrupted : public std::exception
 		{
 			public:

@@ -6,17 +6,20 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/16 15:34:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/17 19:00:32 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "config.hpp"
-// #include "server.hpp"
+
 
 /*----- Exceptions-----*/
 
 const char* Config::FileCorrupted::what() const throw() {
 	return "File Corrupted";
+}
+const char* Config::FileNotWellFormated::what() const throw() {
+	return "File Not Well Formated";
 }
 
 /*---- Constructors & Destructor ------*/
@@ -40,11 +43,21 @@ Config	&Config::operator=(const Config&){
 
 /*---- Member Functions ----*/
 
-configFile	Config::slitTokens(configFile con, std::string delim)
+std::string		Config::removeSpace(std::string init)
+{
+	std::string ret;
+	for (int i = 0; i < init.length(); ++i)
+	{
+		if (!isspace(init[i]))
+			ret.push_back(init[i]);
+	}
+	return ret;
+}
+
+configFile		Config::slitTokens(configFile con, std::string delim)
 {
 	configFile	tokens;
 
-	// std::cout << str << std::endl;
 	for (size_t i = 0; i < con.size(); i++)
 	{
 		std::string str(con[i]);
@@ -56,8 +69,8 @@ configFile	Config::slitTokens(configFile con, std::string delim)
 			end = str.find_first_of(delim, start);
 			if (end == std::string::npos)
 				break;
-			// std::cout  << start << ":" << end << std::endl;
-			std::string token = str.substr(start, end - start);
+			// std::cout << start << ":" << end << std::endl;
+			std::string token = removeSpace(str.substr(start, end - start));
 			// std::cout <<  " -> " << token << std::endl;
 			tokens.push_back(token);
 			start = str.find_first_not_of(delim, end);
@@ -88,7 +101,7 @@ configFile	Config::readFile(const char *fileName){
 	return	(Config::slitTokens(con, " "));
 }
 
-void   		Config::parseFile(const char *fileName)
+void		Config::parseFile(const char *fileName)
 {
 	configFile confFile;
 	unsigned int	confSize;
@@ -101,21 +114,53 @@ void   		Config::parseFile(const char *fileName)
 	{
 		if (!confFile[i].compare("server"))
 		{
-			serverConfig server;
 			++i;
-			// if (confFile[i].compare("{"))
-			// 	throw Config::FileNotWellFormated();
-			// Config::parseServer();
-			i = server.parseServer(confFile, i);
+			i = Config::parseServer(confFile, i);
 		}
+		else
+			throw	Config::FileNotWellFormated();
 	}
- 
-	
-	// for(size_t i = 0; i < confFile.size(); i++)
-	// 	std::cout << confFile[i] << std::endl;
+	//! check for unclosed curl
 }
 
-// void		Config::parseServer(configFile con, unsigned int index)
-// {
-	
-// }
+configFile::iterator	Config::curlLevel(configFile con, unsigned int &index)
+{
+  	configFile::iterator it, ite;
+	it = con.begin() + index;
+	ite  = con.end();
+	size_t curlLvl = 0;
+	std::cout << *it << std::endl;
+	while (it != ite)
+	{
+		if (*it == "server")
+			break;
+		if (*it == "{")
+			curlLvl++;
+		else if (*it == "}")
+			curlLvl--;
+		it++;
+	}
+	if (curlLvl != 0)
+		throw Config::FileNotWellFormated();
+	return it; 
+}
+
+typedef size_t (Config::*Ptr)(const serverConfig&, configFile);
+
+size_t		Config::parseServer(configFile con, unsigned int index)
+{
+	serverConfig	server;
+	size_t	start = index;
+	configFile::iterator ite = curlLevel(con, index);
+	configFile::iterator it = con.begin() + index;
+	while (it != ite)
+	{
+		//! move it to another place
+		std::string keys[] = {"server_name", "listen", "allow_methods",
+		"location", "root", "index", "error_pages"};
+		// Ptr values[1] = {&serverConfig::serverName};
+		// puts("in");
+		index++;
+	}	
+	return index--;
+}
