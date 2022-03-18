@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/17 19:00:32 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/18 11:50:14 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ configFile		Config::slitTokens(configFile con, std::string delim)
 				break;
 			// std::cout << start << ":" << end << std::endl;
 			std::string token = removeSpace(str.substr(start, end - start));
-			// std::cout <<  " -> " << token << std::endl;
+			// std::cout << "["<< token << "]"<< std::endl;
 			tokens.push_back(token);
 			start = str.find_first_not_of(delim, end);
 			if (start == std::string::npos)
@@ -115,17 +115,18 @@ void		Config::parseFile(const char *fileName)
 		if (!confFile[i].compare("server"))
 		{
 			++i;
-			i = Config::parseServer(confFile, i);
+			if (!confFile[i].compare("{"))
+				i = Config::parseServer(confFile, i);
 		}
-		else
-			throw	Config::FileNotWellFormated();
+		// else
+		// 	throw	Config::FileNotWellFormated();
 	}
 	//! check for unclosed curl
 }
 
 configFile::iterator	Config::curlLevel(configFile con, unsigned int &index)
 {
-  	configFile::iterator it, ite;
+	configFile::iterator it, ite;
 	it = con.begin() + index;
 	ite  = con.end();
 	size_t curlLvl = 0;
@@ -145,22 +146,23 @@ configFile::iterator	Config::curlLevel(configFile con, unsigned int &index)
 	return it; 
 }
 
-typedef size_t (Config::*Ptr)(const serverConfig&, configFile);
+typedef size_t (serverConfig::*Ptr)(const serverConfig&, configFile);
 
 size_t		Config::parseServer(configFile con, unsigned int index)
 {
 	serverConfig	server;
 	size_t	start = index;
-	configFile::iterator ite = curlLevel(con, index);
-	configFile::iterator it = con.begin() + index;
+	configFile::iterator ite = con.end();
+	configFile::iterator it = con.begin();
+	std::string keys[] = {"server_names", "listen", "allow_methods",
+	"location", "root", "index", "error_pages"};
+	Ptr values[1] = {&serverConfig::serverName};
+	std::cout << "->" << *it << std::endl;
+	std::cout << "->" << *ite << std::endl;
 	while (it != ite)
 	{
-		//! move it to another place
-		std::string keys[] = {"server_name", "listen", "allow_methods",
-		"location", "root", "index", "error_pages"};
-		// Ptr values[1] = {&serverConfig::serverName};
-		// puts("in");
+		if (!)
 		index++;
-	}	
+	}
 	return index--;
 }
