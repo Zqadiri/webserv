@@ -18,7 +18,9 @@ OBJS		= $(SRCS:.cpp=.o)
 
 CC			= c++
 
-# FLAGS		= -Wall -Wextra -Werror -std=c++98
+FLAGS		=  -std=c++98 -fsanitize=address
+
+WWW			= -Wall -Wextra -Werror
 
 all:		$(NAME)
 

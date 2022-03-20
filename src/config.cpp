@@ -12,6 +12,15 @@
 
 #include "config.hpp"
 
+// const char* keys[] = {
+// 	"server_names", 
+// 	"listen", 
+// 	"allow_methods",
+// 	"location", 
+// 	"root", 
+// 	"index", 
+// 	"error_pages"
+// };
 
 /*----- Exceptions-----*/
 
@@ -69,9 +78,7 @@ configFile		Config::slitTokens(configFile con, std::string delim)
 			end = str.find_first_of(delim, start);
 			if (end == std::string::npos)
 				break;
-			// std::cout << start << ":" << end << std::endl;
 			std::string token = removeSpace(str.substr(start, end - start));
-			// std::cout << "["<< token << "]"<< std::endl;
 			tokens.push_back(token);
 			start = str.find_first_not_of(delim, end);
 			if (start == std::string::npos)
@@ -146,23 +153,28 @@ configFile::iterator	Config::curlLevel(configFile con, unsigned int &index)
 	return it; 
 }
 
-typedef size_t (serverConfig::*Ptr)(const serverConfig&, configFile);
+typedef unsigned int (serverConfig::*Ptr)(serverConfig&, configFile, unsigned int&);
 
-size_t		Config::parseServer(configFile con, unsigned int index)
+size_t		Config::parseServer(configFile con, unsigned int &index)
 {
 	serverConfig	server;
-	size_t	start = index;
 	configFile::iterator ite = con.end();
-	configFile::iterator it = con.begin();
-	std::string keys[] = {"server_names", "listen", "allow_methods",
-	"location", "root", "index", "error_pages"};
-	Ptr values[1] = {&serverConfig::serverName};
-	std::cout << "->" << *it << std::endl;
-	std::cout << "->" << *ite << std::endl;
-	while (it != ite)
+	configFile::iterator it = con.begin() + index;
+	Ptr values[7] = {&serverConfig::serverName, &serverConfig::listen,
+	&serverConfig::allowMethods, &serverConfig::location, &serverConfig::root,
+	&serverConfig::index, &serverConfig::errorPages};
+	while (true)
 	{
-		if (!)
+		for (size_t i = 0; i < 7; i++)
+		{
+			if (*it == keys[i])
+				index = (server.*values[i])(server, con, index);
+		}
+		if (*it == "}")
+			break;
+		it++;
 		index++;
 	}
+	std::cout << "---------" << std::endl;
 	return index--;
 }

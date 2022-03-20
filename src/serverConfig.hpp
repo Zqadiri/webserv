@@ -14,22 +14,29 @@
 #define SERVERCONFIG_HPP_
 
 #include "../includes/webserv.hpp"
-
+ 
 class serverConfig
 {
 	private:
-		std::string					server_name;
-		std::string					root;
-		std::list<std::string>		allow_methods;
-		std::vector<std::string>	locations;
+		std::list<std::string>		_server_name;
+		std::string					_root;
+		std::string					_index;
+		std::list<std::string>		_error_pages;					
+		std::list<std::string>		_allow_methods;
+		std::vector<std::string>	_locations;
 		
 	public:
 		serverConfig();
 		~serverConfig();
 		serverConfig(const serverConfig &obj);
 		serverConfig	&operator=(const serverConfig&);
-		size_t serverName(const serverConfig&, configFile);
-
+		unsigned int 	serverName(serverConfig&, configFile, unsigned int&);
+		unsigned int	location(serverConfig&, configFile, unsigned int&);
+		unsigned int	listen(serverConfig &, configFile, unsigned int&);
+		unsigned int	root(serverConfig &, configFile, unsigned int&);
+		unsigned int	index(serverConfig &, configFile, unsigned int&);
+		unsigned int	errorPages(serverConfig &, configFile, unsigned int&);
+		unsigned int	allowMethods(serverConfig &, configFile, unsigned int&);
 };
 
 #endif
