@@ -14,16 +14,28 @@
 #define SERVERCONFIG_HPP_
 
 #include "../includes/webserv.hpp"
- 
+
+struct _location
+{
+	std::string				_path;
+	std::list<std::string>	_allow_methods;
+	std::string				_root;
+	std::string				_index;
+	unsigned int			_limitBodySize;
+	bool					_alias;
+};
+
 class serverConfig
 {
 	private:
 		std::list<std::string>		_server_name;
 		std::string					_root;
 		std::string					_index;
-		std::list<std::string>		_error_pages;					
+		std::string					_host;
+		unsigned int				_port;
+		std::list<std::string>		_error_pages;
 		std::list<std::string>		_allow_methods;
-		std::vector<std::string>	_locations;
+		std::vector<_location>		_locations;
 		
 	public:
 		serverConfig();

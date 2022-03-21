@@ -12,15 +12,15 @@
 
 #include "config.hpp"
 
-// const char* keys[] = {
-// 	"server_names", 
-// 	"listen", 
-// 	"allow_methods",
-// 	"location", 
-// 	"root", 
-// 	"index", 
-// 	"error_pages"
-// };
+const char* keys[] = {
+	"server_names", 
+	"root", 
+	"listen", 
+	"location", 
+	"allow_methods",
+	"index", 
+	"error_page"
+};
 
 /*----- Exceptions-----*/
 
@@ -116,6 +116,10 @@ void		Config::parseFile(const char *fileName)
 	if (open(fileName, O_RDONLY) < 0)
 		throw Config::FileCorrupted();
 	confFile = Config::readFile(fileName);
+	//! check for unclosed curl
+	// curlLevel(confFile);
+	for (size_t i = 0; i < confFile.size(); i++)
+		std::cout << "-+>  " << confFile[i] << std::endl;
 	confSize = confFile.size();
 	for (unsigned int i = 0; i < confSize; i++)
 	{
@@ -128,16 +132,14 @@ void		Config::parseFile(const char *fileName)
 		// else
 		// 	throw	Config::FileNotWellFormated();
 	}
-	//! check for unclosed curl
 }
 
-configFile::iterator	Config::curlLevel(configFile con, unsigned int &index)
+configFile::iterator	Config::curlLevel(configFile con)
 {
 	configFile::iterator it, ite;
-	it = con.begin() + index;
+	it = con.begin();
 	ite  = con.end();
 	size_t curlLvl = 0;
-	std::cout << *it << std::endl;
 	while (it != ite)
 	{
 		if (*it == "server")
@@ -148,9 +150,10 @@ configFile::iterator	Config::curlLevel(configFile con, unsigned int &index)
 			curlLvl--;
 		it++;
 	}
+	std::cout << "------> " <<curlLvl << std::endl;
 	if (curlLvl != 0)
 		throw Config::FileNotWellFormated();
-	return it; 
+	return it;
 }
 
 typedef unsigned int (serverConfig::*Ptr)(serverConfig&, configFile, unsigned int&);
@@ -160,20 +163,20 @@ size_t		Config::parseServer(configFile con, unsigned int &index)
 	serverConfig	server;
 	configFile::iterator ite = con.end();
 	configFile::iterator it = con.begin() + index;
-	Ptr values[7] = {&serverConfig::serverName, &serverConfig::listen,
-	&serverConfig::allowMethods, &serverConfig::location, &serverConfig::root,
+	Ptr values[7] = {&serverConfig::serverName, &serverConfig::root,
+	&serverConfig::listen, &serverConfig::location, &serverConfig::allowMethods,
 	&serverConfig::index, &serverConfig::errorPages};
 	while (true)
 	{
 		for (size_t i = 0; i < 7; i++)
 		{
 			if (*it == keys[i])
-				index = (server.*values[i])(server, con, index);
+				index = (server.*values[i])(server, con, ++index);
+			std::cout << index << std::endl;
 		}
 		if (*it == "}")
 			break;
 		it++;
-		index++;
 	}
 	std::cout << "---------" << std::endl;
 	return index--;

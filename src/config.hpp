@@ -18,16 +18,6 @@
 
 #define BUFFER_SIZE	1024
 
-const char* keys[] = {
-	"server_names", 
-	"listen", 
-	"allow_methods",
-	"location", 
-	"root", 
-	"index", 
-	"error_pages"
-};
-
 class Config
 {
 	private:
@@ -43,7 +33,7 @@ class Config
 		configFile	slitTokens(configFile, std::string);
 		size_t		parseServer(configFile , unsigned int&);
 		std::string	removeSpace(std::string);
-		configFile::iterator	curlLevel(configFile , unsigned int &);
+		configFile::iterator	curlLevel(configFile);
 		class	FileCorrupted : public std::exception
 		{
 			public:
