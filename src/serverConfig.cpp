@@ -50,11 +50,21 @@ serverConfig	&serverConfig::operator=(const serverConfig&){
 
 /*---- Member Functions ----*/
 
-bool notAValue(std::string value, const char* comp[])
+bool notAValue(std::string value)
 {
 	for (size_t i = 0; i < 7; i++)
 	{
-		if (!value.compare(comp[i]))
+		if (!value.compare(keys_[i]))
+			return true;
+	}
+	return false;
+}
+
+bool notAValueL(std::string value)
+{
+	for (size_t i = 0; i < 6; i++)
+	{
+		if (!value.compare(locationKeys[i]))
 			return true;
 	}
 	return false;
@@ -64,7 +74,7 @@ unsigned int	serverConfig::serverName(serverConfig &serv, configFile con, unsign
 {
 	puts("[serverName]");
 	index++;
-	while (!notAValue(con[index], keys_))
+	while (!notAValue(con[index]))
 	{
 		serv._server_name.push_back(con[index]);
 		index++;
@@ -77,55 +87,55 @@ unsigned int	serverConfig::serverName(serverConfig &serv, configFile con, unsign
 unsigned int	serverConfig::location(serverConfig &serv, configFile con, unsigned int &index)
 {
 	puts("[location]");
-	_location *l;
-	l->_path = con[index++];
-	l->_alias = false;
-	if (!con[index].compare("{"))
+	index++;
+	_location l;
+	l._path = con[index++];
+	l._alias = false;
+	if (!con[index++].compare("{"))
 	{
-		index++;
 		while (true)
 		{
-			for (size_t i = 0; i < 6; i++)
+			if (!con[index].compare("root"))
 			{
-				if (!con[index].compare(locationKeys[i]))
+				index++;
+				l._root = con[index];
+				index++;
+			}
+			else if (!con[index].compare("alias"))
+			{
+				l._alias = true;
+				index++;
+			}
+			else if (!con[index].compare("allow_methods"))
+			{
+				index++;
+				while (!notAValueL(con[index]))
 				{
-					std::cout << con[index] << std::endl;
-					switch (i)
-					{
-						case 0: 
-							l->_root = con[++index];
-						case 1:
-							l->_alias = true;
-							index++;
-						case 2:
-							// while (!notAValue(con[index], locationKeys))
-							// {
-							// 	l->_allow_methods.push_back(con[index]);
-							// 	index++;
-							// }
-						default:
-							;
-					}
-					i++;
+					l._allow_methods.push_back(con[index]);
+					index++;
 				}
 			}
-			if (con[index].compare("}"))
+			else
+				index++;
+			if (!con[index].compare("}"))
 				break;
 		}
 	}
 	else
 		throw "MSG";
-	std::cout << "-> path " << l->_path << std::endl;
-	std::cout << "-> root " << l->_root << std::endl;
-	std::cout << "-> alias " << l->_alias << std::endl;
-	// exit(0);
-	std::cout << " **> " << con[index] << std::endl;
+	std::cout << "-> path " << l._path << std::endl;
+	std::cout << "-> root " << l._root << std::endl;
+	std::cout << "-> alias " << l._alias << std::endl;
+	std::cout << "-> allow_methods : " << std::endl;
+	for (std::list<std::string>::iterator i = l._allow_methods.begin(); i != l._allow_methods.end(); ++i)
+		std::cout << "-> " <<*i << std::endl;
 	return index;
 }
 
 unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned int &index)
 {
 	puts("[listen]");
+	index++;
 	std::string delim(":");
 	size_t end = con[index].find_first_of(delim, 0);
 	serv._host = con[index].substr(0, end);
@@ -138,7 +148,6 @@ unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned i
 	}           
 	std::cout << "->" << serv._host << std::endl;
 	std::cout << "->" << serv._port << std::endl;
-	
 	return index++;
 }
 
@@ -164,7 +173,7 @@ unsigned int	serverConfig::errorPages(serverConfig &serv, configFile con, unsign
 {
 	puts("[errorPages]");
 	index++;
-	while (!notAValue(con[index], keys_))
+	while (!notAValue(con[index]))
 	{
 		serv._error_pages.push_back(con[index]);
 		index++;
@@ -177,9 +186,9 @@ unsigned int	serverConfig::errorPages(serverConfig &serv, configFile con, unsign
 unsigned int	serverConfig::allowMethods(serverConfig &serv, configFile con, unsigned int &index)
 {
 	puts("[allowMethods]");
-	// index++;
-	std::cout << con[index] << std::endl;
-	while (!notAValue(con[index], keys_))
+	index++;
+
+	while (!notAValue(con[index]))
 	{
 		serv._allow_methods.push_back(con[index]);
 		index++;

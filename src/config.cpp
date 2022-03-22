@@ -118,8 +118,8 @@ void		Config::parseFile(const char *fileName)
 	confFile = Config::readFile(fileName);
 	//! check for unclosed curl
 	// curlLevel(confFile);
-	for (size_t i = 0; i < confFile.size(); i++)
-		std::cout << "-+>  " << confFile[i] << std::endl;
+	// for (size_t i = 0; i < confFile.size(); i++)
+	// 	std::cout << "-+>  " << confFile[i] << std::endl;
 	confSize = confFile.size();
 	for (unsigned int i = 0; i < confSize; i++)
 	{
@@ -150,7 +150,7 @@ configFile::iterator	Config::curlLevel(configFile con)
 			curlLvl--;
 		it++;
 	}
-	std::cout << "------> " <<curlLvl << std::endl;
+	std::cout << "------> " << curlLvl << std::endl;
 	if (curlLvl != 0)
 		throw Config::FileNotWellFormated();
 	return it;
@@ -161,6 +161,7 @@ typedef unsigned int (serverConfig::*Ptr)(serverConfig&, configFile, unsigned in
 size_t		Config::parseServer(configFile con, unsigned int &index)
 {
 	serverConfig	server;
+	bool isLocation = 0;
 	configFile::iterator ite = con.end();
 	configFile::iterator it = con.begin() + index;
 	Ptr values[7] = {&serverConfig::serverName, &serverConfig::root,
@@ -168,15 +169,18 @@ size_t		Config::parseServer(configFile con, unsigned int &index)
 	&serverConfig::index, &serverConfig::errorPages};
 	while (true)
 	{
+		index++;
 		for (size_t i = 0; i < 7; i++)
 		{
-			if (*it == keys[i])
-				index = (server.*values[i])(server, con, ++index);
-			std::cout << index << std::endl;
+			if (i == 3)
+				isLocation = 1;
+			if (index >= con.size())
+				break;
+			if (con[index] == keys[i])
+				index = (server.*values[i])(server, con, index);
 		}
-		if (*it == "}")
+		if (index >= con.size() || (con[index] == "}" && !isLocation))
 			break;
-		it++;
 	}
 	std::cout << "---------" << std::endl;
 	return index--;
