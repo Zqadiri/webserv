@@ -16,12 +16,12 @@
 #include "../includes/webserv.hpp"
 #include "./serverConfig.hpp"
 
-#define BUFFER_SIZE	1024
+#define BUFFER_SIZE	2048
 
 class Config
 {
 	private:
-		std::vector<serverConfig>	servers;
+		std::vector<serverConfig*>	servers;
 	public:
 		Config();
 		~Config();
@@ -34,16 +34,17 @@ class Config
 		size_t		parseServer(configFile , unsigned int&);
 		std::string	removeSpace(std::string);
 		configFile::iterator	curlLevel(configFile);
-		class	FileCorrupted : public std::exception
-		{
+		class	FileCorrupted : public std::exception{
 			public:
 				virtual const char* what() const throw();
 		};
 
-		class	FileNotWellFormated : public std::exception
-		{
+		class	FileNotWellFormated : public std::exception{
 			public:
 				virtual const char* what() const throw();
 		};
+
+		//* print function
+		void	print();
 };
 #endif

@@ -21,13 +21,14 @@ struct _location
 	std::list<std::string>	_allow_methods;
 	std::string				_root;
 	std::string				_index;
-	unsigned int			_limitBodySize;
+	int						_limitBodySize;
 	bool					_alias;
+	std::vector<_location>	_locations; //?
 };
 
 class serverConfig
 {
-	private:
+	public: //! add getters 
 		std::list<std::string>		_server_name;
 		std::string					_root;
 		std::string					_index;
@@ -39,6 +40,7 @@ class serverConfig
 		
 	public:
 		serverConfig();
+		serverConfig(std::string _root, std::string _index, std::string _host);
 		~serverConfig();
 		serverConfig(const serverConfig &obj);
 		serverConfig	&operator=(const serverConfig&);
@@ -49,6 +51,7 @@ class serverConfig
 		unsigned int	index(serverConfig &, configFile, unsigned int&);
 		unsigned int	errorPages(serverConfig &, configFile, unsigned int&);
 		unsigned int	allowMethods(serverConfig &, configFile, unsigned int&);
+
 };
 
 #endif

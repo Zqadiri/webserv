@@ -72,25 +72,22 @@ bool notAValueL(std::string value)
 
 unsigned int	serverConfig::serverName(serverConfig &serv, configFile con, unsigned int &index)
 {
-	puts("[serverName]");
 	index++;
-	while (!notAValue(con[index]))
-	{
+	while (!notAValue(con[index])){
 		serv._server_name.push_back(con[index]);
 		index++;
 	}
-	for (std::list<std::string>::iterator i = serv._server_name.begin(); i != serv._server_name.end(); ++i)
-		std::cout << "-> " <<*i << std::endl;
+	index--;
 	return index;
 }
 
 unsigned int	serverConfig::location(serverConfig &serv, configFile con, unsigned int &index)
 {
-	puts("[location]");
 	index++;
 	_location l;
 	l._path = con[index++];
 	l._alias = false;
+	l._limitBodySize = -1;
 	if (!con[index++].compare("{"))
 	{
 		while (true)
@@ -117,24 +114,19 @@ unsigned int	serverConfig::location(serverConfig &serv, configFile con, unsigned
 			}
 			else
 				index++;
+			if (!con[index].compare("location"))
+				index = location(serv, con, index);
 			if (!con[index].compare("}"))
 				break;
 		}
 	}
 	else
 		throw "MSG";
-	std::cout << "-> path " << l._path << std::endl;
-	std::cout << "-> root " << l._root << std::endl;
-	std::cout << "-> alias " << l._alias << std::endl;
-	std::cout << "-> allow_methods : " << std::endl;
-	for (std::list<std::string>::iterator i = l._allow_methods.begin(); i != l._allow_methods.end(); ++i)
-		std::cout << "-> " <<*i << std::endl;
+	serv._locations.push_back(l);
 	return index;
 }
 
-unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned int &index)
-{
-	puts("[listen]");
+unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
 	std::string delim(":");
 	size_t end = con[index].find_first_of(delim, 0);
@@ -146,54 +138,37 @@ unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned i
 	catch (std::exception &r){
 		std::cout << "Bad Port" << std::endl;
 	}           
-	std::cout << "->" << serv._host << std::endl;
-	std::cout << "->" << serv._port << std::endl;
 	return index++;
 }
 
-unsigned int	serverConfig::root(serverConfig &serv, configFile con, unsigned int &index)
-{
-	puts("[root]");
+unsigned int	serverConfig::root(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
 	serv._root = con[index];
-	std::cout << "-> " << serv._root << std::endl;
 	return index;
 }
 
-unsigned int	serverConfig::index(serverConfig &serv, configFile con, unsigned int &index)
-{
-	puts("[index]");
+unsigned int	serverConfig::index(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
 	serv._index = con[index];
-	std::cout << "-> " << serv._index << std::endl;
 	return index;
 }
 
-unsigned int	serverConfig::errorPages(serverConfig &serv, configFile con, unsigned int &index)
-{
-	puts("[errorPages]");
+unsigned int	serverConfig::errorPages(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
-	while (!notAValue(con[index]))
-	{
+	while (!notAValue(con[index])){
 		serv._error_pages.push_back(con[index]);
 		index++;
 	}
-	for (std::list<std::string>::iterator i = serv._error_pages.begin(); i != serv._error_pages.end(); ++i)
-		std::cout << "-> " <<*i << std::endl;
+	index--;
 	return index;
 }
 
-unsigned int	serverConfig::allowMethods(serverConfig &serv, configFile con, unsigned int &index)
-{
-	puts("[allowMethods]");
+unsigned int	serverConfig::allowMethods(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
-
-	while (!notAValue(con[index]))
-	{
+	while (!notAValue(con[index])){
 		serv._allow_methods.push_back(con[index]);
 		index++;
 	}
-	for (std::list<std::string>::iterator i = serv._allow_methods.begin(); i != serv._allow_methods.end(); ++i)
-		std::cout << "-> " <<*i << std::endl;
+	index--;
 	return index;
 }

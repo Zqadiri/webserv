@@ -9,7 +9,6 @@
 /*   Updated: 2022/03/18 11:50:14 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "config.hpp"
 
 const char* keys[] = {
@@ -117,9 +116,6 @@ void		Config::parseFile(const char *fileName)
 		throw Config::FileCorrupted();
 	confFile = Config::readFile(fileName);
 	//! check for unclosed curl
-	// curlLevel(confFile);
-	// for (size_t i = 0; i < confFile.size(); i++)
-	// 	std::cout << "-+>  " << confFile[i] << std::endl;
 	confSize = confFile.size();
 	for (unsigned int i = 0; i < confSize; i++)
 	{
@@ -160,7 +156,7 @@ typedef unsigned int (serverConfig::*Ptr)(serverConfig&, configFile, unsigned in
 
 size_t		Config::parseServer(configFile con, unsigned int &index)
 {
-	serverConfig	server;
+	serverConfig *server = new serverConfig;
 	bool isLocation = 0;
 	configFile::iterator ite = con.end();
 	configFile::iterator it = con.begin() + index;
@@ -177,11 +173,54 @@ size_t		Config::parseServer(configFile con, unsigned int &index)
 			if (index >= con.size())
 				break;
 			if (con[index] == keys[i])
-				index = (server.*values[i])(server, con, index);
+				index = (server->*values[i])(*server, con, index);
 		}
 		if (index >= con.size() || (con[index] == "}" && !isLocation))
 			break;
 	}
+	this->servers.push_back(server);
+	print();
 	std::cout << "---------" << std::endl;
 	return index--;
+}
+
+void	Config::print()
+{
+	std::cout << "[Servers n: " << this->servers.size()  << "]"<< std::endl;
+	for (size_t i = 0; i < this->servers.size(); i++)
+	{
+		puts("[serverName]");
+		for (std::list<std::string>::iterator it = this->servers[i]->_server_name.begin(); 
+					it != this->servers[i]->_server_name.end(); ++it)
+			std::cout << " > " << *it << std::endl;
+		puts("[root]");
+		std::cout << this->servers[i]->_root << std::endl;
+		puts("[index]");
+		std::cout << this->servers[i]->_index << std::endl;
+		puts("[listen]");
+		std::cout << this->servers[i]->_host << std::endl;
+		std::cout << this->servers[i]->_port << std::endl;
+		puts("[errorPages]");
+		for (std::list<std::string>::iterator it = this->servers[i]->_error_pages.begin(); 
+					it != this->servers[i]->_error_pages.end(); ++it)
+			std::cout << " > " <<*it << std::endl;
+		puts("[allow_methods]");
+		for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
+				it != this->servers[i]->_allow_methods.end(); ++it)
+		std::cout << " > " <<*it << std::endl;
+		std::cout << "[locations n: " << this->servers[i]->_locations.size()  << "]"<< std::endl;
+		for (size_t j = 0; j < this->servers[i]->_locations.size(); j++)
+		{
+			std::cout << "[location "<< j << "]"<< std::endl;
+			std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
+			std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
+			std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
+			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
+			std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
+			puts("allow_methods");
+			for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
+				it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
+			std::cout << " > " <<*it << std::endl;
+		}
+	}
 }
