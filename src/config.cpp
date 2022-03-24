@@ -54,7 +54,7 @@ Config	&Config::operator=(const Config&){
 std::string		Config::removeSpace(std::string init)
 {
 	std::string ret;
-	for (int i = 0; i < init.length(); ++i)
+	for (size_t i = 0; i < init.length(); ++i)
 	{
 		if (!isspace(init[i]))
 			ret.push_back(init[i]);
@@ -128,28 +128,7 @@ void		Config::parseFile(const char *fileName)
 		// else
 		// 	throw	Config::FileNotWellFormated();
 	}
-}
-
-configFile::iterator	Config::curlLevel(configFile con)
-{
-	configFile::iterator it, ite;
-	it = con.begin();
-	ite  = con.end();
-	size_t curlLvl = 0;
-	while (it != ite)
-	{
-		if (*it == "server")
-			break;
-		if (*it == "{")
-			curlLvl++;
-		else if (*it == "}")
-			curlLvl--;
-		it++;
-	}
-	std::cout << "------> " << curlLvl << std::endl;
-	if (curlLvl != 0)
-		throw Config::FileNotWellFormated();
-	return it;
+	print();
 }
 
 typedef unsigned int (serverConfig::*Ptr)(serverConfig&, configFile, unsigned int&);
@@ -158,10 +137,8 @@ size_t		Config::parseServer(configFile con, unsigned int &index)
 {
 	serverConfig *server = new serverConfig;
 	bool isLocation = 0;
-	configFile::iterator ite = con.end();
-	configFile::iterator it = con.begin() + index;
 	Ptr values[7] = {&serverConfig::serverName, &serverConfig::root,
-	&serverConfig::listen, &serverConfig::location, &serverConfig::allowMethods,
+	&serverConfig::listen, &serverConfig::parseLocation, &serverConfig::allowMethods,
 	&serverConfig::index, &serverConfig::errorPages};
 	while (true)
 	{
@@ -175,23 +152,23 @@ size_t		Config::parseServer(configFile con, unsigned int &index)
 			if (con[index] == keys[i])
 				index = (server->*values[i])(*server, con, index);
 		}
-		if (index >= con.size() || (con[index] == "}" && !isLocation))
+		if (index >= con.size() || (con[index] == "}" && !isLocation) || !con[index].compare("server"))
 			break;
 	}
 	this->servers.push_back(server);
-	print();
-	std::cout << "---------" << std::endl;
-	return index--;
+	index--;
+	return index; //! return index to the last colla
 }
 
 void	Config::print()
 {
-	std::cout << "[Servers n: " << this->servers.size()  << "]"<< std::endl;
+	std::cout << "[Servers n: " << this->servers.size() << "]"<< std::endl;
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
+		std::cout << "-------------------------------------" << std::endl;
 		puts("[serverName]");
 		for (std::list<std::string>::iterator it = this->servers[i]->_server_name.begin(); 
-					it != this->servers[i]->_server_name.end(); ++it)
+				it != this->servers[i]->_server_name.end(); ++it)
 			std::cout << " > " << *it << std::endl;
 		puts("[root]");
 		std::cout << this->servers[i]->_root << std::endl;
@@ -202,8 +179,8 @@ void	Config::print()
 		std::cout << this->servers[i]->_port << std::endl;
 		puts("[errorPages]");
 		for (std::list<std::string>::iterator it = this->servers[i]->_error_pages.begin(); 
-					it != this->servers[i]->_error_pages.end(); ++it)
-			std::cout << " > " <<*it << std::endl;
+				it != this->servers[i]->_error_pages.end(); ++it)
+			std::cout << " > " << *it << std::endl;
 		puts("[allow_methods]");
 		for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
 				it != this->servers[i]->_allow_methods.end(); ++it)
@@ -218,9 +195,9 @@ void	Config::print()
 			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
 			std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
 			puts("allow_methods");
-			for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
-				it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
-			std::cout << " > " <<*it << std::endl;
+			// for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
+			// 	it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
+			// std::cout << " > " <<*it << std::endl; 
 		}
 	}
 }

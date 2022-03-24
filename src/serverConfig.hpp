@@ -23,7 +23,7 @@ struct _location
 	std::string				_index;
 	int						_limitBodySize;
 	bool					_alias;
-	std::vector<_location>	_locations; //?
+	std::vector<_location>	_nestedLocations; //?
 };
 
 class serverConfig
@@ -45,13 +45,14 @@ class serverConfig
 		serverConfig(const serverConfig &obj);
 		serverConfig	&operator=(const serverConfig&);
 		unsigned int 	serverName(serverConfig&, configFile, unsigned int&);
-		unsigned int	location(serverConfig&, configFile, unsigned int&);
+		unsigned int	parseLocation(serverConfig&, configFile, unsigned int&);
 		unsigned int	listen(serverConfig &, configFile, unsigned int&);
 		unsigned int	root(serverConfig &, configFile, unsigned int&);
 		unsigned int	index(serverConfig &, configFile, unsigned int&);
 		unsigned int	errorPages(serverConfig &, configFile, unsigned int&);
 		unsigned int	allowMethods(serverConfig &, configFile, unsigned int&);
 
+		unsigned int	location(_location &, configFile, unsigned int &);
 };
 
 #endif

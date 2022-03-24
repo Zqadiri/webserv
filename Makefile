@@ -25,7 +25,7 @@ WWW			= -Wall -Wextra -Werror
 all:		$(NAME)
 
 $(NAME):	$(SRCS)
-			@ $(CC) $(FLAGS) $(SRCS) -o $(NAME)
+			@ $(CC) $(FLAGS) $(WWW) $(SRCS) -o $(NAME)
 
 clean:		
 			@ rm -f $(OBJS)

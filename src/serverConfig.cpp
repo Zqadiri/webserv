@@ -12,6 +12,8 @@
 
 #include "serverConfig.hpp"
 
+static bool isNested = 0;
+
 const char* keys_[] = {
 	"server_names", 
 	"root", 
@@ -39,6 +41,7 @@ serverConfig::~serverConfig(){
 }
 
 serverConfig::serverConfig(const serverConfig &obj){
+	(void)obj;
 }
 
 /*---- Operators -------*/
@@ -81,48 +84,58 @@ unsigned int	serverConfig::serverName(serverConfig &serv, configFile con, unsign
 	return index;
 }
 
-unsigned int	serverConfig::location(serverConfig &serv, configFile con, unsigned int &index)
+unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &index)
 {
-	index++;
-	_location l;
-	l._path = con[index++];
-	l._alias = false;
-	l._limitBodySize = -1;
-	if (!con[index++].compare("{"))
-	{
-		while (true)
+	while (true)
 		{
-			if (!con[index].compare("root"))
-			{
+			if (!con[index].compare("root")){
 				index++;
 				l._root = con[index];
 				index++;
 			}
-			else if (!con[index].compare("alias"))
-			{
+			else if (!con[index].compare("alias")){
 				l._alias = true;
 				index++;
 			}
-			else if (!con[index].compare("allow_methods"))
-			{
+			else if (!con[index].compare("allow_methods")){
 				index++;
-				while (!notAValueL(con[index]))
-				{
+				while (!notAValueL(con[index])){
 					l._allow_methods.push_back(con[index]);
 					index++;
 				}
 			}
 			else
 				index++;
-			if (!con[index].compare("location"))
-				index = location(serv, con, index);
+			if (!con[index].compare("location")){
+				isNested = 1;
+			// 	break;
+			}
 			if (!con[index].compare("}"))
 				break;
 		}
+	return index;
+}
+
+unsigned int	serverConfig::parseLocation(serverConfig &serv, configFile con, unsigned int &index)
+{
+	index++;
+	_location l;
+	l._path = con[index++];
+	l._alias = false;
+	l._limitBodySize = -1;
+	if (!con[index++].compare("{")){
+		index = location(l, con, index);
 	}
 	else
 		throw "MSG";
-	serv._locations.push_back(l);
+	if (!isNested)
+		serv._locations.push_back(l);
+	else 
+	{
+		puts(">>>>>>>>>>>>>>>>");
+		l._nestedLocations.push_back(l);
+		isNested = 0;
+	}
 	return index;
 }
 
