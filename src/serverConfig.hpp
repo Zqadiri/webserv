@@ -23,7 +23,7 @@ struct _location
 	std::string				_index;
 	int						_limitBodySize;
 	bool					_alias;
-	std::vector<_location>	_nestedLocations; //?
+	std::vector<_location>	_nestedLocations;
 };
 
 class serverConfig

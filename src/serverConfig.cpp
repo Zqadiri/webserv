@@ -32,6 +32,7 @@ const char* locationKeys[] = {
 	"index",
 	"cgi_pass", 
 };
+
 /*---- Constructors & Destructor ------*/
 
 serverConfig::serverConfig(){
@@ -84,55 +85,49 @@ unsigned int	serverConfig::serverName(serverConfig &serv, configFile con, unsign
 	return index;
 }
 
-unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &index)
-{
+unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &index){
 	while (true)
-		{
-			if (!con[index].compare("root")){
-				index++;
-				l._root = con[index];
-				index++;
-			}
-			else if (!con[index].compare("alias")){
-				l._alias = true;
-				index++;
-			}
-			else if (!con[index].compare("allow_methods")){
-				index++;
-				while (!notAValueL(con[index])){
-					l._allow_methods.push_back(con[index]);
-					index++;
-				}
-			}
-			else
-				index++;
-			if (!con[index].compare("location")){
-				isNested = 1;
-			// 	break;
-			}
-			if (!con[index].compare("}"))
-				break;
+	{
+		if (!con[index].compare("root")){
+			index++;
+			l._root = con[index];
+			index++;
 		}
+		else if (!con[index].compare("alias")){
+			l._alias = true;
+			index++;
+		}
+		else if (!con[index].compare("allow_methods")){
+			index++;
+			while (!notAValueL(con[index])){
+				l._allow_methods.push_back(con[index]);
+				index++;
+			}
+		}
+		else
+			index++;
+		if (!con[index].compare("location")){
+			isNested = 1;
+		}
+		if (!con[index].compare("}"))
+			break;
+	}
 	return index;
 }
 
-unsigned int	serverConfig::parseLocation(serverConfig &serv, configFile con, unsigned int &index)
-{
+unsigned int	serverConfig::parseLocation(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
 	_location l;
 	l._path = con[index++];
 	l._alias = false;
 	l._limitBodySize = -1;
-	if (!con[index++].compare("{")){
+	if (!con[index++].compare("{"))
 		index = location(l, con, index);
-	}
 	else
 		throw "MSG";
 	if (!isNested)
 		serv._locations.push_back(l);
-	else 
-	{
-		puts(">>>>>>>>>>>>>>>>");
+	else {
 		l._nestedLocations.push_back(l);
 		isNested = 0;
 	}
