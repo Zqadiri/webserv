@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 12:19:59 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/26 12:35:43 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/26 14:24:47 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,4 +19,5 @@ Socket::~Socket(){
 }
 
 Socket::Socket(const Socket &obj){
+    (void)obj;
 }

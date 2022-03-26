@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 12:15:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/26 12:35:58 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/26 13:43:26 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@ class Socket
 	public:
 		Socket();
 		~Socket();
-		Socket(const Socket &obj)
-
+		Socket(const Socket &obj);
 };
 
 #endif

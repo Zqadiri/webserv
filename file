@@ -1,0 +1,91 @@
+[Servers n: 2]
+-------------------------------------
+[serverName]
+ > youpi
+ > server_2
+[root]
+./YoupiBanane
+[index]
+index.html
+[listen]
+0.0.0.0
+8000
+[errorPages]
+ > 500
+ > 502
+ > 503
+ > 504
+ > /custom_50x.html
+[allow_methods]
+ > GET
+ > POST
+[locations n: 3]
+[location 0]
+path /put_test
+root ./YoupiBanane/put_here
+index 
+limitBodySize -1
+CGIpass 
+alias 1
+allow_methods
+ > PUT
+ >> [nestedLocation 0]
+[location 1]
+path /post_body
+root 
+index 
+limitBodySize 100
+CGIpass 
+alias 0
+allow_methods
+ > POST
+ >> [nestedLocation 0]
+[location 2]
+path *.bla
+root 
+index 
+limitBodySize -1
+CGIpass test_mac/macos_cgi_tester
+alias 0
+allow_methods
+ > POST
+ >> [nestedLocation 0]
+-------------------------------------
+[serverName]
+ > server_2
+[root]
+./YoupiBanane
+[index]
+index.html
+[listen]
+0.0.0.0
+9000
+[errorPages]
+ > 500
+ > 503
+ > 504
+ > /custom_50x.html
+[allow_methods]
+ > GET
+ > POST
+[locations n: 2]
+[location 0]
+path /put_test
+root ./YoupiBanane/put_here
+index 
+limitBodySize -1
+CGIpass 
+alias 1
+allow_methods
+ > PUT
+ >> [nestedLocation 0]
+[location 1]
+path /post_body
+root 
+index 
+limitBodySize 100
+CGIpass 
+alias 0
+allow_methods
+ > POST
+ >> [nestedLocation 0]

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/18 11:41:34 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/26 14:40:35 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,14 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 				l._allow_methods.push_back(con[index]);
 				index++;
 			}
+		}
+		else if (!con[index].compare("client_body_buffer_size")){
+			index++;
+			l._limitBodySize = stoi(con[index++]); //! exception may happen [abort]
+		}
+		else if (!con[index].compare("cgi_pass")){
+			index++;
+			l._pathCGI = con[index++];
 		}
 		else
 			index++;

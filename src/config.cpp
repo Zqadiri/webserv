@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/26 12:37:25 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/26 15:18:11 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,10 @@ Config::Config(const Config &conf){
 
 /*---- Operators -------*/
 
-Config	&Config::operator=(const Config&){
-	
+Config	&Config::operator=(const Config &obj){
+	// if (*this == obj) //! check for self assign
+	// 	return *this;
+	this->servers = obj.servers;
 	return *this;
 }
 
@@ -148,7 +150,7 @@ void		Config::parseFile(const char *fileName)
 		else
 			throw	Config::FileNotWellFormated();
 	}
-	// print();
+	print();
 }
 
 configFile::iterator	Config::curlLevel(configFile con){
@@ -184,7 +186,7 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 			if (i == 3)
 				isLocation = 1;
 			if (index >= con.size())
-				break;
+				break; 
 			if (con[index] == keys[i])
 				index = (server->*values[i])(*server, con, index);
 		}
@@ -228,11 +230,20 @@ void	Config::print(){
 			std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
 			std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
 			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
+			std::cout << "CGIpass " << this->servers[i]->_locations[j]._pathCGI << std::endl;
 			std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
 			puts("allow_methods");
 			for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
 				it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
 					std::cout << " > " << *it << std::endl;
+			std::cout << " >> [nestedLocation "<< this->servers[i]->_locations[j]._nestedLocations.size() << "]"<< std::endl;
+			for (size_t  k = 0; k < this->servers[i]->_locations[j]._nestedLocations.size(); k++){
+				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._path << std::endl;
+				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._alias << std::endl;
+				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._pathCGI << std::endl;
+				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._index << std::endl;
+				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._root << std::endl;
+			}
 		}
 	}
 }

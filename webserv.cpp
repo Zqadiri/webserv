@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:05:42 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/15 14:36:14 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/26 14:34:21 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
 		{
 			std::cerr << RED << e.what() << '\n';
 		}
+		// system("leaks webserv");
 	}
 	else 
 		std::cout << RED << "ARG ERROR" << std::endl;
