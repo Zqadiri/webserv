@@ -6,9 +6,10 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/18 11:50:14 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/26 12:37:25 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "config.hpp"
 
 const char* keys[] = {
@@ -51,6 +52,19 @@ Config	&Config::operator=(const Config&){
 
 /*---- Member Functions ----*/
 
+bool exepectedTokens(std::string value) //! use the one in serverConfig
+{
+	const char* exepectedTokens[] = {"root", "alias", "allow_methods", 
+	"client_body_buffer_size","cgi_pass", "server_names", "listen", 
+	"location", "index", "error_page", "server", "{", "}"};
+	for (size_t i = 0; i < 13; i++)
+	{
+		if (!value.compare(exepectedTokens[i]))
+			return true;
+	}
+	return false;
+}
+
 std::string		Config::removeSpace(std::string init)
 {
 	std::string ret;
@@ -65,9 +79,10 @@ std::string		Config::removeSpace(std::string init)
 configFile		Config::slitTokens(configFile con, std::string delim)
 {
 	configFile	tokens;
-
+	bool		isKey;
 	for (size_t i = 0; i < con.size(); i++)
 	{
+		isKey = 1;
 		std::string str(con[i]);
 		size_t end = 0;
 		size_t start = 0;
@@ -78,6 +93,11 @@ configFile		Config::slitTokens(configFile con, std::string delim)
 			if (end == std::string::npos)
 				break;
 			std::string token = removeSpace(str.substr(start, end - start));
+			if (isKey && !exepectedTokens(token)){
+				// std::cout << token << std::endl;
+				throw Config::FileNotWellFormated();
+			}
+			isKey = 0;
 			tokens.push_back(token);
 			start = str.find_first_not_of(delim, end);
 			if (start == std::string::npos)
@@ -120,8 +140,7 @@ void		Config::parseFile(const char *fileName)
 	confSize = confFile.size();
 	for (unsigned int i = 0; i < confSize; i++)
 	{
-		if (!confFile[i].compare("server"))
-		{
+		if (!confFile[i].compare("server")){
 			++i;
 			if (!confFile[i].compare("{"))
 				i = Config::parseServer(confFile, i);
@@ -129,7 +148,7 @@ void		Config::parseFile(const char *fileName)
 		else
 			throw	Config::FileNotWellFormated();
 	}
-	print();
+	// print();
 }
 
 configFile::iterator	Config::curlLevel(configFile con){
@@ -211,9 +230,9 @@ void	Config::print(){
 			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
 			std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
 			puts("allow_methods");
-			// for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
-			// 	it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
-			// std::cout << " > " <<*it << std::endl; 
+			for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
+				it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
+					std::cout << " > " << *it << std::endl;
 		}
 	}
 }

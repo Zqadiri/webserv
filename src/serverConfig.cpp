@@ -54,7 +54,7 @@ serverConfig	&serverConfig::operator=(const serverConfig&){
 
 /*---- Member Functions ----*/
 
-bool notAValue(std::string value)
+bool notAValue(std::string value) //! move
 {
 	for (size_t i = 0; i < 7; i++)
 	{
