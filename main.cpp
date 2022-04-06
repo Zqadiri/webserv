@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 15:53:11 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/17 14:42:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/06 15:23:39 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,9 @@ int main (int argc, char *argv[])
 		else
 		{
 			int bind_ret;
-			if ((bind_ret = bind(tcp_socket, (struct sockaddr*)&sockaddr, sizeof(sockaddr))) == -1) //* assign a transport address to the socket
+			if ((bind_ret = bind(tcp_socket, (struct sockaddr*)&sockaddr, sizeof(sockaddr))) == -1) 
 			{
+				//* assign a transport address to the socket
 				std::cerr << "cannot bind socket" << std::endl; 
 				return 0;
 			}

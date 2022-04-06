@@ -24,3 +24,12 @@ A Request for Comments (RFC) is a formal document drafted by the Internet Engine
 
 ### HTTP 1.1
 
+[An overview of HTTP - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview)
+
+## Configuration File
+
+[Understanding the Nginx Configuration File Structure and Configuration Contexts | DigitalOcean](https://www.digitalocean.com/community/tutorials/understanding-the-nginx-configuration-file-structure-and-configuration-contexts)
+
+## Server and Location Block Selection Algorithms
+
+[Understanding Nginx Server and Location Block Selection Algorithms | DigitalOcean](https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms)

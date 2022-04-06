@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/26 15:18:11 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/03/26 16:34:55 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ Config::Config(const Config &conf){
 /*---- Operators -------*/
 
 Config	&Config::operator=(const Config &obj){
-	// if (*this == obj) //! check for self assign
+	// if (*this == obj) //! check for self assign [overload ==]
 	// 	return *this;
 	this->servers = obj.servers;
 	return *this;
@@ -95,10 +95,8 @@ configFile		Config::slitTokens(configFile con, std::string delim)
 			if (end == std::string::npos)
 				break;
 			std::string token = removeSpace(str.substr(start, end - start));
-			if (isKey && !exepectedTokens(token)){
-				// std::cout << token << std::endl;
+			if (isKey && !exepectedTokens(token))
 				throw Config::FileNotWellFormated();
-			}
 			isKey = 0;
 			tokens.push_back(token);
 			start = str.find_first_not_of(delim, end);
@@ -129,6 +127,7 @@ configFile	Config::readFile(const char *fileName){
 	return	(Config::slitTokens(con, " "));
 }
 
+//! add an init to set all fields to default values 
 void		Config::parseFile(const char *fileName)
 {
 	configFile confFile;
@@ -140,8 +139,7 @@ void		Config::parseFile(const char *fileName)
 	//! check for unclosed curl
 	curlLevel(confFile);
 	confSize = confFile.size();
-	for (unsigned int i = 0; i < confSize; i++)
-	{
+	for (unsigned int i = 0; i < confSize; i++){
 		if (!confFile[i].compare("server")){
 			++i;
 			if (!confFile[i].compare("{"))

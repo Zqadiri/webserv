@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:10 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/26 14:20:43 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/06 15:57:35 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,10 @@
 
 class Server
 {
-	Config  config;	
+	Config  			config;
+
 	public:
-		Server();
+		Server(void);
 		~Server();
 		Server(const Server&);
 		Server	&operator=(const Server&);
