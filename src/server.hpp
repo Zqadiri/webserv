@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:10 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/17 23:56:41 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/17 23:57:41 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class Server // add s
 		std::vector<serverConfig*>	getServers(void);
 
 		void	conf(char **);
-		void	setup(); //? main funtion7
+		void	setup(); //? main funtion
 		
 };
 
