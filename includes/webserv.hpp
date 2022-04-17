@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/17 16:10:31 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/15 21:31:46 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,9 @@
 
 typedef	std::vector<std::string>	configFile;
 
-
+typedef struct s_listen{
+	unsigned int    host;//
+	int             port;
+}   t_listen;
 
 #endif

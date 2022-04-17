@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 12:15:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/06 16:31:31 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/06 21:32:20 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,9 @@
 class Socket
 {
 	private:
-
 		std::vector<int>	_socket;
 		int					_connection;
 		struct sockaddr_in	_address;
-		int					_backlog;
 		
 	public:
 		Socket();
@@ -31,11 +29,12 @@ class Socket
 		Socket(const Socket &obj);
 		Socket	&operator=(const Socket&);
 
-			// Accessors 
+		// Accessors 
+
 		struct sockaddr_in getAddress(void) const;
 		int getConnection(void) const;
 		int	getSocket(void) const;
-
+		std::vector<t_listen>		getListen(void);
 
 		virtual int	connectNetwork (int, struct sockaddr_in) = 0;
 		void	testConnection(int);

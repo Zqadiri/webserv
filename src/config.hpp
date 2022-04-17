@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/17 18:45:50 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/06 21:15:59 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ class Config
 		size_t		parseServer(configFile , unsigned int&);
 		std::string	removeSpace(std::string);
 		configFile::iterator	curlLevel(configFile);
+		
+		//* Accessors
 		class	FileCorrupted : public std::exception{
 			public:
 				virtual const char* what() const throw();

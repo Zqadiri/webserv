@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 12:19:59 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/06 17:08:28 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/15 21:38:41 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,16 @@ Socket::Socket(int domain, int type, int protocol, int port, u_long interface){
 		exit(EXIT_FAILURE);
 	}
 	const int opt = 1;
-	if (setsockopt(sok, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt) < 0)){
+	if (setsockopt(sok, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt) < 0)){// * get and set options on sockets{
 		perror("socket");
 		exit(EXIT_FAILURE);
 	}
-		
+	//* set the socket to be a non-blocking socket
+	int flag  = fcntl(sok, F_SETFL, O_NONBLOCK);
+	if (flag == -1){
+		perror("socket");
+		exit(EXIT_FAILURE);
+	}
 }
 
 Socket::~Socket(){
@@ -59,9 +64,9 @@ int Socket::getConnection(void) const{
 	return _connection;
 }
 
-int	Socket::getSocket(void) const{
-	return _socket;
-}
+// int	Socket::getSocket(void) const{
+// 	return _socket;
+// }
 
 /*------ Member Functions--------*/
 

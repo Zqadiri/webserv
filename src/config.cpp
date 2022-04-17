@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/26 16:34:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/17 00:11:48 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ configFile	Config::readFile(const char *fileName){
 //! add an init to set all fields to default values 
 void		Config::parseFile(const char *fileName)
 {
-	configFile confFile;
+	configFile		confFile;
 	unsigned int	confSize;
 
 	if (open(fileName, O_RDONLY) < 0)
@@ -171,7 +171,7 @@ configFile::iterator	Config::curlLevel(configFile con){
 typedef unsigned int (serverConfig::*Ptr)(serverConfig&, configFile, unsigned int&);
 
 size_t		Config::parseServer(configFile con, unsigned int &index){
-	serverConfig *server = new serverConfig;
+	serverConfig *server = new serverConfig();
 	bool isLocation = 0;
 	Ptr values[7] = {&serverConfig::serverName, &serverConfig::root,
 	&serverConfig::listen, &serverConfig::parseLocation, &serverConfig::allowMethods,

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/26 14:40:35 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/17 02:26:49 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ const char* locationKeys[] = {
 /*---- Constructors & Destructor ------*/
 
 serverConfig::serverConfig(){
+	_host = inet_addr("192.168.0.1");
+	_port = 80;
 }
 
 serverConfig::~serverConfig(){
@@ -48,16 +50,14 @@ serverConfig::serverConfig(const serverConfig &obj){
 /*---- Operators -------*/
 
 serverConfig	&serverConfig::operator=(const serverConfig&){
-	
 	return *this;
 }
 
 /*---- Member Functions ----*/
 
-bool notAValue(std::string value) //! move
+bool notAValue(std::string value)
 {
-	for (size_t i = 0; i < 7; i++)
-	{
+	for (size_t i = 0; i < 7; i++){
 		if (!value.compare(keys_[i]))
 			return true;
 	}
@@ -142,18 +142,48 @@ unsigned int	serverConfig::parseLocation(serverConfig &serv, configFile con, uns
 	return index;
 }
 
+// localhost
+// ip address -> always to 192.168.0.1
+// no port  -> default 80
+
+uint32_t convert( const std::string& ipv4Str ) //! convert and check for errors
+{
+	std::istringstream iss( ipv4Str );
+	uint32_t ipv4 = 0;
+	
+	for( uint32_t i = 0; i < 4; ++i ) {
+		uint32_t part;
+		iss >> part;
+		if ( iss.fail() || part > 255 ) {
+			throw std::runtime_error( "Invalid IP address - Expected [0, 255]" );
+		}
+		if ( i != 3 ) {
+			char delimiter;
+			iss >> delimiter;
+			if ( iss.fail() || delimiter != '.' ) {
+				throw std::runtime_error( "Invalid IP address - Expected '.' delimiter" );
+			}
+		}
+		ipv4 = inet_addr(ipv4Str.c_str());
+	}
+	return ipv4;
+}
+
 unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
 	std::string delim(":");
 	size_t end = con[index].find_first_of(delim, 0);
-	serv._host = con[index].substr(0, end);
+	if (end == std::string::npos || std::string(con[index].substr(0, end)).compare("localhost")){ //! no port || localhost
+		serv._host = convert(con[index].substr(0, end));
+		return index++;
+	}
 	try {
 		end++;
 		serv._port = stoi(con[index].substr(end, con[index].find_first_of(delim, end)));
 	}
 	catch (std::exception &r){
 		std::cout << "Bad Port" << std::endl;
-	}           
+	}
 	return index++;
 }
 

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/26 14:39:51 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/17 01:11:06 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 #define SERVERCONFIG_HPP_
 
 #include "../includes/webserv.hpp"
+#include <arpa/inet.h>
+#include <sstream>
+#include <string.h>
 
 struct _location
 {
@@ -33,8 +36,8 @@ class serverConfig
 		std::list<std::string>		_server_name;
 		std::string					_root;
 		std::string					_index;
-		std::string					_host;
-		unsigned int				_port;
+		unsigned int 				_host;
+		int							_port;
 		std::list<std::string>		_error_pages;
 		std::list<std::string>		_allow_methods;
 		std::vector<_location>		_locations;
@@ -55,5 +58,6 @@ class serverConfig
 
 		unsigned int	location(_location &, configFile, unsigned int &);
 };
+
 
 #endif
