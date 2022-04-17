@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/06 21:15:59 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/17 02:47:34 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ class Config
 		~Config();
 		Config(const Config&);
 		Config	&operator=(const Config&);
-		
+		std::vector<serverConfig*>	getServers(void);
 		void		parseFile(const char *fileName);
 		configFile	readFile(const char *fileName);
 		configFile	slitTokens(configFile, std::string);

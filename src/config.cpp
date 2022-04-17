@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/17 00:11:48 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/17 02:48:41 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,12 @@ Config::~Config(){
 
 Config::Config(const Config &conf){
 	*this = conf;
+}
+
+/*---- Accessors -------*/
+
+std::vector<serverConfig*>	Config::getServers(void){
+	return this->servers;
 }
 
 /*---- Operators -------*/

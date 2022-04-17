@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:05:42 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/03/26 14:34:21 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/17 03:19:40 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@ int main(int argc, char *argv[])
 	if (argc == 2)
 	{
 		Server  serv;
-		try
-		{
+		try{
 			serv.conf(argv);
 		}
 		catch(const std::exception& e)
