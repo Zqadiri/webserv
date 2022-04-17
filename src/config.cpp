@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/17 02:48:41 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/17 15:36:35 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,18 @@ Config::Config(const Config &conf){
 std::vector<serverConfig*>	Config::getServers(void){
 	return this->servers;
 }
+
+std::vector<t_listen>		Config::getAllListenDir(void){
+	std::vector<t_listen>	listen;
+	for (size_t i = 0; i < this->servers.size(); i++){
+		t_listen	l;
+		l.host = this->servers[i]->_host;
+		l.port = this->servers[i]->_port;
+		listen.push_back(l);
+	}
+	return listen;
+}
+
 
 /*---- Operators -------*/
 
@@ -154,7 +166,7 @@ void		Config::parseFile(const char *fileName)
 		else
 			throw	Config::FileNotWellFormated();
 	}
-	print();
+	// print();
 }
 
 configFile::iterator	Config::curlLevel(configFile con){

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:10 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/17 03:17:09 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/17 23:52:11 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,11 @@
 #include "../includes/webserv.hpp"
 #include "config.hpp"
 
-class Server
+class Server // add s
 {
 	private:
-		Config				config;
-		std::vector<int>	_socket;
-		int					_connection;
-		struct sockaddr_in	_address;
+		Config				config; //? servers data
+		std::vector<int>	_socket; //? sockets fds
 
 	public:
 		Server(void);
@@ -31,17 +29,11 @@ class Server
 		Server(const Server&);
 		Server	&operator=(const Server&);
 
-		struct sockaddr_in getAddress(void) const;
-		int getConnection(void) const;
-		int	getSocket(void) const;
 		std::vector<t_listen>		getListen(void);
-		void	conf(char **);
-
-		int	connectNetwork (int, struct sockaddr_in);
-		void	testConnection(int);
-
 		std::vector<serverConfig*>	getServers(void);
 
+		void	conf(char **);
+		void	setup(); //? main funtion
 };
 
 #endif

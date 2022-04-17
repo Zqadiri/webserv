@@ -1,34 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.cpp                                        :+:      :+:    :+:   */
+/*   socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/15 11:05:42 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/17 14:55:50 by zqadiri          ###   ########.fr       */
+/*   Created: 2022/04/17 16:22:20 by zqadiri           #+#    #+#             */
+/*   Updated: 2022/04/17 23:50:08 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./includes/webserv.hpp"
-#include "./src/server.hpp"
+#include "socket.hpp"
 
-int main(int argc, char *argv[])
-{
-	if (argc == 2)
-	{
-		Server  serv;
-		try{
-			serv.conf(argv);
-			serv.setup();
-		}
-		catch(const std::exception& e)
-		{
-			std::cerr << RED << e.what() << '\n';
-		}
-		// system("leaks webserv");
-	}
-	else 
-		std::cout << RED << "ARG ERROR" << std::endl;
-	return EXIT_SUCCESS;
-}
+/*----- Constructors -------*/
+
+
+/*----- Accessors -------*/
+
+
+/*------ Member Functions--------*/
+
