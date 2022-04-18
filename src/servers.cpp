@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/18 22:10:49 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/04/18 23:29:25 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,9 @@ void		Servers::setup(void){
 		int fd = sev.get_fd();
 		FD_SET(fd, &_fd_set);
 		_servers[fd] = sev;
+		std::cout << "Server: "<< fd << " " << it->port << " Setup Done" << std::endl;
 	}
+	
 }
 
 void		Servers::run(void){
@@ -72,9 +74,11 @@ void		Servers::run(void){
 	while (1)
 	{
 		int selected = 0;
+		std::cout << "Waiting for connections..." << std::endl;
 		while (selected == 0)
 		{
 			fd_set fd_set = _fd_set;
+			std::cout << "selet()" << std::endl;
 			selected = select(max_fd + 1, &fd_set, NULL, NULL, &timeout);
 			if (selected == -1)
 			{
@@ -93,6 +97,7 @@ void		Servers::run(void){
 					if (ret == 0)
 					{
 						it->second.print_rec();
+						FD_CLR(socket, &_fd_set);
 						std::cout << "done and waiting for response" << std::endl;
 					}
 					else if (ret == -1)
@@ -107,6 +112,7 @@ void		Servers::run(void){
 			{
 				if (FD_ISSET(it->first, &_fd_set))
 				{
+					std::cout << "accepted()" << std::endl;
 					int sock = it->second.acc();
 					if (sock != -1)
 						FD_SET(sock, &_fd_set);
