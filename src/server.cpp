@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/18 22:08:36 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/04/18 23:34:33 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,10 @@
 #include "../includes/webserv.hpp"
 
 server::server(){
-	
 }
+
 server::~server(){
-	if (_socket > 0)
-		close(_socket);
-	if (_fd > 0)
-		close(_fd);
+	
 }
 server::server(const server &sv){
 	*this = sv;
@@ -40,6 +37,7 @@ server::server(t_listen &l) :  _port(l.port),_host(l.host), _fd(-1), _socket(-1)
 	_addr.sin_family = AF_INET;
 	_addr.sin_addr.s_addr = htonl(_host);
 	_addr.sin_port = htons(_port);
+	setup();
 }
 
 int server::setup(void)
@@ -78,6 +76,7 @@ int server::get_fd(void) const
 {
 	return (_fd);
 }
+
 int server::get_socket(void) const
 {
 	return (_socket);

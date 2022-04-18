@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/18 22:10:49 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/04/18 23:38:40 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ void		Servers::setup(void){
 		int fd = sev.get_fd();
 		FD_SET(fd, &_fd_set);
 		_servers[fd] = sev;
-	}
+		std::cout << "done" << fd << " "<< it->port << std::endl;
+ 	}
 }
 
 void		Servers::run(void){
@@ -69,11 +70,14 @@ void		Servers::run(void){
 	timeout.tv_sec = 1;
 	timeout.tv_usec = 0;
 	int max_fd = ((--_servers.end())->first);
+	
 	while (1)
 	{
+		std::cout << "run()\n";
 		int selected = 0;
 		while (selected == 0)
 		{
+			std::cout << "select()\n";
 			fd_set fd_set = _fd_set;
 			selected = select(max_fd + 1, &fd_set, NULL, NULL, &timeout);
 			if (selected == -1)
@@ -93,6 +97,7 @@ void		Servers::run(void){
 					if (ret == 0)
 					{
 						it->second.print_rec();
+						// FD_CLR(socket, &_fd_set);
 						std::cout << "done and waiting for response" << std::endl;
 					}
 					else if (ret == -1)

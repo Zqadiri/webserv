@@ -6,37 +6,82 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 17:22:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/18 22:26:45 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/18 22:53:43 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // ! simple program to parse an http request 
-
 #include <stdio.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <netinet/in.h>
+#include <string.h>
+
+#define PORT 8080
+
+enum    Method
+{
+	GET, 
+	POST, 
+	DELETE
+};
+
+typedef	struct Header
+{
+	/* data */
+}	;
 
 
 typedef struct Request {
-    // enum Method method;  //? possible methods are GET POST PUT
-    char *version;
-    char *url;
-    struct Header *headers;
-    char *body;
-} Request;
+	enum Method method;  //? possible methods are GET POST PUT
+	char *version;
+	char *url;
+	struct Header *headers;
+	char *body;
+}               Request;
 
+void    parseRequest(char *buffer)
+{
+	printf(" -> %s\n",buffer );
+	
+}
 
-int main(void) {
-    //! http header
-    char *raw_request = "GET /home.htmlf HTTP/1.1\r\n"
-            "Host: localhost:8080\r\n"
-            "Connection: keep-alive\r\n"
-            "Upgrade-Insecure-Requests: 1\r\n"
-            "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\n"
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/604.5.6 (KHTML, like Gecko) Version/11.0.3 Safari/604.5.6\r\n"
-            "Accept-Language: en-us\r\n"
-            "DNT: 1\r\n"
-            "Accept-Encoding: gzip, deflate\r\n"
-            "\r\n"
-            "Usually GET requests don\'t have a body\r\n"
-            "But I don\'t care in this case :)";
-            
+int main(int argc, char const *argv[])
+{
+	int server_fd, new_socket; long valread;
+	struct sockaddr_in address;
+	int addrlen = sizeof(address);
+	char * hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0){
+		perror("In socket");
+		exit(EXIT_FAILURE);
+	}
+	address.sin_family = AF_INET;
+	address.sin_addr.s_addr = INADDR_ANY;
+	address.sin_port = htons( PORT );
+	memset(address.sin_zero, '\0', sizeof address.sin_zero);
+	if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0){
+		perror("In bind");
+		exit(EXIT_FAILURE);
+	}
+	if (listen(server_fd, 10) < 0){
+		perror("In listen");
+		exit(EXIT_FAILURE);
+	}
+	while(1)
+	{
+		if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0){
+			perror("In accept");
+			exit(EXIT_FAILURE);
+		}
+		char buffer[30000] = {0};
+		valread = read( new_socket , buffer, 30000);
+		parseRequest(buffer);
+		write(new_socket , hello , strlen(hello));
+		printf("------------------Hello message sent-------------------");
+		close(new_socket);
+		break;
+	}
+	return 0;
 }
