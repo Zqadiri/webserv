@@ -1,41 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.hpp                                         :+:      :+:    :+:   */
+/*   servers.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/18 01:53:55 by nwakour          ###   ########.fr       */
+/*   Created: 2022/03/15 11:10:10 by zqadiri           #+#    #+#             */
+/*   Updated: 2022/04/18 01:54:19 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-#define SERVER_HPP
+#ifndef SERVERS_HPP
+#define SERVERS_HPP
 
 #include "../includes/webserv.hpp"
 #include "config.hpp"
+#include "server.hpp"
 
-class servers;
+class server;
 
-class server
+class Servers
 {
 	private:
-		struct sockaddr_in	_addr;
-		int					_fd;
-		int					_port;
-		int					_host;
-
+		Config				config; //? servers data
+		std::vector<server>	_servers;
+		fd_set		_fd_set;
+		
 	public:
-		server(void);
-		server(t_listen&);
-		~server();
-		server(const server&);
-		server	&operator=(const server&);
+		Servers(void);
+		Servers(int, int, int, int, u_long);
+		~Servers();
+		Servers(const Servers&);
+		Servers	&operator=(const Servers&);
 
-		int get_fd(void) const;
-		int setup(void);
-		int acc(void);
+		std::vector<t_listen>		getListen(void);
+		std::vector<serverConfig*>	getServers(void);
+
+		void	conf(char **);
+		void	setup(); //? main funtion
+		
 };
 
 #endif

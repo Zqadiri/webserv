@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:05:42 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/17 14:55:50 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/18 01:39:12 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./includes/webserv.hpp"
-#include "./src/server.hpp"
+#include "./src/servers.hpp"
 
 int main(int argc, char *argv[])
 {
 	if (argc == 2)
 	{
-		Server  serv;
+		Servers  serv;
 		try{
 			serv.conf(argv);
 			serv.setup();

@@ -3,62 +3,78 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/17 23:51:23 by zqadiri          ###   ########.fr       */
+/*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
+/*   Updated: 2022/04/18 01:46:03 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
-#include "socket.hpp"
+#include "../includes/webserv.hpp"
 
-/*---- Constructors & Destructor ------*/
-
-Server::Server(){
+server::server(){
+	
 }
-
-Server::~Server(){
+server::~server(){
+	if (_fd > 0)
+		close(_fd);
 }
-
-Server::Server(const Server &sv){
+server::server(const server &sv){
 	*this = sv;
 }
 
-/*---- Operators -------*/
-
-Server	&Server::operator=(const Server&obj){
-	this->_socket = obj._socket;
-	this->config = obj.config;
+server &server::operator=(const server &obj){
+	this->_addr = obj._addr;
+	this->_fd = obj._fd;
+	this->_port = obj._port;
+	this->_host = obj._host;
 	return *this;
 }
 
-/*----- Accessors -------*/
 
-std::vector<serverConfig*>	Server::getServers(void){
-	return		config.getServers();
+server::server(t_listen &l) : _host(l.host), _port(l.port), _fd(-1){
+	ft_bzero((char *)&_addr, sizeof(_addr));
+	_addr.sin_family = AF_INET;
+	_addr.sin_addr.s_addr = htonl(_host);
+	_addr.sin_port = htons(_port);
 }
 
-/*---- Member Functions ----*/
-
-void	Server::testConnection(int sock){
-	if (sock < 0){
-		write (2, "Failed To Connect\n", 18);
-		exit (EXIT_FAILURE);
-	}
-}
-
-void		Server::conf(char **argv){
-	config.parseFile(argv[1]);
-}
-
-void		Server::setup(void){
-	std::vector<t_listen>	listen = config.getAllListenDir();
-	size_t socket_nbr = 0;
-	while (socket_nbr  < this->config.getServers().size())
+int server::setup(void)
+{
+	_fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (_fd == -1)
 	{
-		//! add sockets
-		std::cout << listen.at(0).port << " : " << listen.at(0).host << std::endl;
-		socket_nbr++;
+		std::cout << "socket() failed" << std::endl;
+		return (-1);
 	}
+	if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
+	{
+		std::cout << "bind() failed" << std::endl;
+		return (-1);
+	}
+	if (listen(_fd, 10) == -1)
+	{
+		std::cout << "listen() failed" << std::endl;
+		return (-1);
+	}
+	return (1);
+}
+
+int server::acc(void)
+{
+	int s;
+
+	s = accept(_fd, NULL, NULL);
+	if (s == -1)
+	{
+		std::cout << "accept() failed" << std::endl;
+		return (-1);
+	}
+	return s;
+}
+
+int server::get_fd(void) const
+{
+	return (_fd);
 }
