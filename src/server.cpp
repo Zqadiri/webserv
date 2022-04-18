@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/17 23:51:23 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/18 00:18:25 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,6 @@ std::vector<serverConfig*>	Server::getServers(void){
 }
 
 /*---- Member Functions ----*/
-
-void	Server::testConnection(int sock){
-	if (sock < 0){
-		write (2, "Failed To Connect\n", 18);
-		exit (EXIT_FAILURE);
-	}
-}
 
 void		Server::conf(char **argv){
 	config.parseFile(argv[1]);
