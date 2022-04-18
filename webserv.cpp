@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:05:42 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/18 01:39:12 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/04/18 22:11:46 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
 		try{
 			serv.conf(argv);
 			serv.setup();
+			serv.run();
 		}
 		catch(const std::exception& e)
 		{
