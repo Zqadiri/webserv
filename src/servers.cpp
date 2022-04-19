@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/18 23:38:40 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/19 00:07:26 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 /*---- Constructors & Destructor ------*/
 
 Servers::Servers(){
-	
 }
 
 Servers::~Servers(){
@@ -61,8 +60,8 @@ void		Servers::setup(void){
 		int fd = sev.get_fd();
 		FD_SET(fd, &_fd_set);
 		_servers[fd] = sev;
-		std::cout << "done" << fd << " "<< it->port << std::endl;
- 	}
+		std::cout << "Server: "<< fd << " " << it->port << " Setup Done" << std::endl;
+	}
 }
 
 void		Servers::run(void){
@@ -77,8 +76,8 @@ void		Servers::run(void){
 		int selected = 0;
 		while (selected == 0)
 		{
-			std::cout << "select()\n";
 			fd_set fd_set = _fd_set;
+			std::cout << "select()" << std::endl;
 			selected = select(max_fd + 1, &fd_set, NULL, NULL, &timeout);
 			if (selected == -1)
 			{
@@ -97,7 +96,8 @@ void		Servers::run(void){
 					if (ret == 0)
 					{
 						it->second.print_rec();
-						// FD_CLR(socket, &_fd_set);
+						FD_CLR(socket, &_fd_set);
+						it->second.set_socket(-1);
 						std::cout << "done and waiting for response" << std::endl;
 					}
 					else if (ret == -1)
@@ -112,6 +112,7 @@ void		Servers::run(void){
 			{
 				if (FD_ISSET(it->first, &_fd_set))
 				{
+					std::cout << "accepted()" << std::endl;
 					int sock = it->second.acc();
 					if (sock != -1)
 						FD_SET(sock, &_fd_set);

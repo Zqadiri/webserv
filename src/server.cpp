@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/18 23:34:33 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/18 23:41:16 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ server::server(){
 }
 
 server::~server(){
-	
 }
 server::server(const server &sv){
 	*this = sv;
@@ -28,6 +27,8 @@ server &server::operator=(const server &obj){
 	this->_fd = obj._fd;
 	this->_port = obj._port;
 	this->_host = obj._host;
+	this->_socket = obj._socket;
+	this->_rec = obj._rec;
 	return *this;
 }
 
