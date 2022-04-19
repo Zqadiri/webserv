@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/18 23:39:58 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/19 14:59:05 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,19 +173,18 @@ unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned i
 	index++;
 	std::string delim(":");
 	size_t end = con[index].find_first_of(delim, 0);
-	if (end == std::string::npos || std::string(con[index].substr(0, end)).compare("localhost")){ //! no port || localhost
-		// puts("here");
+	if (std::string(con[index].substr(0, end)).compare("localhost")){ //! no port || localhost
 		serv._host = convert(con[index].substr(0, end));
-		// return index++;
 	}
 	try {
-		end++;
-		serv._port = stoi(con[index].substr(end, con[index].find_first_of(delim, end)));
+		if (end != std::string::npos){
+			end++;
+			serv._port = stoi(con[index].substr(end, con[index].find_first_of(delim, end)));
+		}
 	}
 	catch (std::exception &r){
 		std::cout << "Bad Port" << std::endl;
 	}
-	
 	return index++;
 }
 

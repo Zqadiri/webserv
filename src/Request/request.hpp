@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 02:12:41 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/19 22:36:01 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ class request
 		std::string								_requestURI;
 		std::string								_version; //! http 1.0 1.1
 		std::map<std::string, std::string>		_headers;
+		std::vector<std::string>				methods; //! no need to be global
 
 	public:
 		request();
@@ -33,7 +34,8 @@ class request
 		std::string								getVersion();
 		std::map<std::string, std::string>		getHeaders();
 		
-		int										getFirstLine(std::string);
+		void									init_methods();
+		int										getFirstLine(const std::string &);
 		int										startParsing(std::string);
 };
 
