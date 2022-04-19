@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 05:43:44 by tenshi           ###   ########.fr       */
+/*   Updated: 2022/04/19 21:30:12 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void		Servers::conf(char **argv){
 
 void		Servers::setup(void){
 	std::vector<t_listen>	listen = config.getAllListenDir();
+	_max_fd = 0;
 	FD_ZERO(&_fd_set);
 	for(std::vector<t_listen>::iterator it = listen.begin(); it != listen.end(); ++it){
 		server sev(*it);
@@ -73,18 +74,23 @@ void		Servers::setup(void){
 
 void		Servers::run(void){
 	
-	struct timeval	timeout;
+	std::cout << "run()\n";
+	struct timeval		tv;
+	fd_set write_set;
+	FD_ZERO(&write_set);
+	
 	while (1)
 	{
-		std::cout << "run()\n";
+		tv.tv_sec = 1;
+		tv.tv_usec = 0;
 		int selected = 0;
+		std::cout << "select()\n";
 		while (selected == 0)
 		{
-			timeout.tv_sec = 1;
-			timeout.tv_usec = 0;
 			fd_set fset = _fd_set;
-			std::cout << "select()\n";
-			selected = select(_max_fd + 1, &fset, NULL, NULL, &timeout);
+			fd_set wset = write_set;
+			
+			selected = select(_max_fd + 1, &fset, &wset, NULL, &tv);
 			if (selected == -1)
 			{
 				std::cout << "select error" << std::endl;
@@ -96,7 +102,7 @@ void		Servers::run(void){
 			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
 			{
 				if (!serv->is_sockets_empty())
-					serv->handle_sockets(_fd_set);
+					serv->handle_sockets(_fd_set, write_set);
 				else
 					serv->add_socket(_fd_set, _max_fd);
 			}

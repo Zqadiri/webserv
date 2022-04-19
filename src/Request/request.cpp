@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2022/04/19 16:11:41 by zqadiri          ###   ########.fr       */
+=======
+/*   Updated: 2022/04/19 22:00:57 by nwakour          ###   ########.fr       */
+>>>>>>> 22b4002232453a19e39985a130f988ef754430af
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +50,7 @@ std::map<std::string, std::string>		request::getHeaders(){
 
 /*------ Member Functions ------*/
 
+<<<<<<< HEAD
 int			request::getFirstLine(const std::string &buff)
 {
 	std::string	line = buff.substr(0, buff.find_first_of('\n'));
@@ -79,6 +84,13 @@ int			request::getFirstLine(const std::string &buff)
 	std::cout << "path : " << _requestURI << std::endl;
 	std::cout << "version :  "  << this->_version << std::endl;
 	return j;
+=======
+int			request::getFirstLine(std::string buff){
+    std::string delim("\n");
+    int end = buff.find_first_of(delim, 0);
+    (void)end;
+    return 1;
+>>>>>>> 22b4002232453a19e39985a130f988ef754430af
 }
 
 int				request::startParsing(std::string buff){
