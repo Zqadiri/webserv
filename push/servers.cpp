@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 05:43:44 by tenshi           ###   ########.fr       */
+/*   Updated: 2022/04/19 02:56:01 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 /*---- Constructors & Destructor ------*/
 
 Servers::Servers(){
-	
 }
 
 Servers::~Servers(){
@@ -72,16 +71,16 @@ void		Servers::setup(void){
 }
 
 void		Servers::run(void){
-	
 	struct timeval	timeout;
+	timeout.tv_sec = 1;
+	timeout.tv_usec = 0;
+	
 	while (1)
 	{
 		std::cout << "run()\n";
 		int selected = 0;
 		while (selected == 0)
 		{
-			timeout.tv_sec = 1;
-			timeout.tv_usec = 0;
 			fd_set fset = _fd_set;
 			std::cout << "select()\n";
 			selected = select(_max_fd + 1, &fset, NULL, NULL, &timeout);
@@ -91,17 +90,21 @@ void		Servers::run(void){
 				return ;
 			}
 		}
-		if (selected > 0)
+		for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
 		{
-			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
-			{
-				if (!serv->is_sockets_empty())
-					serv->handle_sockets(_fd_set);
-				else
-					serv->add_socket(_fd_set, _max_fd);
-			}
+				serv->handle_sockets(_fd_set);
+				if (FD_ISSET(serv->get_fd(), &_fd_set))
+				{
+					std::cout << "accepted()" << std::endl;
+					int sock = serv->acc();
+					if (sock != -1)
+					{
+						FD_SET(sock, &_fd_set);
+						serv->add_socket(sock);
+						if (sock > _max_fd)
+							_max_fd = sock;
+					}
+				}
 		}
-		else
-			std::cout << "didnt select" << std::endl;
 	}
 }

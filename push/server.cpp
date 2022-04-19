@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/19 05:48:48 by tenshi           ###   ########.fr       */
+/*   Updated: 2022/04/19 02:55:20 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ server &server::operator=(const server &obj){
 	this->_port = obj._port;
 	this->_host = obj._host;
 	this->_sockets = obj._sockets;
-	// this->_rec = obj._rec;
+	this->_rec = obj._rec;
 	return *this;
 }
 
@@ -77,7 +77,12 @@ int server::get_fd(void) const
 	return (_fd);
 }
 
-int server::rec(int &socket, request& req)
+void server::add_socket(int &socket)
+{
+	_sockets.push_back(socket);
+}
+
+int server::rec(int &socket)
 {
 	char				buff[1024];
 	int					ret;
@@ -85,79 +90,48 @@ int server::rec(int &socket, request& req)
 	ret = recv(socket, buff, sizeof(buff), 0);
 	if (ret == -1)
 	{
+		close(socket);
 		std::cout << "recv() failed" << std::endl;
 		return (-1);
 	}
 	if (ret == 0)
 	{
+		close(socket);
 		std::cout << "Client disconnected" << std::endl;
 		return (0);
 	}
-	std::string str(buff);
-	// std::cout << str << std::endl;
-	//! parse 
-	// request *req = new request();
-	// if (req->startParsing(str) < -1){
-	// 	std::cout << "BAD REQUEST" << std::endl;
-	// 	return -1;
-	// }
-	//! zedt dkchi li gal lya amine
-	//! wlat 3ndi list fiha pair<socket, request>
-	//! kat jik hna request li wslat l server f correct socket
-	if (req.startParsing(str) < -1){
-		std::cout << "BAD REQUEST" << std::endl;
-		return -1;
-	}
+	_rec.append(buff);
 	return (1);
 }
 
-void server::handle_sockets(fd_set& fset)
+void server::print_rec(void)
 {
-	std::cout << "handle_sockets" << std::endl;
-	std::list<std::pair<int, request> >::iterator socket = _sockets.begin();
-	while (socket != _sockets.end())
+	std::cout << _rec << std::endl;
+	_rec.clear();
+}
+
+int server::handle_sockets(fd_set& fset)
+{
+	for (std::list<int>::iterator socket = _sockets.begin(); socket != _sockets.end(); ++socket)
 	{
-		if (FD_ISSET(socket->first, &fset))
+		if (FD_ISSET(*socket, &fset))
 		{
-			int ret = rec(socket->first, socket->second);
+			int ret = rec(*socket);
 			if (ret == 0)
 			{
-				FD_CLR(socket->first, &fset);
-				close(socket->first);
-				socket = _sockets.erase(socket);
-				continue;
+				print_rec();
+				FD_CLR(*socket, &fset);
+				_sockets.erase(socket);
+				std::cout << "done and waiting for response" << std::endl;
+				break;
 			}
 			else if (ret == -1)
 			{
-				FD_CLR(socket->first, &fset);
-				close(socket->first);
-				socket =_sockets.erase(socket);
-				continue;
+				std::cout << "error rec()" << std::endl;
+				FD_CLR(*socket, &fset);
+				_sockets.erase(socket);
+				break;
 			}
 		}
-		++socket;
 	}
-}
-
-void server::add_socket(fd_set &fset, int &max_fd)
-{
-	std::cout << "search for new socket" << std::endl;
-	std::cout << _sockets.size() << std::endl;
-	if (FD_ISSET(_fd, &fset))
-	{
-		int sock = acc();
-		if (sock != -1)
-		{
-			std::cout << "accepted()" << std::endl;
-			FD_SET(sock, &fset);
-			_sockets.push_back(std::make_pair(sock, request()));
-			if (sock > max_fd)
-				max_fd = sock;
-		}
-	}
-}
-
-bool server::is_sockets_empty(void) const
-{
-	return (_sockets.empty());
 }
