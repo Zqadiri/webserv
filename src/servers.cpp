@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 01:34:14 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/04/19 02:18:14 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 /*---- Constructors & Destructor ------*/
 
 Servers::Servers(){
+	
 }
 
 Servers::~Servers(){
@@ -82,7 +83,7 @@ void		Servers::run(void){
 		while (selected == 0)
 		{
 			fd_set fd_set = _fd_set;
-			std::cout << "select()\n";
+			std::cout << "select()" << std::endl;
 			selected = select(max_fd + 1, &fd_set, NULL, NULL, &timeout);
 			if (selected == -1)
 			{

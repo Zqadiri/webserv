@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/19 01:33:01 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/04/19 02:11:35 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,12 @@ int server::rec(void)
 		return (0);
 	}
 	_rec.append(buff);
+	//! parse 
+	request *req = new request();
+	if (req->startParsing(_rec) < -1){
+		std::cout << "BAD REQUEST" << std::endl;
+		return -1;
+	}
 	return (1);
 }
 

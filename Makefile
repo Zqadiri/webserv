@@ -6,13 +6,13 @@
 #    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/04/18 22:54:20 by zqadiri          ###   ########.fr        #
+#    Updated: 2022/04/19 02:10:42 by zqadiri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		=	webserv
 
-SRCS		=  	webserv.cpp ./src/*.cpp
+SRCS		=  	webserv.cpp ./src/*.cpp ./src/Request/*.cpp
 
 OBJS		= $(SRCS:.cpp=.o)
 

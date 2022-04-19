@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 01:28:25 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/19 02:12:41 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,6 @@
 
 #include "../../includes/webserv.hpp"
 #include "../server.hpp"
-
-class	Servers;
 
 class request
 {
@@ -35,7 +33,8 @@ class request
 		std::string								getVersion();
 		std::map<std::string, std::string>		getHeaders();
 		
-		int			getFirstLine();
+		int										getFirstLine(std::string);
+		int										startParsing(std::string);
 };
 
 #endif
