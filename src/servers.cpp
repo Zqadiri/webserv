@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 00:07:26 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/19 01:34:14 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,15 @@ void		Servers::setup(void){
 	FD_ZERO(&_fd_set);
 	for(std::vector<t_listen>::iterator it = listen.begin(); it != listen.end(); ++it){
 		server sev(*it);
-		int fd = sev.get_fd();
-		FD_SET(fd, &_fd_set);
-		_servers[fd] = sev;
-		std::cout << "Server: "<< fd << " " << it->port << " Setup Done" << std::endl;
+		if (sev.setup() != -1)
+		{
+			int fd = sev.get_fd();
+			FD_SET(fd, &_fd_set);
+			_servers[fd] = sev;
+			std::cout << "Server: "<< fd << " " << it->port << " Setup Done" << std::endl;
+		}
+		else
+			std::cout << "Server: "<< it->port << " Setup Failed" << std::endl;
 	}
 }
 
@@ -77,7 +82,7 @@ void		Servers::run(void){
 		while (selected == 0)
 		{
 			fd_set fd_set = _fd_set;
-			std::cout << "select()" << std::endl;
+			std::cout << "select()\n";
 			selected = select(max_fd + 1, &fd_set, NULL, NULL, &timeout);
 			if (selected == -1)
 			{

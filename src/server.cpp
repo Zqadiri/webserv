@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/18 23:41:16 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/19 01:33:01 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ server::server(t_listen &l) :  _port(l.port),_host(l.host), _fd(-1), _socket(-1)
 	_addr.sin_family = AF_INET;
 	_addr.sin_addr.s_addr = htonl(_host);
 	_addr.sin_port = htons(_port);
-	setup();
 }
 
 int server::setup(void)
@@ -95,9 +94,17 @@ int server::rec(void)
 
 	ret = recv(_socket, buff, sizeof(buff), 0);
 	if (ret == -1)
+	{
+		close(_socket);
+		std::cout << "recv() failed" << std::endl;
 		return (-1);
+	}
 	if (ret == 0)
+	{
+		close(_socket);
+		std::cout << "Client disconnected" << std::endl;
 		return (0);
+	}
 	_rec.append(buff);
 	return (1);
 }
@@ -105,4 +112,5 @@ int server::rec(void)
 void server::print_rec(void)
 {
 	std::cout << _rec << std::endl;
+	_rec.clear();
 }
