@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:10 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 00:23:18 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/19 02:33:22 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ class Servers
 {
 	private:
 		Config					config; //? servers data
-		std::map<int ,server>	_servers;
+		std::list<server>		_servers;
+		int						_max_fd;
 		fd_set					_fd_set;
 		
 	public:
