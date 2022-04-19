@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/19 02:06:10 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/19 05:42:47 by tenshi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ class server
 		int						_port;
 		int						_host;
 		int						_fd;
-		int						_socket;
-		std::string				_rec;
-		std::vector<request*>	_requests;
+		std::list<std::pair<int, request> >	_sockets;
+		// std::string				_rec;
+		// std::vector<request*>	_requests;
 
 	public:
 		server(void);
@@ -39,11 +39,12 @@ class server
 		server	&operator=(const server&);
 
 		int		get_fd(void) const;
-		int		get_socket(void) const;
-		void	set_socket(int);
+		int 	rec(int&, request&);
+		void 	handle_sockets(fd_set&);
+		void 	add_socket(fd_set&, int&);
 		int		setup(void);
 		int		acc(void);
-		int		rec(void);
+		bool 	is_sockets_empty(void) const;
 		void	print_rec(void);
 };
 

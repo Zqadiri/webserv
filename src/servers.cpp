@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 02:18:14 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/19 05:43:44 by tenshi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ void		Servers::conf(char **argv){
 
 void		Servers::setup(void){
 	std::vector<t_listen>	listen = config.getAllListenDir();
-	
 	FD_ZERO(&_fd_set);
 	for(std::vector<t_listen>::iterator it = listen.begin(); it != listen.end(); ++it){
 		server sev(*it);
@@ -62,7 +61,9 @@ void		Servers::setup(void){
 		{
 			int fd = sev.get_fd();
 			FD_SET(fd, &_fd_set);
-			_servers[fd] = sev;
+			if (fd > _max_fd)
+				_max_fd = fd;
+			_servers.push_back(sev);
 			std::cout << "Server: "<< fd << " " << it->port << " Setup Done" << std::endl;
 		}
 		else
@@ -71,61 +72,36 @@ void		Servers::setup(void){
 }
 
 void		Servers::run(void){
-	struct timeval	timeout;
-	timeout.tv_sec = 1;
-	timeout.tv_usec = 0;
-	int max_fd = ((--_servers.end())->first);
 	
+	struct timeval	timeout;
 	while (1)
 	{
 		std::cout << "run()\n";
 		int selected = 0;
 		while (selected == 0)
 		{
-			fd_set fd_set = _fd_set;
-			std::cout << "select()" << std::endl;
-			selected = select(max_fd + 1, &fd_set, NULL, NULL, &timeout);
+			timeout.tv_sec = 1;
+			timeout.tv_usec = 0;
+			fd_set fset = _fd_set;
+			std::cout << "select()\n";
+			selected = select(_max_fd + 1, &fset, NULL, NULL, &timeout);
 			if (selected == -1)
 			{
 				std::cout << "select error" << std::endl;
 				return ;
 			}
 		}
-		for (std::map<int ,server>::iterator it = _servers.begin(); it != _servers.end(); ++it)
+		if (selected > 0)
 		{
-			int socket = it->second.get_socket();
-			if (socket != -1)
+			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
 			{
-				if (FD_ISSET(socket, &_fd_set))
-				{
-					int ret = it->second.rec();
-					if (ret == 0)
-					{
-						it->second.print_rec();
-						FD_CLR(socket, &_fd_set);
-						it->second.set_socket(-1);
-						std::cout << "done and waiting for response" << std::endl;
-					}
-					else if (ret == -1)
-					{
-						std::cout << "error rec()" << std::endl;
-						FD_CLR(socket, &_fd_set);
-						it->second.set_socket(-1);
-					}
-				}
-			}
-			else
-			{
-				if (FD_ISSET(it->first, &_fd_set))
-				{
-					std::cout << "accepted()" << std::endl;
-					int sock = it->second.acc();
-					if (sock != -1)
-						FD_SET(sock, &_fd_set);
-					if (sock > max_fd)
-						max_fd = sock;
-				}
+				if (!serv->is_sockets_empty())
+					serv->handle_sockets(_fd_set);
+				else
+					serv->add_socket(_fd_set, _max_fd);
 			}
 		}
+		else
+			std::cout << "didnt select" << std::endl;
 	}
 }
