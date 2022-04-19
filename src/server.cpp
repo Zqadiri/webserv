@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/19 05:48:48 by tenshi           ###   ########.fr       */
+/*   Updated: 2022/04/19 22:00:32 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,19 @@ int server::get_fd(void) const
 	return (_fd);
 }
 
+int server::sen(int &socket, request& req)
+{
+	int ret;
+	std::string buf;
+	(void)req;
+	buf = "HTTP/1.1 200 OK\r\nContent-Length: 30\r\nContent-Location: /index.html\r\nContent-Type: text/html\r\nDate: Tue, 19 Apr 2022 19:58:38 GMT\r\nLast-Modified: Tue, 19 Apr 2022 19:58:38 GMT\r\nServer: Webserv/1.0.0 (Unix)\r\nTransfer-Encoding: identity\r\n\r\n";
+	buf +=  "<html><body><h1>Hello World</h1></body></html>";
+	ret = send(socket, buf.c_str(), buf.size(), 0);
+	if (ret == -1)
+		return (-1);
+	return (0);
+}
+
 int server::rec(int &socket, request& req)
 {
 	char				buff[1024];
@@ -111,28 +124,49 @@ int server::rec(int &socket, request& req)
 	return (1);
 }
 
-void server::handle_sockets(fd_set& fset)
+void server::handle_sockets(fd_set& fset, fd_set& wset)
 {
-	std::cout << "handle_sockets" << std::endl;
+	// std::cout << "handle_sockets" << std::endl;
 	std::list<std::pair<int, request> >::iterator socket = _sockets.begin();
 	while (socket != _sockets.end())
 	{
-		if (FD_ISSET(socket->first, &fset))
+		if (FD_ISSET(socket->first, &wset))
 		{
-			int ret = rec(socket->first, socket->second);
-			if (ret == 0)
+			int ret = sen(socket->first, socket->second);
+			if (ret == -1)
 			{
+				std::cout << "send() failed" << std::endl;
+				FD_CLR(socket->first, &wset);
 				FD_CLR(socket->first, &fset);
 				close(socket->first);
-				socket = _sockets.erase(socket);
-				continue;
+				socket =_sockets.erase(socket);
+				continue ;
 			}
-			else if (ret == -1)
+			else
+			{
+				std::cout << "send() success" << std::endl;
+				FD_CLR(socket->first, &wset);
+				FD_CLR(socket->first, &fset);
+				close(socket->first);
+				socket =_sockets.erase(socket);
+				continue ;
+			}
+		}
+		else if (FD_ISSET(socket->first, &fset))
+		{
+			int ret = rec(socket->first, socket->second);
+			if (ret == -1)
 			{
 				FD_CLR(socket->first, &fset);
 				close(socket->first);
 				socket =_sockets.erase(socket);
 				continue;
+			}
+			else 
+			{
+				std::cout << "recv() success" << std::endl;
+				FD_SET(socket->first, &wset);
+				// continue;
 			}
 		}
 		++socket;
@@ -141,8 +175,6 @@ void server::handle_sockets(fd_set& fset)
 
 void server::add_socket(fd_set &fset, int &max_fd)
 {
-	std::cout << "search for new socket" << std::endl;
-	std::cout << _sockets.size() << std::endl;
 	if (FD_ISSET(_fd, &fset))
 	{
 		int sock = acc();
@@ -161,3 +193,4 @@ bool server::is_sockets_empty(void) const
 {
 	return (_sockets.empty());
 }
+

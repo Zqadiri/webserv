@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/19 05:42:47 by tenshi           ###   ########.fr       */
+/*   Updated: 2022/04/19 21:59:33 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ class server
 
 		int		get_fd(void) const;
 		int 	rec(int&, request&);
-		void 	handle_sockets(fd_set&);
+		int		sen(int&, request&);
+		void 	handle_sockets(fd_set&, fd_set&);
 		void 	add_socket(fd_set&, int&);
 		int		setup(void);
 		int		acc(void);

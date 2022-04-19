@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 02:22:39 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/19 22:00:57 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ std::map<std::string, std::string>		request::getHeaders(){
 int			request::getFirstLine(std::string buff){
     std::string delim("\n");
     int end = buff.find_first_of(delim, 0);
-    
+    (void)end;
     return 1;
 }
 
