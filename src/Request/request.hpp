@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/20 03:04:35 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/20 03:08:13 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ class request
 
 		std::string								getKey(const std::string&);
 		std::string								getValue(const std::string&, size_t);
-
 
 		//! print function 
 		void	print_req(void);
