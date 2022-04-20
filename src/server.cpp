@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/19 22:00:32 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/04/19 23:47:07 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ int server::sen(int &socket, request& req)
 	int ret;
 	std::string buf;
 	(void)req;
+	//resp
 	buf = "HTTP/1.1 200 OK\r\nContent-Length: 30\r\nContent-Location: /index.html\r\nContent-Type: text/html\r\nDate: Tue, 19 Apr 2022 19:58:38 GMT\r\nLast-Modified: Tue, 19 Apr 2022 19:58:38 GMT\r\nServer: Webserv/1.0.0 (Unix)\r\nTransfer-Encoding: identity\r\n\r\n";
 	buf +=  "<html><body><h1>Hello World</h1></body></html>";
 	ret = send(socket, buf.c_str(), buf.size(), 0);
@@ -101,6 +102,7 @@ int server::rec(int &socket, request& req)
 		std::cout << "recv() failed" << std::endl;
 		return (-1);
 	}
+
 	if (ret == 0)
 	{
 		std::cout << "Client disconnected" << std::endl;
