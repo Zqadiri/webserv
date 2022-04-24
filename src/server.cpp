@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/20 03:06:34 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/21 23:39:31 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,6 @@ int server::sen(int &socket, request& req)
 	int ret;
 	std::string buf;
 	(void)req;
-	//resp
 	buf = "HTTP/1.1 200 OK\r\nContent-Length: 30\r\nContent-Location: /index.html\r\nContent-Type: text/html\r\nDate: Tue, 19 Apr 2022 19:58:38 GMT\r\nLast-Modified: Tue, 19 Apr 2022 19:58:38 GMT\r\nServer: Webserv/1.0.0 (Unix)\r\nTransfer-Encoding: identity\r\n\r\n";
 	buf +=  "<html><body><h1>Hello World</h1></body></html>";
 	ret = send(socket, buf.c_str(), buf.size(), 0);
@@ -109,17 +108,7 @@ int server::rec(int &socket, request& req)
 		return (0);
 	}
 	std::string str(buff);
-	// std::cout << str << std::endl;
-	//! parse 
-	// request *req = new request();
-	// if (req->startParsing(str) < -1){
-	// 	std::cout << "BAD REQUEST" << std::endl;
-	// 	return -1;
-	// }
-	//! zedt dkchi li gal lya amine
-	//! wlat 3ndi list fiha pair<socket, request>
-	//! kat jik hna request li wslat l server f correct socket
-	if (req.startParsing(str) < -1){
+	if (req.startParsing(str, req) < -1){
 		std::cout << "BAD REQUEST" << std::endl;
 		return -1;
 	}

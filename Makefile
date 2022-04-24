@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+         #
+#    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/04/19 22:01:07 by nwakour          ###   ########.fr        #
+#    Updated: 2022/04/24 23:18:19 by zqadiri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ OBJS		= $(SRCS:.cpp=.o)
 
 CC			= c++
 
-FLAGS		=  -std=c++98 -fsanitize=address -g
+FLAGS		=  -std=c++98 -g
 
 WWW			= -Wall -Wextra -Werror
 

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/17 02:41:43 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/24 23:46:48 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,6 @@
 #define SERVERCONFIG_HPP_
 
 #include "../includes/webserv.hpp"
-#include <arpa/inet.h>
-#include <sstream>
-#include <string.h>
 
 struct _location
 {
@@ -58,6 +55,5 @@ class serverConfig
 
 		unsigned int	location(_location &, configFile, unsigned int &);
 };
-
 
 #endif

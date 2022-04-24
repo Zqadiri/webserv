@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/18 18:28:28 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/04/24 23:54:00 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,14 @@
 #include <string>
 #include <list>
 #include <iterator>
+#include <sstream>
+#include <algorithm>
 
 // C 
 #include <unistd.h>
 #include <fcntl.h>
+#include <arpa/inet.h>
+#include <string.h>
 
 // Network 
 #include <sys/socket.h>

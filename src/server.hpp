@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/19 21:59:33 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/04/20 22:44:16 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ class server
 		int						_fd;
 		std::list<std::pair<int, request> >	_sockets;
 		// std::string				_rec;
-		// std::vector<request*>	_requests;
+		std::vector<request*>	_requests;
 
 	public:
 		server(void);

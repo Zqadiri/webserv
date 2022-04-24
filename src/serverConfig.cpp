@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 14:59:05 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/24 23:45:49 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,28 +33,6 @@ const char* locationKeys[] = {
 	"cgi_pass", 
 };
 
-/*---- Constructors & Destructor ------*/
-
-serverConfig::serverConfig(){
-	_host = inet_addr("192.168.0.1");
-	_port = 80;
-}
-
-serverConfig::~serverConfig(){
-}
-
-serverConfig::serverConfig(const serverConfig &obj){
-	(void)obj;
-}
-
-/*---- Operators -------*/
-
-serverConfig	&serverConfig::operator=(const serverConfig&){
-	return *this;
-}
-
-/*---- Member Functions ----*/
-
 bool notAValue(std::string value)
 {
 	for (size_t i = 0; i < 7; i++){
@@ -73,6 +51,37 @@ bool notAValueL(std::string value)
 	}
 	return false;
 }
+
+/*---- Constructors & Destructor ------*/
+
+serverConfig::serverConfig() : _root(""), _index(""){
+	_host = inet_addr("192.168.0.1");
+	_port = 80;
+}
+
+serverConfig::~serverConfig(){
+}
+
+serverConfig::serverConfig(const serverConfig &obj){
+	*this = obj;
+}
+
+/*---- Operators -------*/
+
+serverConfig	&serverConfig::operator=(const serverConfig &obj){
+	this->_server_name = obj._server_name;
+	this->_root = obj._root;
+	this->_index = obj._index;
+	this->_host = obj._host;
+	this->_host = obj._host;
+	this->_port = obj._port;
+	this->_error_pages = obj._error_pages;
+	this->_allow_methods = obj._allow_methods;
+	this->_locations = obj._locations;
+	return *this;
+}
+
+/*---- Member Functions ----*/
 
 unsigned int	serverConfig::serverName(serverConfig &serv, configFile con, unsigned int &index)
 {
@@ -106,7 +115,7 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 		}
 		else if (!con[index].compare("client_body_buffer_size")){
 			index++;
-			l._limitBodySize = stoi(con[index++]); //! exception may happen [abort]
+			l._limitBodySize = stoi(con[index++]);
 		}
 		else if (!con[index].compare("cgi_pass")){
 			index++;
@@ -142,12 +151,7 @@ unsigned int	serverConfig::parseLocation(serverConfig &serv, configFile con, uns
 	return index;
 }
 
-// localhost
-// ip address -> always to 192.168.0.1
-// no port  -> default 80
-
-uint32_t convert( const std::string& ipv4Str ) //! convert and check for errors
-{
+uint32_t convert( const std::string& ipv4Str ){
 	std::istringstream iss( ipv4Str );
 	uint32_t ipv4 = 0;
 	
@@ -173,9 +177,8 @@ unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned i
 	index++;
 	std::string delim(":");
 	size_t end = con[index].find_first_of(delim, 0);
-	if (std::string(con[index].substr(0, end)).compare("localhost")){ //! no port || localhost
+	if (std::string(con[index].substr(0, end)).compare("localhost"))
 		serv._host = convert(con[index].substr(0, end));
-	}
 	try {
 		if (end != std::string::npos){
 			end++;

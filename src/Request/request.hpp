@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/20 03:08:13 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/21 00:28:34 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class request
 		std::vector<std::string>				methods; //! no need to be global
 		std::string								_body;
 
-		int										_retCode; 
+		int										_retCode;
 	public:
 		request();
 		~request();
@@ -37,15 +37,15 @@ class request
 		std::map<std::string, std::string>		getHeaders();
 		
 		void									init_methods();
-		int										getFirstLine(const std::string &);
+		int										getFirstLine(const std::string &, request&);
 		std::string								getNextLine(const std::string &, size_t&);
-		int										startParsing(std::string);
+		int										startParsing(std::string,  request&);
 
 		std::string								getKey(const std::string&);
 		std::string								getValue(const std::string&, size_t);
 
 		//! print function 
-		void	print_req(void);
+		void	print_req(request &);
 };
 
 #endif

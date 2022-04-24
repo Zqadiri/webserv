@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 15:02:24 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/24 23:32:43 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ Config::Config(){
 }
 
 Config::~Config(){
+	for (size_t i = 0; i < servers.size(); i++)
+		delete servers[i];
 }
 
 Config::Config(const Config &conf){
@@ -56,19 +58,13 @@ std::vector<t_listen>		Config::getAllListenDir(void){
 		l.host = this->servers[i]->_host;
 		l.port = this->servers[i]->_port;
 		listen.push_back(l);
-		// std::cout << " >> : "<< l.host << std::endl;
-		// std::cout << " >> : "<< l.port << std::endl;
-
 	}
 	return listen;
 }
 
-
 /*---- Operators -------*/
 
 Config	&Config::operator=(const Config &obj){
-	// if (*this == obj) //! check for self assign [overload ==]
-	// 	return *this;
 	this->servers = obj.servers;
 	return *this;
 }
@@ -80,8 +76,7 @@ bool exepectedTokens(std::string value) //! use the one in serverConfig
 	const char* exepectedTokens[] = {"root", "alias", "allow_methods", 
 	"client_body_buffer_size","cgi_pass", "server_names", "listen", 
 	"location", "index", "error_page", "server", "{", "}"};
-	for (size_t i = 0; i < 13; i++)
-	{
+	for (size_t i = 0; i < 13; i++){
 		if (!value.compare(exepectedTokens[i]))
 			return true;
 	}
@@ -144,11 +139,9 @@ configFile	Config::readFile(const char *fileName){
 			continue;
 		con.push_back(str);
 	}
-	// ! split to tokens
 	return	(Config::slitTokens(con, " "));
 }
 
-//! add an init to set all fields to default values 
 void		Config::parseFile(const char *fileName)
 {
 	configFile		confFile;
@@ -157,7 +150,6 @@ void		Config::parseFile(const char *fileName)
 	if (open(fileName, O_RDONLY) < 0)
 		throw Config::FileCorrupted();
 	confFile = Config::readFile(fileName);
-	//! check for unclosed curl
 	curlLevel(confFile);
 	confSize = confFile.size();
 	for (unsigned int i = 0; i < confSize; i++){
@@ -169,7 +161,7 @@ void		Config::parseFile(const char *fileName)
 		else
 			throw	Config::FileNotWellFormated();
 	}
-	// print(); 
+	print();
 }
 
 configFile::iterator	Config::curlLevel(configFile con){
@@ -212,6 +204,7 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 		if (index >= con.size() || (con[index] == "}" && !isLocation) || !con[index].compare("server"))
 			break;
 	}
+	// ? check if two servers have the same server_name and the same port
 	this->servers.push_back(server);
 	index--;
 	return index; //! return index to the last colla 

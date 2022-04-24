@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/20 03:04:04 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/04/24 23:56:06 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,22 +25,21 @@ request::request() : _method(""), _requestURI(""), _version(""){
 	_retCode = 200;  // ? 200 OK -> Successful responses
 }
 
-request::~request()
-{
+request::~request(){
 }
 
 /*------ Accessors ------*/
 
-std::string								request::getMethod(){
+std::string							request::getMethod(){
 	return      _method;
 }
-std::string								request::getRequestURI(){
+std::string							request::getRequestURI(){
 	return      _requestURI;
 }
-std::string								request::getVersion(){
+std::string							request::getVersion(){
 	return       _version;
 }
-std::map<std::string, std::string>		request::getHeaders(){
+std::map<std::string, std::string>	request::getHeaders(){
 	return       _headers;
 }
 
@@ -50,42 +49,42 @@ std::map<std::string, std::string>		request::getHeaders(){
 // the request due to something that is perceived to be a 
 // client error ex: malformed request syntax
 
-int						request::getFirstLine(const std::string &buff)
+int						request::getFirstLine(const std::string &buff, request& req)
 {
 	std::string	line = buff.substr(0, buff.find_first_of('\n'));
 	size_t	i, j;
 
 	i = line.find_first_of(' ');
 	if (i == std::string::npos){
-		this->_retCode = 400;
+		req._retCode = 400;
 		std::cerr << "BAD REQUEST" << std::endl;
 		return -1;
 	}
-	this->_method.assign(line, 0, i);
+	req._method.assign(line, 0, i);
 	if ((j = buff.find_first_not_of(' ', i)) == std::string::npos){
-		this->_retCode = 400;
+		req._retCode = 400;
 		std::cerr << "BAD REQUEST" << std::endl;
 		return -1;
 	}
 	if ((i = buff.find_first_of(' ', j)) == std::string::npos){
-		this->_retCode = 400;
+		req._retCode = 400;
 		std::cerr << "BAD REQUEST" << std::endl;
 		return -1;
 	}
-	this->_requestURI.assign(buff, j, i - j);
+	req._requestURI.assign(buff, j, i - j);
 	j += _requestURI.size();
 	if ((j = buff.find_first_not_of(' ', j)) == std::string::npos){
-		this->_retCode = 400;
+		req._retCode = 400;
 		std::cerr << "No HTTP version" << std::endl;
 		return -1;
 	}
 	if (buff[j] == 'H' && buff[j + 1] == 'T' && buff[j + 2] == 'T' &&
 			buff[j + 3] == 'P' && buff[j + 4] == '/'){
-		this->_version.assign(buff, j + 5, 3);
+		req._version.assign(buff, j + 5, 3);
 	}
-	if (this->_version.compare("1.0") && this->_version.compare("1.1")){
+	if (req._version.compare("1.0") && req._version.compare("1.1")){
 		//! The HTTP version used in the request is not supported by the server.
-		this->_retCode = 505;
+		req._retCode = 505;
 		std::cerr << "BAD VERSION" << std::endl;
 		return (-1);
 	}
@@ -128,34 +127,32 @@ std::string				request::getValue(const std::string &buff, size_t i){
 	return value;
 }
 
-int						request::startParsing(std::string buff)
+int						request::startParsing(std::string buff,  request& req)
 {
 	size_t  cursor = 0;
 	std::string ret, key, value;
 
-	cursor = this->getFirstLine(buff);
+	cursor = this->getFirstLine(buff, req);
 	ret = getNextLine(buff, cursor); // ! skip ' HTTP/1.1 .. '
 	while ((ret = getNextLine(buff, cursor)).compare("\r") && ret.compare("")){
-		// std::cout << "<<< "<< ret << " >>>" <<std::endl;
 		key = getKey(ret);
 		value = getValue(ret, key.size());
-		this->_headers.insert(std::make_pair(key, value));
+		req._headers.insert(std::make_pair(key, value));
 	}
-	this->_body = buff.substr(cursor, buff.size());
-	print_req();
+	req._body = buff.substr(cursor, buff.size());
+	// print_req(req);
 	return 1;
 }
 
-void	request::print_req(void)
+void	request::print_req(request& req)
 {
-	std::cout << "method :  "  << this->_method << std::endl;
-	std::cout << "path : " << this->_requestURI << std::endl;
-	std::cout << "version :  "  << this->_version << std::endl;
-	for(std::map<std::string, std::string>::const_iterator it = this->_headers.begin();
-    it != this->_headers.end(); ++it){
-   		std::cout << "{key} : " << it->first << std::endl;
+	std::cout << "method :  "  << req._method << std::endl;
+	std::cout << "path : " << req._requestURI << std::endl;
+	std::cout << "version :  "  << req._version << std::endl;
+	for(std::map<std::string, std::string>::const_iterator it = req._headers.begin();
+    it != req._headers.end(); ++it){
+   		std::cout << "{key}: " << it->first << std::endl;
 		std::cout << "{value} : " << it->second  << std::endl;
 	}
-	std::cout << "body :  "  << this->_body << std::endl;
+	std::cout << "body :  "  << req._body << std::endl;
 }
-	
