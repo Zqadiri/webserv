@@ -22,7 +22,7 @@ int ft_main(int argc, char *argv[])
 		try{
 			serv.conf(argv);
 			serv.setup();
-			// serv.run();
+			serv.run();
 		}
 		catch(const std::exception& e)
 		{
