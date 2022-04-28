@@ -23,7 +23,7 @@ class request
 		std::string								_method;
 		std::string								_requestTarget;
 		std::string								_requestURI;
-		std::string								_version; //! http 1.0 1.1
+		std::string								_version;
 		std::map<std::string, std::string>		_headers;
 		std::string								_body;
 		int										_retCode;
