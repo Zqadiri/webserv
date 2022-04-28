@@ -16,6 +16,11 @@ void        request::init_methods(){
 	this->methods.push_back("GET");
 	this->methods.push_back("DELETE");
 	this->methods.push_back("POST");
+	this->methods.push_back("HEAD");
+	this->methods.push_back("PUT");
+	this->methods.push_back("CONNECT");
+	this->methods.push_back("OPTIONS");
+	this->methods.push_back("TRACE");
 }
 
 /*------ Constructors ------*/
@@ -42,36 +47,55 @@ std::string							request::getVersion(){
 std::map<std::string, std::string>	request::getHeaders(){
 	return       _headers;
 }
+void		request::setCode(int code){
+	this->_retCode = code;
+}
 
 /*------ Member Functions ------*/
+
+std::string				request::getKey(const std::string &buff){
+	std::string key;
+	size_t i;
+
+	i = buff.find_first_of(":", 0);
+	key = buff.substr(0, i); //! check if the key is excepted
+	return key;
+}
+
+std::string				request::getValue(const std::string &buff, size_t i){
+	std::string value;
+	size_t j;
+
+	j = buff.find_first_of("\r", ++i);
+	value = buff.substr(i, j);
+	return value;
+}
 
 //! 400 Bad Request The server cannot or will not process
 // the request due to something that is perceived to be a 
 // client error ex: malformed request syntax
 
-int						request::getFirstLine(const std::string &buff, request& req)
+
+int			badRequest(request& req){
+	req.setCode(400);
+	std::cerr << "BAD REQUEST" << std::endl;
+	return -1;
+}
+
+int				request::getFirstLine(const std::string &buff, request& req)
 {
 	std::string	line = buff.substr(0, buff.find_first_of('\n'));
 	size_t	i, j;
 
 	i = line.find_first_of(' ');
-	if (i == std::string::npos){
-		req._retCode = 400;
-		std::cerr << "BAD REQUEST" << std::endl;
-		return -1;
-	}
+	if (i == std::string::npos)
+		return badRequest(req);
 	req._method.assign(line, 0, i);
-	if ((j = buff.find_first_not_of(' ', i)) == std::string::npos){
-		req._retCode = 400;
-		std::cerr << "BAD REQUEST" << std::endl;
-		return -1;
-	}
-	if ((i = buff.find_first_of(' ', j)) == std::string::npos){
-		req._retCode = 400;
-		std::cerr << "BAD REQUEST" << std::endl;
-		return -1;
-	}
-	req._requestURI.assign(buff, j, i - j);
+	if ((j = buff.find_first_not_of(' ', i)) == std::string::npos)
+		return badRequest(req);
+	if ((i = buff.find_first_of(' ', j)) == std::string::npos)
+		return badRequest(req);
+	req._requestTarget.assign(buff, j, i - j);
 	j += _requestURI.size();
 	if ((j = buff.find_first_not_of(' ', j)) == std::string::npos){
 		req._retCode = 400;
@@ -83,7 +107,6 @@ int						request::getFirstLine(const std::string &buff, request& req)
 		req._version.assign(buff, j + 5, 3);
 	}
 	if (req._version.compare("1.0") && req._version.compare("1.1")){
-		//! The HTTP version used in the request is not supported by the server.
 		req._retCode = 505;
 		std::cerr << "BAD VERSION" << std::endl;
 		return (-1);
@@ -107,24 +130,6 @@ std::string				request::getNextLine(const std::string &buff, size_t &cursor)
 		i++;
 	cursor = i;
 	return ret;
-}
-
-std::string				request::getKey(const std::string &buff){
-	std::string key;
-	size_t i;
-
-	i = buff.find_first_of(":", 0);
-	key = buff.substr(0, i); //! check if the key is excepted
-	return key;
-}
-
-std::string				request::getValue(const std::string &buff, size_t i){
-	std::string value;
-	size_t j;
-
-	j = buff.find_first_of("\r", ++i);
-	value = buff.substr(i, j);
-	return value;
 }
 
 int						request::startParsing(std::string buff,  request& req)

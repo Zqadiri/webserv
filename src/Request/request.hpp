@@ -19,14 +19,15 @@
 class request
 {
 	private:
-		std::string								_method; //! GET POST DELETE
+		std::vector<std::string>				methods; //! no need to be global
+		std::string								_method;
+		std::string								_requestTarget;
 		std::string								_requestURI;
 		std::string								_version; //! http 1.0 1.1
 		std::map<std::string, std::string>		_headers;
-		std::vector<std::string>				methods; //! no need to be global
 		std::string								_body;
-
 		int										_retCode;
+
 	public:
 		request();
 		~request();
@@ -35,6 +36,8 @@ class request
 		std::string								getRequestURI();
 		std::string								getVersion();
 		std::map<std::string, std::string>		getHeaders();
+		void									setCode(int);
+
 		
 		void									init_methods();
 		int										getFirstLine(const std::string &, request&);

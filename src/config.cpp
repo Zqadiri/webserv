@@ -55,8 +55,8 @@ std::vector<t_listen>		Config::getAllListenDir(void){
 	std::vector<t_listen>	listen;
 	for (size_t i = 0; i < this->servers.size(); i++){
 		t_listen	l;
-		l.host = this->servers[i]->_host;
-		l.port = this->servers[i]->_port;
+		l.host = this->servers[i]->getHost();
+		l.port = this->servers[i]->getPort();
 		listen.push_back(l);
 	}
 	return listen;
@@ -211,51 +211,51 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 }
 
 void	Config::print(){
-	std::cout << "[Servers n: " << this->servers.size() << "]"<< std::endl;
-	for (size_t i = 0; i < this->servers.size(); i++)
-	{
-		std::cout << "-------------------------------------" << std::endl;
-		puts("[serverName]");
-		for (std::list<std::string>::iterator it = this->servers[i]->_server_name.begin(); 
-				it != this->servers[i]->_server_name.end(); ++it)
-			std::cout << " > " << *it << std::endl;
-		puts("[root]");
-		std::cout << this->servers[i]->_root << std::endl;
-		puts("[index]");
-		std::cout << this->servers[i]->_index << std::endl;
-		puts("[listen]");
-		std::cout << this->servers[i]->_host << std::endl;
-		std::cout << this->servers[i]->_port << std::endl;
-		puts("[errorPages]");
-		for (std::list<std::string>::iterator it = this->servers[i]->_error_pages.begin(); 
-				it != this->servers[i]->_error_pages.end(); ++it)
-			std::cout << " > " << *it << std::endl;
-		puts("[allow_methods]");
-		for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
-				it != this->servers[i]->_allow_methods.end(); ++it)
-		std::cout << " > " <<*it << std::endl;
-		std::cout << "[locations n: " << this->servers[i]->_locations.size()  << "]"<< std::endl;
-		for (size_t j = 0; j < this->servers[i]->_locations.size(); j++)
-		{
-			std::cout << "[location "<< j << "]"<< std::endl;
-			std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
-			std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
-			std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
-			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
-			std::cout << "CGIpass " << this->servers[i]->_locations[j]._pathCGI << std::endl;
-			std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
-			puts("allow_methods");
-			for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
-				it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
-					std::cout << " > " << *it << std::endl;
-			std::cout << " >> [nestedLocation "<< this->servers[i]->_locations[j]._nestedLocations.size() << "]"<< std::endl;
-			for (size_t  k = 0; k < this->servers[i]->_locations[j]._nestedLocations.size(); k++){
-				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._path << std::endl;
-				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._alias << std::endl;
-				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._pathCGI << std::endl;
-				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._index << std::endl;
-				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._root << std::endl;
-			}
-		}
-	}
+// 	std::cout << "[Servers n: " << this->servers.size() << "]"<< std::endl;
+// 	for (size_t i = 0; i < this->servers.size(); i++)
+// 	{
+// 		std::cout << "-------------------------------------" << std::endl;
+// 		puts("[serverName]");
+// 		for (std::list<std::string>::iterator it = this->servers[i]->_server_name.begin(); 
+// 				it != this->servers[i]->_server_name.end(); ++it)
+// 			std::cout << " > " << *it << std::endl;
+// 		puts("[root]");
+// 		std::cout << this->servers[i]->_root << std::endl;
+// 		puts("[index]");
+// 		std::cout << this->servers[i]->_index << std::endl;
+// 		puts("[listen]");
+// 		std::cout << this->servers[i]->_host << std::endl;
+// 		std::cout << this->servers[i]->_port << std::endl;
+// 		puts("[errorPages]");
+// 		for (std::list<std::string>::iterator it = this->servers[i]->_error_pages.begin(); 
+// 				it != this->servers[i]->_error_pages.end(); ++it)
+// 			std::cout << " > " << *it << std::endl;
+// 		puts("[allow_methods]");
+// 		for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
+// 				it != this->servers[i]->_allow_methods.end(); ++it)
+// 		std::cout << " > " <<*it << std::endl;
+// 		std::cout << "[locations n: " << this->servers[i]->_locations.size()  << "]"<< std::endl;
+// 		for (size_t j = 0; j < this->servers[i]->_locations.size(); j++)
+// 		{
+// 			std::cout << "[location "<< j << "]"<< std::endl;
+// 			std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
+// 			std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
+// 			std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
+// 			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
+// 			std::cout << "CGIpass " << this->servers[i]->_locations[j]._pathCGI << std::endl;
+// 			std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
+// 			puts("allow_methods");
+// 			for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
+// 				it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
+// 					std::cout << " > " << *it << std::endl;
+// 			std::cout << " >> [nestedLocation "<< this->servers[i]->_locations[j]._nestedLocations.size() << "]"<< std::endl;
+// 			for (size_t  k = 0; k < this->servers[i]->_locations[j]._nestedLocations.size(); k++){
+// 				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._path << std::endl;
+// 				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._alias << std::endl;
+// 				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._pathCGI << std::endl;
+// 				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._index << std::endl;
+// 				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._root << std::endl;
+// 			}
+// 		}
+// 	}
 }

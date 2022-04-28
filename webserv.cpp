@@ -14,7 +14,6 @@
 #include "./src/servers.hpp"
 #include "./src/Request/request.hpp"
 
-
 int ft_main(int argc, char *argv[])
 {
 	if (argc == 2)
@@ -22,7 +21,7 @@ int ft_main(int argc, char *argv[])
 		Servers  serv;
 		try{
 			serv.conf(argv);
-			// serv.setup();
+			serv.setup();
 			// serv.run();
 		}
 		catch(const std::exception& e)

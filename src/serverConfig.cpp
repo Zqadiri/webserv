@@ -54,9 +54,7 @@ bool notAValueL(std::string value)
 
 /*---- Constructors & Destructor ------*/
 
-serverConfig::serverConfig() : _root(""), _index(""){
-	_host = inet_addr("192.168.0.1");
-	_port = 80;
+serverConfig::serverConfig() : _root(""), _index(""), _host(-1), _port(-1){
 }
 
 serverConfig::~serverConfig(){
@@ -79,6 +77,21 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 	this->_allow_methods = obj._allow_methods;
 	this->_locations = obj._locations;
 	return *this;
+}
+
+/*---- Accessors ----*/
+
+unsigned int			serverConfig::getHost(void) const{
+	return this->_host;
+}
+unsigned int			serverConfig::getPort(void) const{
+	return this->_port;
+}
+std::list<std::string>	serverConfig::getServerNames(void) const{
+	return this->_server_name;
+}
+std::vector<_location>	serverConfig::getLocations(void) const{
+	return this->_locations;
 }
 
 /*---- Member Functions ----*/
@@ -175,6 +188,10 @@ uint32_t convert( const std::string& ipv4Str ){
 
 unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
+	if (_host != -1 && _host != -1)
+		throw std::runtime_error("two Listen directives");
+	_host = inet_addr("192.168.0.1");
+	_port = 80;
 	std::string delim(":");
 	size_t end = con[index].find_first_of(delim, 0);
 	if (std::string(con[index].substr(0, end)).compare("localhost"))
@@ -190,6 +207,7 @@ unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned i
 	}
 	return index++;
 }
+
 
 unsigned int	serverConfig::root(serverConfig &serv, configFile con, unsigned int &index){
 	index++;

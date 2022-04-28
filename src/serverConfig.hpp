@@ -29,11 +29,11 @@ struct _location
 
 class serverConfig
 {
-	public:
+	private:
 		std::list<std::string>		_server_name;
 		std::string					_root;
 		std::string					_index;
-		unsigned int 				_host;
+		int 						_host;
 		int							_port;
 		std::list<std::string>		_error_pages;
 		std::list<std::string>		_allow_methods;
@@ -45,6 +45,12 @@ class serverConfig
 		~serverConfig();
 		serverConfig(const serverConfig &obj);
 		serverConfig	&operator=(const serverConfig&);
+
+		unsigned int			getHost(void) const;
+		unsigned int			getPort(void) const;
+		std::list<std::string>	getServerNames(void) const;
+		std::vector<_location>	getLocations(void) const;
+
 		unsigned int 	serverName(serverConfig&, configFile, unsigned int&);
 		unsigned int	parseLocation(serverConfig&, configFile, unsigned int&);
 		unsigned int	listen(serverConfig &, configFile, unsigned int&);
@@ -52,7 +58,6 @@ class serverConfig
 		unsigned int	index(serverConfig &, configFile, unsigned int&);
 		unsigned int	errorPages(serverConfig &, configFile, unsigned int&);
 		unsigned int	allowMethods(serverConfig &, configFile, unsigned int&);
-
 		unsigned int	location(_location &, configFile, unsigned int &);
 };
 

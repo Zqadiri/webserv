@@ -1,10 +1,10 @@
-# webserv
-Write my own HTTP server
 # Webserv
 
 [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/html/)
 
 [HTTP Server: Everything you need to know to Build a simple HTTP server from scratch](https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa)
+
+[C++ Tutorial: Sockets - Server & Client - 2020](http://bogotobogo.com/cplusplus/sockets_server_client.php)
 
 ## OSI Model
 
@@ -26,10 +26,32 @@ A Request for Comments (RFC) is a formal document drafted by the Internet Engine
 
 [An overview of HTTP - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview)
 
+## Understand the basics of how your web browser communicates with the internet
+
+[HTTP Requests | Codecademy](http://codecademy.com/article/http-requests)
+
 ## Configuration File
 
 [Understanding the Nginx Configuration File Structure and Configuration Contexts | DigitalOcean](https://www.digitalocean.com/community/tutorials/understanding-the-nginx-configuration-file-structure-and-configuration-contexts)
 
-## Server and Location Block Selection Algorithms
+## ****Server and Location Block Selection Algorithms****
 
 [Understanding Nginx Server and Location Block Selection Algorithms | DigitalOcean](https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms)
+
+## Set a Socket  to be non-blocking
+
+[How do I set a socket to be non-blocking?](https://jameshfisher.com/2017/04/05/set_socket_nonblocking/)
+
+## HTTP requests
+
+[HTTP Messages - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages)
+
+[HTTP request parser in C](https://codereview.stackexchange.com/questions/188384/http-request-parser-in-c)
+
+## **HTTP response status codes**
+
+[HTTP response status codes - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
+
+## Select :**How one thread listens to many sockets**
+
+[https://www.youtube.com/watch?v=Y6pFtgRdUts](https://www.youtube.com/watch?v=Y6pFtgRdUts)
