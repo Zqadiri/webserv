@@ -46,9 +46,13 @@
 
 typedef	std::vector<std::string>	configFile;
 
+
 typedef struct s_listen{
 	unsigned int	host;
 	int				port;
 }   t_listen;
+
+extern const char* keys[];
+extern const char* locationKeys[];
 
 #endif

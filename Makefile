@@ -18,7 +18,7 @@ OBJS		= $(SRCS:.cpp=.o)
 
 CC			= c++
 
-FLAGS		=  -std=c++98 -g
+FLAGS		=  -std=c++98
 
 WWW			= -Wall -Wextra -Werror
 

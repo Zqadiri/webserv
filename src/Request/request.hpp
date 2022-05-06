@@ -19,7 +19,7 @@
 class request
 {
 	private:
-		std::vector<std::string>				methods; //! no need to be global
+		std::vector<std::string>				methods;
 		std::string								_method;
 		std::string								_requestTarget;
 		std::string								_requestURI;
@@ -36,8 +36,8 @@ class request
 		std::string								getRequestURI();
 		std::string								getVersion();
 		std::map<std::string, std::string>		getHeaders();
-		void									setCode(int);
 
+		void									setCode(int);
 		
 		void									init_methods();
 		int										getFirstLine(const std::string &, request&);

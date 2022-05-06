@@ -106,11 +106,11 @@ int				request::getFirstLine(const std::string &buff, request& req)
 			buff[j + 3] == 'P' && buff[j + 4] == '/'){
 		req._version.assign(buff, j + 5, 3);
 	}
-	if (req._version.compare("1.0") && req._version.compare("1.1")){
-		req._retCode = 505;
-		std::cerr << "BAD VERSION" << std::endl;
-		return (-1);
-	}
+	// if (req._version.compare("1.0") && req._version.compare("1.1")){
+	// 	req._retCode = 505;
+	// 	std::cerr << "BAD VERSION" << std::endl;
+	// 	return (-1);
+	// }
 	return j;
 }
 
@@ -145,7 +145,7 @@ int						request::startParsing(std::string buff,  request& req)
 		req._headers.insert(std::make_pair(key, value));
 	}
 	req._body = buff.substr(cursor, buff.size());
-	// print_req(req);
+	print_req(req);
 	return 1;
 }
 
@@ -156,8 +156,8 @@ void	request::print_req(request& req)
 	std::cout << "version :  "  << req._version << std::endl;
 	for(std::map<std::string, std::string>::const_iterator it = req._headers.begin();
     it != req._headers.end(); ++it){
-   		std::cout << "{key}: " << it->first << std::endl;
-		std::cout << "{value} : " << it->second  << std::endl;
+   		std::cout  << it->first << std::endl;
+		std::cout << " : " << it->second  << std::endl;
 	}
 	std::cout << "body :  "  << req._body << std::endl;
 }

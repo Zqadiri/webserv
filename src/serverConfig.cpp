@@ -14,14 +14,15 @@
 
 static bool isNested = 0;
 
-const char* keys_[] = {
+const char* keys[] = {
 	"server_names", 
 	"root", 
 	"listen", 
 	"location", 
 	"allow_methods",
 	"index", 
-	"error_pages"
+	"error_pages",
+	"autoindex"
 };
 
 const char* locationKeys[] = {
@@ -33,19 +34,16 @@ const char* locationKeys[] = {
 	"cgi_pass", 
 };
 
-bool notAValue(std::string value)
-{
+bool notAValue(std::string value){
 	for (size_t i = 0; i < 7; i++){
-		if (!value.compare(keys_[i]))
+		if (!value.compare(keys[i]))
 			return true;
 	}
 	return false;
 }
 
-bool notAValueL(std::string value)
-{
-	for (size_t i = 0; i < 6; i++)
-	{
+bool notAValueL(std::string value){
+	for (size_t i = 0; i < 6; i++){
 		if (!value.compare(locationKeys[i]))
 			return true;
 	}

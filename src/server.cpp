@@ -126,7 +126,7 @@ void server::handle_sockets(fd_set& fset, fd_set& wset)
 			int ret = sen(socket->first, socket->second);
 			if (ret == -1)
 			{
-				std::cout << "send() failed" << std::endl;
+				std::cout << "() failed" << std::endl;
 				FD_CLR(socket->first, &wset);
 				FD_CLR(socket->first, &fset);
 				close(socket->first);

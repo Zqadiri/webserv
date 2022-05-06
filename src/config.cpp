@@ -12,16 +12,6 @@
 
 #include "config.hpp"
 
-const char* keys[] = {
-	"server_names", 
-	"root", 
-	"listen", 
-	"location", 
-	"allow_methods",
-	"index", 
-	"error_page"
-};
-
 /*----- Exceptions-----*/
 
 const char* Config::FileCorrupted::what() const throw() {
@@ -33,7 +23,7 @@ const char* Config::FileNotWellFormated::what() const throw() {
 
 /*---- Constructors & Destructor ------*/
 
-Config::Config(){
+Config::Config(){ 
 }
 
 Config::~Config(){
