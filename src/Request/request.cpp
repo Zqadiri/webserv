@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/07 14:34:12 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/07 15:08:02 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ int			request::getFirstLine(const std::string &buff, request& req)
 	if ((i = buff.find_first_of(' ', j)) == std::string::npos)
 		return badRequest(req);
 	req._requestTarget.assign(buff, j, i - j);
-	j += _requestURI.size();
+	j += i - j;
 	if ((j = buff.find_first_not_of(' ', j)) == std::string::npos){
 		req._retCode = 400;
 		std::cerr << "No HTTP version" << std::endl;
@@ -111,11 +111,11 @@ int			request::getFirstLine(const std::string &buff, request& req)
 			buff[j + 3] == 'P' && buff[j + 4] == '/'){
 		req._version.assign(buff, j + 5, 3);
 	}
-	// if (req._version.compare("1.0") && req._version.compare("1.1")){
-	// 	req._retCode = 505;
-	// 	std::cerr << "BAD VERSION" << std::endl;
-	// 	return (-1);
-	// }
+	if (req._version.compare("1.0") && req._version.compare("1.1")){
+		req._retCode = 505;
+		std::cerr << "BAD VERSION" << std::endl;
+		return (-1);
+	}
 	return j;
 }
 
