@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/24 23:56:06 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/07 14:34:12 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,10 @@ void        request::init_methods(){
 
 /*------ Constructors ------*/
 
-request::request() : _method(""), _requestURI(""), _version(""){
+request::request() : _method(""), _requestURI(""), _version(""), _host(""){
 	init_methods();
 	_retCode = 200;  // ? 200 OK -> Successful responses
+	_port = -1;
 }
 
 request::~request(){
@@ -35,18 +36,22 @@ request::~request(){
 
 /*------ Accessors ------*/
 
-std::string							request::getMethod(){
+std::string							request::getMethod() const{
 	return      _method;
 }
-std::string							request::getRequestURI(){
+
+std::string							request::getRequestURI() const{
 	return      _requestURI;
 }
-std::string							request::getVersion(){
+
+std::string							request::getVersion() const{
 	return       _version;
 }
-std::map<std::string, std::string>	request::getHeaders(){
+
+std::map<std::string, std::string>	request::getHeaders() const{
 	return       _headers;
 }
+
 void		request::setCode(int code){
 	this->_retCode = code;
 }
@@ -82,7 +87,7 @@ int			badRequest(request& req){
 	return -1;
 }
 
-int				request::getFirstLine(const std::string &buff, request& req)
+int			request::getFirstLine(const std::string &buff, request& req)
 {
 	std::string	line = buff.substr(0, buff.find_first_of('\n'));
 	size_t	i, j;
@@ -114,7 +119,19 @@ int				request::getFirstLine(const std::string &buff, request& req)
 	return j;
 }
 
-std::string				request::getNextLine(const std::string &buff, size_t &cursor)
+void							request::Host(const std::string &str, request & req){
+	int end = str.find_first_of(":");
+	if (end == std::string::npos){
+		req._host = str.substr(0, str.length());
+		return ;
+	}
+	req._host = str.substr(0, end);
+	end++;
+	req._port = stoi(str.substr(end, str.length()));
+	return;
+}
+
+std::string			request::getNextLine(const std::string &buff, size_t &cursor)
 {
 	std::string		ret;
 	size_t			i;
@@ -132,31 +149,41 @@ std::string				request::getNextLine(const std::string &buff, size_t &cursor)
 	return ret;
 }
 
-int						request::startParsing(std::string buff,  request& req)
+int					request::startParsing(std::string buff,  request& req)
 {
 	size_t  cursor = 0;
 	std::string ret, key, value;
 
 	cursor = this->getFirstLine(buff, req);
-	ret = getNextLine(buff, cursor); // ! skip ' HTTP/1.1 .. '
+	ret = getNextLine(buff, cursor);
 	while ((ret = getNextLine(buff, cursor)).compare("\r") && ret.compare("")){
 		key = getKey(ret);
+		if (!key.compare("Host")){
+			int begin = ret.find_first_of(":");
+			begin++;
+			std::string str = ret.substr(begin, ret.length());
+			Host(str, req);
+			continue;
+		}
 		value = getValue(ret, key.size());
 		req._headers.insert(std::make_pair(key, value));
 	}
 	req._body = buff.substr(cursor, buff.size());
-	print_req(req);
+	// print_req(req);
 	return 1;
 }
 
-void	request::print_req(request& req)
+void				request::print_req(request& req)
 {
 	std::cout << "method :  "  << req._method << std::endl;
 	std::cout << "path : " << req._requestURI << std::endl;
 	std::cout << "version :  "  << req._version << std::endl;
+	std::cout << "Host :  "  << req._host << std::endl;	
+	if (req._port != -1)
+		std::cout << "Host :  "  << req._port << std::endl;
 	for(std::map<std::string, std::string>::const_iterator it = req._headers.begin();
-    it != req._headers.end(); ++it){
-   		std::cout  << it->first << std::endl;
+	it != req._headers.end(); ++it){
+		std::cout  << it->first << std::endl;
 		std::cout << " : " << it->second  << std::endl;
 	}
 	std::cout << "body :  "  << req._body << std::endl;

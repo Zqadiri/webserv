@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/24 23:46:48 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/06 12:34:28 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class serverConfig
 
 		unsigned int			getHost(void) const;
 		unsigned int			getPort(void) const;
-		std::list<std::string>	getServerNames(void) const;
+		std::list<std::string>	getServerName(void) const;
 		std::vector<_location>	getLocations(void) const;
 
 		unsigned int 	serverName(serverConfig&, configFile, unsigned int&);

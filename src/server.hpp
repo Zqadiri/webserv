@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/20 22:44:16 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/06 17:44:35 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,10 @@ class server
 		int		acc(void);
 		bool 	is_sockets_empty(void) const;
 		void	print_rec(void);
+
+		//! mine
+		std::list<std::pair<int, request> >		getRequest(void);
+		
 };
 
 #endif

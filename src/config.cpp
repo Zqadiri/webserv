@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/24 23:32:43 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/06 15:09:30 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,14 @@ std::vector<t_listen>		Config::getAllListenDir(void){
 	return listen;
 }
 
+std::list<std::list<std::string> >	Config::getAllServerNames(void){
+	std::list<std::list<std::string> > servNames;
+	for (size_t i = 0; i < this->servers.size(); i++){
+		servNames.push_back(this->servers[i]->getServerName());
+	}
+	return servNames;
+}
+
 /*---- Operators -------*/
 
 Config	&Config::operator=(const Config &obj){
@@ -65,16 +73,15 @@ bool exepectedTokens(std::string value) //! use the one in serverConfig
 {
 	const char* exepectedTokens[] = {"root", "alias", "allow_methods", 
 	"client_body_buffer_size","cgi_pass", "server_names", "listen", 
-	"location", "index", "error_page", "server", "{", "}"};
-	for (size_t i = 0; i < 13; i++){
+	"location", "index", "error_page", "server", "{", "}", "autoindex"};
+	for (size_t i = 0; i < 14; i++){
 		if (!value.compare(exepectedTokens[i]))
 			return true;
 	}
 	return false;
 }
 
-std::string		Config::removeSpace(std::string init)
-{
+std::string		Config::removeSpace(std::string init){
 	std::string ret;
 	for (size_t i = 0; i < init.length(); ++i)
 	{
@@ -113,8 +120,7 @@ configFile		Config::slitTokens(configFile con, std::string delim)
 	return tokens;
 }
 
-configFile	Config::readFile(const char *fileName){
-	
+configFile				Config::readFile(const char *fileName){
 	configFile con;
 	configFile tokens;
 	std::string str;
@@ -132,7 +138,7 @@ configFile	Config::readFile(const char *fileName){
 	return	(Config::slitTokens(con, " "));
 }
 
-void		Config::parseFile(const char *fileName)
+void					Config::parseFile(const char *fileName)
 {
 	configFile		confFile;
 	unsigned int	confSize;

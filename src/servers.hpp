@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:10 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/19 02:33:22 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/06 12:20:21 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,12 @@
 #include "config.hpp"
 #include "server.hpp"
 
-
 class server;
 
 class Servers
 {
 	private:
-		Config					config; //? servers data
+		Config					config;
 		std::list<server>		_servers;
 		int						_max_fd;
 		fd_set					_fd_set;
@@ -40,6 +39,9 @@ class Servers
 		void	conf(char **);
 		void	setup(); //? main funtion
 		void	run();
+
+		//! THIS function Decides Which Server Block Will Handle a Request
+		int		selectServer(void);
 };
 
 #endif

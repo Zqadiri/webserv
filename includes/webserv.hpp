@@ -6,15 +6,12 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/24 23:54:00 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/07 11:31:47 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERV_HPP_
 #define WEBSERV_HPP_
-
-// Libft
-#include "../libft/libft.h"
 
 // CPP
 #include <iostream>
@@ -46,13 +43,12 @@
 
 typedef	std::vector<std::string>	configFile;
 
+extern const char* keys[];
+extern const char* locationKeys[];
 
 typedef struct s_listen{
 	unsigned int	host;
 	int				port;
 }   t_listen;
-
-extern const char* keys[];
-extern const char* locationKeys[];
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:05:42 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/24 23:18:03 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/06 17:33:49 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,6 @@ int ft_main(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
 	ft_main(argc, argv);
-	system("leaks webserv");
+	// system("leaks webserv");
 	return 1;
 }

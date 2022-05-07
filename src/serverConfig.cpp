@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/24 23:45:49 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/06 12:34:17 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ unsigned int			serverConfig::getHost(void) const{
 unsigned int			serverConfig::getPort(void) const{
 	return this->_port;
 }
-std::list<std::string>	serverConfig::getServerNames(void) const{
+std::list<std::string>	serverConfig::getServerName(void) const{
 	return this->_server_name;
 }
 std::vector<_location>	serverConfig::getLocations(void) const{

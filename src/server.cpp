@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/04/21 23:39:31 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/07 14:04:26 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ int server::rec(int &socket, request& req)
 	int					ret;
 
 	ret = recv(socket, buff, sizeof(buff), 0);
+	std::cout << buff << std::endl;
 	if (ret == -1)
 	{
 		std::cout << "recv() failed" << std::endl;
@@ -119,6 +120,7 @@ void server::handle_sockets(fd_set& fset, fd_set& wset)
 {
 	// std::cout << "handle_sockets" << std::endl;
 	std::list<std::pair<int, request> >::iterator socket = _sockets.begin();
+	
 	while (socket != _sockets.end())
 	{
 		if (FD_ISSET(socket->first, &wset))
@@ -146,6 +148,7 @@ void server::handle_sockets(fd_set& fset, fd_set& wset)
 		else if (FD_ISSET(socket->first, &fset))
 		{
 			int ret = rec(socket->first, socket->second);
+			
 			if (ret == -1)
 			{
 				FD_CLR(socket->first, &fset);
@@ -185,3 +188,6 @@ bool server::is_sockets_empty(void) const
 	return (_sockets.empty());
 }
 
+std::list<std::pair<int, request> >		server::getRequest(void){
+	return this->_sockets;
+}

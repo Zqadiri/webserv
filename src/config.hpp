@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/04/24 23:13:34 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/06 12:51:17 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ class Config
 		//* Accessors
 		std::vector<serverConfig*>	getServers(void);
 		std::vector<t_listen>		getAllListenDir(void);
+		std::list<std::list<std::string> >	getAllServerNames(void);
 
-		
 		class	FileCorrupted : public std::exception{
 			public:
 				virtual const char* what() const throw();
