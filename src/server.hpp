@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/06 17:44:35 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/08 14:31:56 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class server
 		int 	rec(int&, request&);
 		int		sen(int&, request&);
 		void 	handle_sockets(fd_set&, fd_set&);
-		void 	add_socket(fd_set&, int&);
+		int 	add_socket(fd_set&, int&);
 		int		setup(void);
 		int		acc(void);
 		bool 	is_sockets_empty(void) const;

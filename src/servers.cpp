@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/08 14:18:15 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/08 14:55:08 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,40 +75,37 @@ void		Servers::setup(void){
 void		Servers::run(void){
 	
 	std::cout << "run()\n";
-	struct timeval		tv;
+	// struct timeval		tv;
 	fd_set write_set;
 	FD_ZERO(&write_set);
-	
+
 	while (1)
 	{
-		tv.tv_sec = 1;
-		tv.tv_usec = 0;
-		int selected = 0;
+		// tv.tv_sec = 1;
+		// tv.tv_usec = 0;
+		// int selected = 0;
 		std::cout << "select()\n";
-		while (selected == 0)
+		// while (selected == 0)
+		// {
+		fd_set fset = _fd_set;
+		fd_set wset = write_set;
+
+		int selected = select(_max_fd + 1, &fset, &wset, NULL, NULL);
+		if (selected == -1)
 		{
-			fd_set fset = _fd_set;
-			fd_set wset = write_set;
-			
-			selected = select(_max_fd + 1, &fset, &wset, NULL, &tv);
-			if (selected == -1)
-			{
-				std::cout << "select error" << std::endl;
-				return ;
-			}
+			std::cout << "select error" << std::endl;
+			return ;
 		}
+		// }
 		if (selected > 0)
 		{
-			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv){
-				if (!serv->is_sockets_empty())
-				{
-					serv->handle_sockets(_fd_set, write_set);
-					//!mine 
-					this->selectServer();
-					//!
-				}
-				else
-					serv->add_socket(_fd_set, _max_fd);
+			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
+			{
+				serv->handle_sockets(_fd_set, write_set);
+				this->selectServer();
+				if (serv->add_socket(_fd_set, _max_fd) == 0)
+					break;
+					
 			}
 		}
 		else
