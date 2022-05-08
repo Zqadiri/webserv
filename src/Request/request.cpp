@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/08 18:20:34 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/08 18:21:54 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,5 +247,5 @@ void				request::print_req(request& req)
 		std::cout  << it->first << std::endl;
 		std::cout << " : [" << it->second << "]" << std::endl;
 	}
-	std::cout << "body :  "  << req._body << std::endl;
+	std::cout << "body : "  << req._body << std::endl;
 }
