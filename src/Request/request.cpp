@@ -6,27 +6,33 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/07 15:08:02 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/08 14:54:38 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "request.hpp"
 
-void        request::init_methods(){
-	this->methods.push_back("GET");
-	this->methods.push_back("DELETE");
-	this->methods.push_back("POST");
-	this->methods.push_back("HEAD");
-	this->methods.push_back("PUT");
-	this->methods.push_back("CONNECT");
-	this->methods.push_back("OPTIONS");
-	this->methods.push_back("TRACE");
+/*---- Init Static Members -----*/
+
+std::vector<std::string>	request::possibleMethods = request::init_methods();
+
+std::vector<std::string>		request::init_methods()
+{
+	std::vector<std::string>	methods;
+	methods.push_back("GET");
+	methods.push_back("DELETE");
+	methods.push_back("POST");
+	methods.push_back("HEAD");
+	methods.push_back("PUT");
+	methods.push_back("CONNECT");
+	methods.push_back("OPTIONS");
+	methods.push_back("TRACE");	
+	return methods;
 }
 
 /*------ Constructors ------*/
 
 request::request() : _method(""), _requestURI(""), _version(""), _host(""){
-	init_methods();
 	_retCode = 200;  // ? 200 OK -> Successful responses
 	_port = -1;
 }
@@ -36,24 +42,22 @@ request::~request(){
 
 /*------ Accessors ------*/
 
-std::string							request::getMethod() const{
-	return      _method;
-}
-
-std::string							request::getRequestURI() const{
-	return      _requestURI;
-}
-
-std::string							request::getVersion() const{
-	return       _version;
-}
-
-std::map<std::string, std::string>	request::getHeaders() const{
-	return       _headers;
-}
+std::string							request::getMethod() const { return	_method;}
+std::string							request::getRequestTarget() const { return _requestTarget;}
+std::string							request::getVersion() const { return  _version;}
+std::string							request::getRequestURI() const { return	_requestURI;}
+std::string							request::getHost() const { return _host; }
+int									request::getPort() const { return _port; }
+std::map<std::string, std::string>	request::getHeaders() const { return  _headers;}
+int									request::getRetCode() const { return _retCode; }
 
 void		request::setCode(int code){
 	this->_retCode = code;
+}
+
+void				request::setBody(const std::string& str){
+	this->_body.assign(str);
+	// ! check format
 }
 
 /*------ Member Functions ------*/
@@ -63,11 +67,11 @@ std::string				request::getKey(const std::string &buff){
 	size_t i;
 
 	i = buff.find_first_of(":", 0);
-	key = buff.substr(0, i); //! check if the key is excepted
+	key = buff.substr(0, i);
 	return key;
 }
 
-std::string				request::getValue(const std::string &buff, size_t i){
+std::string			request::getValue(const std::string &buff, size_t i){
 	std::string value;
 	size_t j;
 
@@ -76,18 +80,13 @@ std::string				request::getValue(const std::string &buff, size_t i){
 	return value;
 }
 
-//! 400 Bad Request The server cannot or will not process
-// the request due to something that is perceived to be a 
-// client error ex: malformed request syntax
-
-
 int			badRequest(request& req){
 	req.setCode(400);
 	std::cerr << "BAD REQUEST" << std::endl;
 	return -1;
 }
 
-int			request::getFirstLine(const std::string &buff, request& req)
+int					request::getFirstLine(const std::string &buff, request& req)
 {
 	std::string	line = buff.substr(0, buff.find_first_of('\n'));
 	size_t	i, j;
@@ -116,10 +115,13 @@ int			request::getFirstLine(const std::string &buff, request& req)
 		std::cerr << "BAD VERSION" << std::endl;
 		return (-1);
 	}
+	// req.checkMethod();
 	return j;
 }
 
-void							request::Host(const std::string &str, request & req){
+//! 405 Method Not Allowed
+
+void				request::Host(const std::string &str, request & req){
 	int end = str.find_first_of(":");
 	if (end == std::string::npos){
 		req._host = str.substr(0, str.length());
@@ -149,6 +151,16 @@ std::string			request::getNextLine(const std::string &buff, size_t &cursor)
 	return ret;
 }
 
+int 				request::checkData(std::string buff,  request& req, size_t cur)
+{
+	std::string str = buff.substr(cur, buff.length());
+	std::cout << " **>" << buff << "<**"  << std::endl;
+	// if (req._headers["WWW-Authenticate"].compare("") != 0)
+	// 	authenticate();
+	// req.setBody();
+	return cur;
+}
+
 int					request::startParsing(std::string buff,  request& req)
 {
 	size_t  cursor = 0;
@@ -168,7 +180,7 @@ int					request::startParsing(std::string buff,  request& req)
 		value = getValue(ret, key.size());
 		req._headers.insert(std::make_pair(key, value));
 	}
-	req._body = buff.substr(cursor, buff.size());
+	this->checkData(buff, req, cursor);
 	// print_req(req);
 	return 1;
 }

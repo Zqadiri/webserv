@@ -1,1 +1,9 @@
-Response 0% 
+Remove WS from headers {keys and values} :
+            "Whitespace before the value is ignored headers"
+
+check for expected keys in the request --> fill the map first 
+
+Parse WWW-Authenticate:
+    401 Unauthorized response to a request for a protected resource --> chmod
+
+Response 0%
