@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/08 18:21:54 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/08 18:34:57 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,18 +217,15 @@ int					request::startParsing(std::string buff,  request& req)
 	while ((ret = getNextLine(buff, cursor)).compare("\r") && ret.compare(""))
 	{
 		key = removeSpace(getKey(ret));
-		// if (req._headers.count(key))
-		// {
-			if (!key.compare("Host")){
-				int begin = ret.find_first_of(":");
-				begin++;
-				std::string str = ret.substr(begin, ret.length());
-				Host(str, req);
-				continue;
-			}
-			value = removeSpace(getValue(ret, key.size()));
-			req._headers[key] = value;
-		// }
+		if (!key.compare("Host")){
+			int begin = ret.find_first_of(":");
+			begin++;
+			std::string str = ret.substr(begin, ret.length());
+			Host(str, req);
+			continue;
+		}
+		value = removeSpace(getValue(ret, key.size()));
+		req._headers[key] = value;
 	}
 	this->checkData(buff, req, cursor);
 	// print_req(req);

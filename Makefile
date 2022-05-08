@@ -6,7 +6,7 @@
 #    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/05/06 18:09:05 by zqadiri          ###   ########.fr        #
+#    Updated: 2022/05/08 21:40:26 by zqadiri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ OBJS		= $(SRCS:.cpp=.o)
 
 CC			= c++
 
-FLAGS		=  -std=c++98
+FLAGS		=  -std=c++98 -fsanitize=address -g
 
 # WWW			= -Wall -Wextra -Werror
 

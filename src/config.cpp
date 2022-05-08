@@ -6,11 +6,12 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/06 15:09:30 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/08 22:38:50 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "config.hpp"
+#include <set>
 
 /*----- Exceptions-----*/
 
@@ -69,7 +70,7 @@ Config	&Config::operator=(const Config &obj){
 
 /*---- Member Functions ----*/
 
-bool exepectedTokens(std::string value) //! use the one in serverConfig
+bool exepectedTokens(std::string value)
 {
 	const char* exepectedTokens[] = {"root", "alias", "allow_methods", 
 	"client_body_buffer_size","cgi_pass", "server_names", "listen", 
@@ -81,7 +82,7 @@ bool exepectedTokens(std::string value) //! use the one in serverConfig
 	return false;
 }
 
-std::string		Config::removeSpace(std::string init){
+std::string		Config::removeSpace(std::string init){ //! dup
 	std::string ret;
 	for (size_t i = 0; i < init.length(); ++i)
 	{
@@ -158,6 +159,7 @@ void					Config::parseFile(const char *fileName)
 			throw	Config::FileNotWellFormated();
 	}
 	print();
+	// checkForDup();
 }
 
 configFile::iterator	Config::curlLevel(configFile con){
@@ -178,6 +180,59 @@ configFile::iterator	Config::curlLevel(configFile con){
 }
 
 typedef unsigned int (serverConfig::*Ptr)(serverConfig&, configFile, unsigned int&);
+
+void				Config::checkForDup(void)
+{
+	// ? check if two servers have the same server_name and the same port
+	std::vector<t_listen>				listens = this->getAllListenDir();
+	std::list<std::list<std::string> > 	servNames = this->getAllServerNames();
+	std::set<int> index;
+	std::vector<int> match;
+	int  k = 0;
+	for (std::list<std::list<std::string> >::iterator i = servNames.begin(); 
+					i != servNames.end(); ++i)
+	{
+		int j = k + 1;
+		if (k >= servNames.size() - 1)
+			break;
+		std::list<std::list<std::string> >::iterator tmp = i;
+		std::list<std::string> inerList = *i;
+		tmp++;
+		std::list<std::string> NinerList = *tmp;
+		for (std::list<std::string>::iterator it = inerList.begin(); 
+					it != inerList.end(); ++it)
+		{
+			for (std::list<std::string>::iterator itn = NinerList.begin(); 
+				itn != NinerList.end(); ++itn)
+			{
+				// std::cout << " > " << *it << std::endl;
+				// std::cout << " * " << *itn << std::endl;
+				if (*it == *itn){
+					std::cout << " > " << k << " : " << j << std::endl;
+					index.insert(j);
+					index.insert(k);
+				}
+			}
+			// std::cout << " ------- " << std::endl;
+		}
+		k++;
+	}
+	for (size_t i = 0; i < listens.size(); i++){
+		for (size_t j = 0; j < index.size(); j++){
+			if (i == index.at(j))
+				match.push_back(listens.at(i).port);
+		}
+	}
+	for (size_t i = 0;  i < match.size() - 1; i++)
+	{
+		int j  = i + 1;
+		if (match.at(i) == match.at(j))
+			std::cout << " ------- " << std::endl;
+	}
+	for (size_t i = 0;  i < match.size(); i++)
+		std::cout << match.at(i) << " - " ;
+	std::cout << std::endl;
+}
 
 size_t		Config::parseServer(configFile con, unsigned int &index){
 	serverConfig *server = new serverConfig();
@@ -200,14 +255,13 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 		if (index >= con.size() || (con[index] == "}" && !isLocation) || !con[index].compare("server"))
 			break;
 	}
-	// ? check if two servers have the same server_name and the same port
 	this->servers.push_back(server);
 	index--;
 	return index; //! return index to the last colla 
 }
 
 void	Config::print(){
-// 	std::cout << "[Servers n: " << this->servers.size() << "]"<< std::endl;
+	std::cout << "[Servers n: " << this->servers.size() << "]"<< std::endl;
 // 	for (size_t i = 0; i < this->servers.size(); i++)
 // 	{
 // 		std::cout << "-------------------------------------" << std::endl;

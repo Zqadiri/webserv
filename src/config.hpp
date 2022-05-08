@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/06 12:51:17 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/08 18:41:23 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,17 +28,16 @@ class Config
 		Config(const Config&);
 		Config	&operator=(const Config&);
 
-		//* Parsing functions
-		void		parseFile(const char *fileName);
-		configFile	readFile(const char *fileName);
-		configFile	slitTokens(configFile, std::string);
-		size_t		parseServer(configFile , unsigned int&);
-		std::string	removeSpace(std::string);
-		configFile::iterator	curlLevel(configFile);
+		void								parseFile(const char *fileName);
+		configFile							readFile(const char *fileName);
+		configFile							slitTokens(configFile, std::string);
+		size_t								parseServer(configFile , unsigned int&);
+		std::string							removeSpace(std::string);
+		configFile::iterator				curlLevel(configFile);
+		void								checkForDup();
 		
-		//* Accessors
-		std::vector<serverConfig*>	getServers(void);
-		std::vector<t_listen>		getAllListenDir(void);
+		std::vector<serverConfig*>			getServers(void);
+		std::vector<t_listen>				getAllListenDir(void);
 		std::list<std::list<std::string> >	getAllServerNames(void);
 
 		class	FileCorrupted : public std::exception{
