@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/08 14:36:58 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/08 17:58:18 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,6 @@ int server::rec(int &socket, request& req)
 		std::cout << "recv() failed" << std::endl;
 		return (-1);
 	}
-
 	if (ret == 0)
 	{
 		std::cout << "Client disconnected" << std::endl;
