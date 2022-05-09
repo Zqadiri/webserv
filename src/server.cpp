@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/08 17:58:18 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/09 14:43:42 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,7 @@ int server::rec(int &socket, request& req)
 		std::cout << "Client disconnected" << std::endl;
 		return (0);
 	}
+	
 	std::string str(buff);
 	if (req.startParsing(str, req) < -1){
 		std::cout << "BAD REQUEST" << std::endl;

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:05:42 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/08 21:09:32 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/09 14:38:35 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int ft_main(int argc, char *argv[])
 		try{
 			serv.conf(argv);
 			serv.setup();
-			// serv.run();
+			serv.run();
 		}
 		catch(const std::exception& e)
 		{

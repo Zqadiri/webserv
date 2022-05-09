@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/08 22:38:50 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/09 12:31:52 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ void					Config::parseFile(const char *fileName)
 			throw	Config::FileNotWellFormated();
 	}
 	print();
-	// checkForDup();
+	checkForDup();
 }
 
 configFile::iterator	Config::curlLevel(configFile con){
@@ -181,57 +181,47 @@ configFile::iterator	Config::curlLevel(configFile con){
 
 typedef unsigned int (serverConfig::*Ptr)(serverConfig&, configFile, unsigned int&);
 
-void				Config::checkForDup(void)
-{
-	// ? check if two servers have the same server_name and the same port
+// ? check if two servers have the same server_name and the same port
+void				Config::checkForDup(void){
 	std::vector<t_listen>				listens = this->getAllListenDir();
 	std::list<std::list<std::string> > 	servNames = this->getAllServerNames();
-	std::set<int> index;
-	std::vector<int> match;
+
 	int  k = 0;
+	std::map<std::list<std::string> ,int> pairs;
 	for (std::list<std::list<std::string> >::iterator i = servNames.begin(); 
-					i != servNames.end(); ++i)
+					i != servNames.end(); i++)
+	{
+		std::list<std::string> inerList = *i;
+		pairs.insert(std::make_pair(*i, listens.at(k).port));
+		k++;
+	}
+	k = 0;
+	for (std::map<std::list<std::string> ,int>::iterator i = pairs.begin(); 
+					i != pairs.end(); ++i)
 	{
 		int j = k + 1;
-		if (k >= servNames.size() - 1)
+		if (k >= pairs.size() - 1)
 			break;
-		std::list<std::list<std::string> >::iterator tmp = i;
-		std::list<std::string> inerList = *i;
+		std::list<std::string> inerList = i->first;
+		std::map<std::list<std::string>,int >::iterator tmp = i;
 		tmp++;
-		std::list<std::string> NinerList = *tmp;
+		std::list<std::string> NinerList = tmp->first;
 		for (std::list<std::string>::iterator it = inerList.begin(); 
 					it != inerList.end(); ++it)
 		{
 			for (std::list<std::string>::iterator itn = NinerList.begin(); 
 				itn != NinerList.end(); ++itn)
 			{
-				// std::cout << " > " << *it << std::endl;
-				// std::cout << " * " << *itn << std::endl;
-				if (*it == *itn){
-					std::cout << " > " << k << " : " << j << std::endl;
-					index.insert(j);
-					index.insert(k);
+				std::cout << servNames.size() << " > " << *it  << " : " << i->second << std::endl;
+				std::cout << j << " * " << *itn << " : " << tmp->second << std::endl;
+				if (*it == *itn && i->second == tmp->second){
+					std::cout << " + " << k << " : " << j << std::endl;
 				}
 			}
-			// std::cout << " ------- " << std::endl;
+			std::cout << " ------- " << std::endl;
 		}
 		k++;
 	}
-	for (size_t i = 0; i < listens.size(); i++){
-		for (size_t j = 0; j < index.size(); j++){
-			if (i == index.at(j))
-				match.push_back(listens.at(i).port);
-		}
-	}
-	for (size_t i = 0;  i < match.size() - 1; i++)
-	{
-		int j  = i + 1;
-		if (match.at(i) == match.at(j))
-			std::cout << " ------- " << std::endl;
-	}
-	for (size_t i = 0;  i < match.size(); i++)
-		std::cout << match.at(i) << " - " ;
-	std::cout << std::endl;
 }
 
 size_t		Config::parseServer(configFile con, unsigned int &index){

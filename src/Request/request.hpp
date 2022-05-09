@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/08 18:18:44 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/09 14:34:53 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,11 @@ class request
 		int										_port;
 		std::map<std::string, std::string>		_headers;
 		int										_retCode;
-		std::string								_body;
-
+		std::string								_body; //! file
+		
+		//!
+		std::string								_tmp;
+		bool 									_header_finished;
 	public:
 		request();
 		~request();

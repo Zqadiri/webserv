@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/08 18:34:57 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/09 14:40:22 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ request::request() : _method(""), _requestURI(""), _version(""), _host(""){
 	this->_headers["Allow"] = "";
 	this->_headers["Auth-Scheme"] = "";
 	this->_headers["Authorization"] = "";
-	this->_headers["Connection"] = "Keep-Alive";
+	this->_headers["Connection"] = "";
 	this->_headers["Content-Language"] = "";
 	this->_headers["Content-Length"] = "";
 	this->_headers["Content-Location"] = "";
@@ -199,8 +199,6 @@ void				request::getQuery()
 
 int 				request::checkData(std::string buff,  request& req, size_t cur)
 {
-	req.getQuery();
-	req.setBody(buff.substr(cur, buff.length()));
 	// if (req._headers["WWW-Authenticate"].compare("") != 0)
 	// 	authenticate();
 	// req.setBody();
@@ -211,24 +209,44 @@ int					request::startParsing(std::string buff,  request& req)
 {
 	size_t  cursor = 0;
 	std::string ret, key, value;
+	// std::string::iterator it;
 
-	cursor = this->getFirstLine(buff, req);
-	ret = getNextLine(buff, cursor);
-	while ((ret = getNextLine(buff, cursor)).compare("\r") && ret.compare(""))
-	{
-		key = removeSpace(getKey(ret));
-		if (!key.compare("Host")){
-			int begin = ret.find_first_of(":");
-			begin++;
-			std::string str = ret.substr(begin, ret.length());
-			Host(str, req);
-			continue;
+	// if (!_header_finished)
+	// {
+	// 	if ((it = std::find(buff.begin(), buff.end(), "\r\n\r\n")) != buff.end())
+	// 	{
+	// 		req._tmp += buff;
+	// 	}
+	// 	else
+	// 	{
+	// 		req._tmp.append(buff.begin(), it + 5);
+	// 		_header_finished = true;
+	// 	}
+	// }
+	// else 
+	// {
+	// 	//! body
+	// }
+	// if (_header_finished)
+	// {
+		cursor = this->getFirstLine(buff, req);
+		ret = getNextLine(buff, cursor);
+		while ((ret = getNextLine(buff, cursor)).compare("\r") && ret.compare(""))
+		{
+			key = removeSpace(getKey(ret));
+			if (!key.compare("Host")){
+				int begin = ret.find_first_of(":");
+				begin++;
+				std::string str = ret.substr(begin, ret.length());
+				Host(str, req);
+				continue;
+			}
+			value = removeSpace(getValue(ret, key.size()));
+			req._headers[key] = value;
 		}
-		value = removeSpace(getValue(ret, key.size()));
-		req._headers[key] = value;
-	}
-	this->checkData(buff, req, cursor);
-	// print_req(req);
+		req.getQuery();
+		// print_req(req);
+	// }
 	return 1;
 }
 
