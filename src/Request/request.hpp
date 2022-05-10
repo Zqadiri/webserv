@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/10 14:29:09 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 16:07:24 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,23 +21,17 @@ class request
 	static std::vector<std::string>			possibleMethods;
 	static std::vector<std::string>			init_methods();
 	
-	private:
-		std::string								_method;
-		std::string								_path;
-		std::string								_queryString;
-		std::string								_requestURI;
-		std::string								_version;
-		std::string								_host;
-		int										_port;
-		std::map<std::string, std::string>		_headers;
-		int										_retCode;
-		FILE*									_body;
-		std::string								_tmp;
-		bool 									_header_finished;
-	
 	public:
 		request();
 		~request();
+
+		enum ParseStatus {
+			START_LINE,
+			PRE_HEADERS,
+			HEADERS,
+			PRE_BODY,
+			BODY
+		};
 
 		const std::string							&getQuery() const;
 		const std::string							&getMethod() const;
@@ -54,14 +48,27 @@ class request
 		void									getQuery();
 		void									Host(const std::string &, request&);
 		int										getFirstLine(const std::string &, request&);
-		int										startParsing(std::string,  request&);
+		int										ParseHeaders(std::string,  request&, size_t);
+		int										parseRquest(std::string,  request&);
 		std::string								getNextLine(const std::string &, size_t&);
 		std::string								getKey(const std::string&);
 		std::string								getValue(const std::string&, size_t);
-		int 									checkData(std::string buff,  request& r, size_t);
 		int										checkMethod();
 
+	private:
 
+		ParseStatus 							_status;
+		std::string								_method;
+		std::string								_path;
+		std::string								_queryString;
+		std::string								_requestURI;
+		std::string								_version;
+		std::string								_host;
+		int										_port;
+		std::map<std::string, std::string>		_headers;
+		int										_retCode;
+		// std::fstream							_body;
+		std::string								_tmp;
 		//! print function 
 		void	print_req(request &);
 };

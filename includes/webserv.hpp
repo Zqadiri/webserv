@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/08 18:14:43 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 15:21:47 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,17 @@ typedef struct s_listen{
 	int				port;
 }   t_listen;
 
+//* Request
+enum ParseStatus {
+	HEADERS,
+	BODY,
+	CHUNK,
+	COMPLETE
+};
+
+enum ChunkStatus {
+	CHUNK_BODY,
+	CHUNK_SIZE,
+};
+
 #endif
-
-
-

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/10 14:28:58 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 16:07:36 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,10 @@ std::vector<std::string>		request::init_methods()
 
 /*------ Constructors ------*/
 
-request::request() : _method(""), _requestURI(""), _version(""), _host(""), _header_finished(false){
+request::request() : _method(""), _requestURI(""), _version(""), _host(""){
 	_retCode = 200;  // ? 200 OK -> Successful responses
 	_port = 80;
+	_status = START_LINE;
 	this->_headers["Accept"] = ""; 
 	this->_headers["Accept-Charsets"] = "";
 	this->_headers["Accept-Language"] = "";
@@ -140,6 +141,7 @@ int					request::getFirstLine(const std::string &buff, request& req)
 		std::cerr << "BAD VERSION" << std::endl;
 		return (-1);
 	}
+	_status = PRE_HEADERS; 
 	return j;
 }
 
@@ -182,8 +184,7 @@ std::string			request::getNextLine(const std::string &buff, size_t &cursor)
 	return ret;
 }
 
-void				request::getQuery()
-{
+void				request::getQuery(){
 	size_t		i =  this->_path.find_first_of('?');
 
 	if (i != std::string::npos){
@@ -192,55 +193,48 @@ void				request::getQuery()
 	}
 }
 
-int 				request::checkData(std::string buff,  request& req, size_t cur)
+int					request::ParseHeaders(std::string buff,  request& req, size_t cursor)
 {
-	// if (req._headers["WWW-Authenticate"].compare("") != 0)
-	// 	authenticate();
-	return cur;
+	std::string ret, key, value;
+
+	ret = getNextLine(buff, cursor);
+	while ((ret = getNextLine(buff, cursor)).compare("\r") && ret.compare(""))
+	{
+		key = removeSpace(getKey(ret));
+		if (!key.compare("Host")){
+			int begin = ret.find_first_of(":");
+			begin++;
+			std::string str = ret.substr(begin, ret.length());
+			Host(str, req);
+			continue;
+		}
+		value = removeSpace(getValue(ret, key.size()));
+		req._headers[key] = value;
+	}
+	req.getQuery();
+	_status = PRE_BODY;
+	// print_req(req);
+	return 1;
 }
 
-int					request::startParsing(std::string buff,  request& req)
+int					request::parseRquest(std::string buff,  request& req)
 {
-	size_t  cursor = 0;
-	std::string ret, key, value;
 	std::string delim("\r\n\r\n");
+	size_t bodyCursor = buff.find(delim);
+	size_t cursor = 0;
 
-	if (!_header_finished)
-	{
-		size_t end = buff.find(delim);
-		if (end == std::string::npos)
-			req._tmp += buff;
-		else{
-			req._tmp.append(buff.substr(0, end));
-			_header_finished = true;
-		}
+	if (bodyCursor == std::string::npos)
+		req._tmp += buff;
+	else{
+		req._tmp.append(buff.substr(0, bodyCursor));
+		_status = HEADERS;
 	}
-	else 
-	{
-		if (_headers["Content-Length"].compare("Chunked"))
-			std::cout << "body" << std::endl;
-		//? 
-	}
-	if (_header_finished)
-	{
-		cursor = this->getFirstLine(buff, req);
-		ret = getNextLine(buff, cursor);
-		while ((ret = getNextLine(buff, cursor)).compare("\r") && ret.compare(""))
-		{
-			key = removeSpace(getKey(ret));
-			if (!key.compare("Host")){
-				int begin = ret.find_first_of(":");
-				begin++;
-				std::string str = ret.substr(begin, ret.length());
-				Host(str, req);
-				continue;
-			}
-			value = removeSpace(getValue(ret, key.size()));
-			req._headers[key] = value;
-		}
-		req.getQuery();
-		// print_req(req);
-	}
+	if (_status == START_LINE)
+		cursor = getFirstLine(buff, req);
+	if (_status == HEADERS)
+		ParseHeaders(buff, req, cursor);
+	if (_status == BODY)
+		std::cout << "body" << std::endl;
 	return 1;
 }
 
@@ -256,5 +250,5 @@ void				request::print_req(request& req)
 		std::cout  << it->first << std::endl;
 		std::cout << " : [" << it->second << "]" << std::endl;
 	}
-	std::cout << "body : "  << req._body << std::endl;
+	// std::cout << "body : "  << req._body << std::endl;
 }
