@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/09 14:40:22 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 14:28:58 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ std::vector<std::string>		request::init_methods()
 
 /*------ Constructors ------*/
 
-request::request() : _method(""), _requestURI(""), _version(""), _host(""){
+request::request() : _method(""), _requestURI(""), _version(""), _host(""), _header_finished(false){
 	_retCode = 200;  // ? 200 OK -> Successful responses
 	_port = 80;
 	this->_headers["Accept"] = ""; 
@@ -59,23 +59,18 @@ request::~request(){
 
 /*------ Accessors ------*/
 
-std::string							request::getMethod() const { return	_method;}
-std::string							request::getPath() const { return _path;}
-std::string							request::getQuery() const { return _queryString;}
-std::string							request::getVersion() const { return  _version;}
-std::string							request::getRequestURI() const { return	_requestURI;}
-std::string							request::getHost() const { return _host; }
-int									request::getPort() const { return _port; }
-std::map<std::string, std::string>	request::getHeaders() const { return  _headers;}
-int									request::getRetCode() const { return _retCode; }
+const std::string							&request::getMethod() const { return	_method;}
+const std::string							&request::getPath() const { return _path;}
+const std::string							&request::getQuery() const { return _queryString;}
+const std::string							&request::getVersion() const { return  _version;}
+const std::string							&request::getRequestURI() const { return	_requestURI;}
+const std::string							&request::getHost() const { return _host; }
+const int									&request::getPort() const { return _port; }
+const std::map<std::string, std::string>	&request::getHeaders() const { return  _headers;}
+const int									&request::getRetCode() const { return _retCode; }
 
 void				request::setCode(int code){
 	this->_retCode = code;
-}
-
-void				request::setBody(const std::string& str){
-	this->_body.assign(str);
-	// ! check format
 }
 
 /*------ Member Functions ------*/
@@ -201,7 +196,6 @@ int 				request::checkData(std::string buff,  request& req, size_t cur)
 {
 	// if (req._headers["WWW-Authenticate"].compare("") != 0)
 	// 	authenticate();
-	// req.setBody();
 	return cur;
 }
 
@@ -209,26 +203,26 @@ int					request::startParsing(std::string buff,  request& req)
 {
 	size_t  cursor = 0;
 	std::string ret, key, value;
-	// std::string::iterator it;
+	std::string delim("\r\n\r\n");
 
-	// if (!_header_finished)
-	// {
-	// 	if ((it = std::find(buff.begin(), buff.end(), "\r\n\r\n")) != buff.end())
-	// 	{
-	// 		req._tmp += buff;
-	// 	}
-	// 	else
-	// 	{
-	// 		req._tmp.append(buff.begin(), it + 5);
-	// 		_header_finished = true;
-	// 	}
-	// }
-	// else 
-	// {
-	// 	//! body
-	// }
-	// if (_header_finished)
-	// {
+	if (!_header_finished)
+	{
+		size_t end = buff.find(delim);
+		if (end == std::string::npos)
+			req._tmp += buff;
+		else{
+			req._tmp.append(buff.substr(0, end));
+			_header_finished = true;
+		}
+	}
+	else 
+	{
+		if (_headers["Content-Length"].compare("Chunked"))
+			std::cout << "body" << std::endl;
+		//? 
+	}
+	if (_header_finished)
+	{
 		cursor = this->getFirstLine(buff, req);
 		ret = getNextLine(buff, cursor);
 		while ((ret = getNextLine(buff, cursor)).compare("\r") && ret.compare(""))
@@ -246,7 +240,7 @@ int					request::startParsing(std::string buff,  request& req)
 		}
 		req.getQuery();
 		// print_req(req);
-	// }
+	}
 	return 1;
 }
 

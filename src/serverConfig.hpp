@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/06 12:34:28 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 14:30:13 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,11 @@ class serverConfig
 		std::string					_index;
 		int 						_host;
 		int							_port;
-		std::list<std::string>		_error_pages;
+		std::list<std::string>		_error_pages; //!
 		std::list<std::string>		_allow_methods;
 		std::vector<_location>		_locations;
-		
+		//!autoindex bool
+		 
 	public:
 		serverConfig();
 		serverConfig(std::string _root, std::string _index, std::string _host);
@@ -46,11 +47,11 @@ class serverConfig
 		serverConfig(const serverConfig &obj);
 		serverConfig	&operator=(const serverConfig&);
 
-		unsigned int			getHost(void) const;
-		unsigned int			getPort(void) const;
-		std::list<std::string>	getServerName(void) const;
-		std::vector<_location>	getLocations(void) const;
-
+		unsigned int				 getHost(void) const;
+		unsigned int				 getPort(void) const;
+		const std::list<std::string>	& getServerName(void) const;
+		const std::vector<_location>	& getLocations(void) const;
+		const std::list<std::string> &getErrorsPages(void) const;
 		unsigned int 	serverName(serverConfig&, configFile, unsigned int&);
 		unsigned int	parseLocation(serverConfig&, configFile, unsigned int&);
 		unsigned int	listen(serverConfig &, configFile, unsigned int&);

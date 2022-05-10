@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/09 14:34:53 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 14:29:09 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 #include "../../includes/webserv.hpp"
 #include "../server.hpp"
-
 
 class request
 {
@@ -32,26 +31,24 @@ class request
 		int										_port;
 		std::map<std::string, std::string>		_headers;
 		int										_retCode;
-		std::string								_body; //! file
-		
-		//!
+		FILE*									_body;
 		std::string								_tmp;
 		bool 									_header_finished;
+	
 	public:
 		request();
 		~request();
 
-		std::string								getQuery() const;
-		std::string								getMethod() const;
-		std::string								getPath() const;
-		std::string								getRequestURI() const;
-		std::string								getVersion() const;
-		std::string								getHost() const;
-		int										getPort() const;
-		std::map<std::string, std::string>		getHeaders() const;
-		int										getRetCode() const;
+		const std::string							&getQuery() const;
+		const std::string							&getMethod() const;
+		const std::string							&getPath() const;
+		const std::string							&getRequestURI() const;
+		const std::string							&getVersion() const;
+		const std::string							&getHost() const;
+		const int									&getPort() const;
+		const std::map<std::string, std::string>	&getHeaders() const;
+		const int									&getRetCode() const;
 
-		void									setBody(const std::string& str);
 		void									setCode(int);
 
 		void									getQuery();

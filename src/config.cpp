@@ -6,12 +6,11 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/09 12:31:52 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 13:26:18 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "config.hpp"
-#include <set>
 
 /*----- Exceptions-----*/
 
@@ -212,13 +211,13 @@ void				Config::checkForDup(void){
 			for (std::list<std::string>::iterator itn = NinerList.begin(); 
 				itn != NinerList.end(); ++itn)
 			{
-				std::cout << servNames.size() << " > " << *it  << " : " << i->second << std::endl;
-				std::cout << j << " * " << *itn << " : " << tmp->second << std::endl;
-				if (*it == *itn && i->second == tmp->second){
-					std::cout << " + " << k << " : " << j << std::endl;
-				}
+				// std::cout << servNames.size() << " > " << *it  << " : " << i->second << std::endl;
+				// std::cout << j << " * " << *itn << " : " << tmp->second << std::endl;
+				if (*it == *itn && i->second == tmp->second)
+					throw "duplicate Servers";
+					// std::cout << " + " << k << " : " << j <<  std::endl;
 			}
-			std::cout << " ------- " << std::endl;
+			// std::cout << " ------- " << std::endl;
 		}
 		k++;
 	}
