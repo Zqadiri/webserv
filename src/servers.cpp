@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/08 14:55:08 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 19:44:15 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,9 +101,9 @@ void		Servers::run(void){
 		{
 			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
 			{
-				serv->handle_sockets(_fd_set, write_set);
+				serv->handle_sockets(fset, wset, _fd_set, write_set);
 				this->selectServer();
-				if (serv->add_socket(_fd_set, _max_fd) == 0)
+				if (serv->add_socket(fset, _fd_set, _max_fd) == 0)
 					break;
 					
 			}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   serverConfig.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/10 14:30:59 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 14:38:33 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 }
 
 /*---- Accessors ----*/
+const std::list<std::string> &serverConfig::getAllowMethods(void) const{ return this->_allow_methods;}
 const std::list<std::string> &serverConfig::getErrorsPages(void) const{ return this->_error_pages;}
 unsigned int			serverConfig::getHost(void) const { return this->_host;}
 unsigned int			serverConfig::getPort(void) const { return this->_port;}
