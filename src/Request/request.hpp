@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 12:50:48 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 13:18:46 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ class request
 	private:
 
 		ParseStatus 							_status;
-		std::fstream							*_body;
+		// ≈
 		std::string								_method;
 		std::string								_path;
 		std::string								_queryString;

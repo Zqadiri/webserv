@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/11 12:51:18 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 13:20:00 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ int server::rec(int &socket, request& req)
 	
 	std::cout << "trying recv\n";
 	ret = recv(socket, buff, sizeof(buff), 0);
-	std::cout << buff << std::endl;
+	
 	if (ret == -1)
 	{
 		std::cout << "recv() failed" << std::endl;
@@ -112,7 +112,8 @@ int server::rec(int &socket, request& req)
 		std::cout << "Client disconnected" << std::endl;
 		return (0);
 	}
-	
+	// std::cout << ret << std::endl;
+	std::cout << buff << std::endl;
 	std::string str(buff);
 	if (req.parseRquest(str, req) < -1){
 		std::cout << "BAD REQUEST" << std::endl;

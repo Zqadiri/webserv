@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 12:45:18 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 13:18:55 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,6 +221,7 @@ int					request::ParseHeaders(std::string buff,  request& req)
 
 int					request::parseRquest(std::string buff,  request& req)
 {
+	std::fstream		_body;
 	std::string delim("\r\n\r\n");
 	size_t bodyCursor = buff.find(delim);
 	// size_t cursor = 0;
@@ -239,9 +240,13 @@ int					request::parseRquest(std::string buff,  request& req)
 	}
 	if (_status == PRE_BODY)
 	{
-		if (_headers["Transfer-Encoding"].compare("chuncked")){ //! not chunked
-			_body->open ("/tmp/body.txt", std::fstream::in | std::fstream::out | std::fstream::app);
-			_body->write(_tmp.c_str(), _tmp.size());
+		if (_headers["Transfer-Encoding"].compare("chunked")){ //! not chunked
+			puts("here");
+			_body.open ("/tmp/body.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+			if(_body.is_open())
+				_body.write(_tmp.c_str(), _tmp.size());
+			else
+				puts("error open");
 		}
 	}
 	if (_status == BODY)
