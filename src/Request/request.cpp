@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 13:18:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 17:55:41 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,7 +215,7 @@ int					request::ParseHeaders(std::string buff,  request& req)
 	}
 	req.getQuery();
 	_status = PRE_BODY;
-	print_req(req);
+	// print_req(req);
 	return 1;
 }
 
@@ -236,6 +236,7 @@ int					request::parseRquest(std::string buff,  request& req)
 	{
 		ParseHeaders(req._tmp, req);
 		_tmp.clear();
+		std::cout << "[" << buff << "]" << std::endl;
 		_tmp.append(buff.substr(bodyCursor + delim.length(), buff.length())); //! the rest of the body
 	}
 	if (_status == PRE_BODY)
@@ -248,13 +249,47 @@ int					request::parseRquest(std::string buff,  request& req)
 			else
 				puts("error open");
 		}
+		else if (!_headers["Transfer-Encoding"].compare("chunked") && _headers["Content-Length"].compare(""))
+			_status = BODY;
 	}
 	if (_status == BODY)
 	{
-		std::cout << "body" << std::endl;
-		
+		std::cout << RED << "body" << std::endl;
+		// parseChunkedRequest();
 	}
 	return 1;
+}
+
+size_t toHex(std::string &str) {
+    std::stringstream ss;
+    size_t hex;
+
+    ss << std::dec << str;
+    ss >> hex;
+
+	hex = static_cast<int>(hex);
+    return hex;
+}
+  
+int					request::parseChunkedRequest(void)
+{
+	size_t chunkSize = stoi(_headers["Content-Length"]);
+	
+	std::cout << "chunkSize : " << chunkSize << std::endl;
+	size_t cursor = 0;
+	size_t hex = 0;
+	bool isFirst = 1;
+	std::string line;
+
+	while ((line = getNextLine(_tmp, cursor)) != ""){
+		std::cout << "Line : " << line << std::endl;
+		if (isFirst)
+			hex = toHex(line);
+		std::cout << "Hex : " << line << std::endl;
+		isFirst = 0;
+		
+	}	
+	return 0;
 }
 
 void				request::print_req(request& req)

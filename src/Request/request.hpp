@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 13:18:46 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 17:14:46 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,10 @@ class request
 			PRE_HEADERS,
 			HEADERS,
 			PRE_BODY,
-			BODY
+			BODY, 
+			COMPLETE
 		};
-
+		
 		const std::string							&getQuery() const;
 		const std::string							&getMethod() const;
 		const std::string							&getPath() const;
@@ -49,6 +50,7 @@ class request
 		void									Host(const std::string &, request&);
 		int										getFirstLine(const std::string &, request&);
 		int										ParseHeaders(std::string,  request&);
+		int										parseChunkedRequest();
 		int										parseRquest(std::string,  request&);
 		std::string								getNextLine(const std::string &, size_t&);
 		std::string								getKey(const std::string&);
@@ -59,7 +61,6 @@ class request
 	private:
 
 		ParseStatus 							_status;
-		// ≈
 		std::string								_method;
 		std::string								_path;
 		std::string								_queryString;
