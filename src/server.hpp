@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/08 14:31:56 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/11 11:47:31 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@ class server
 {
 	private:
 		struct sockaddr_in		_addr;
-		int						_port;
-		int						_host;
+		// int						_port;
+		// int						_host;
+		t_listen 				_hostPort;
 		int						_fd;
 		std::list<std::pair<int, request> >	_sockets;
 		// std::string				_rec;
@@ -39,10 +40,11 @@ class server
 		server	&operator=(const server&);
 
 		int		get_fd(void) const;
+		const t_listen	&get_hostPort(void) const;
 		int 	rec(int&, request&);
 		int		sen(int&, request&);
-		void 	handle_sockets(fd_set&, fd_set&);
-		int 	add_socket(fd_set&, int&);
+		void 	handle_sockets(fd_set&, fd_set&,fd_set&, fd_set&);
+		int 	add_socket(fd_set&,fd_set&, int&);
 		int		setup(void);
 		int		acc(void);
 		bool 	is_sockets_empty(void) const;

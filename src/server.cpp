@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/10 18:47:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 12:51:18 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,18 @@ server::server(const server &sv){
 server &server::operator=(const server &obj){
 	this->_addr = obj._addr;
 	this->_fd = obj._fd;
-	this->_port = obj._port;
-	this->_host = obj._host;
+	this->_hostPort = obj._hostPort;
 	this->_sockets = obj._sockets;
 	// this->_rec = obj._rec;
 	return *this;
 }
 
 
-server::server(t_listen &l) :  _port(l.port),_host(l.host), _fd(-1){
+server::server(t_listen &l) :  _hostPort(l), _fd(-1){
 	bzero((char *)&_addr, sizeof(_addr));
 	_addr.sin_family = AF_INET;
-	_addr.sin_addr.s_addr = htonl(_host);
-	_addr.sin_port = htons(_port);
+	_addr.sin_addr.s_addr = htonl(l.host);
+	_addr.sin_port = htons(l.port);
 }
 
 int server::setup(void)
@@ -122,13 +121,13 @@ int server::rec(int &socket, request& req)
 	return (1);
 }
 
-void server::handle_sockets(fd_set& fset, fd_set& wset)
+void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_set& wset)
 {
 	// std::cout << "handle_sockets" << std::endl;
 	std::list<std::pair<int, request> >::iterator socket = _sockets.begin();
 	while (socket != _sockets.end())
 	{
-		if (FD_ISSET(socket->first, &wset))
+		if (FD_ISSET(socket->first, &cp_wset))
 		{
 			int ret = sen(socket->first, socket->second);
 			if (ret == -1)
@@ -136,6 +135,8 @@ void server::handle_sockets(fd_set& fset, fd_set& wset)
 				std::cout << "send() failed" << std::endl;
 				FD_CLR(socket->first, &wset);
 				FD_CLR(socket->first, &fset);
+				FD_CLR(socket->first, &cp_wset);
+				FD_CLR(socket->first, &cp_fset);
 				close(socket->first);
 				socket =_sockets.erase(socket);
 				break ;
@@ -145,6 +146,8 @@ void server::handle_sockets(fd_set& fset, fd_set& wset)
 				std::cout << "send() success" << std::endl;
 				FD_CLR(socket->first, &wset);
 				FD_CLR(socket->first, &fset);
+				FD_CLR(socket->first, &cp_wset);
+				FD_CLR(socket->first, &cp_fset);
 				close(socket->first);
 				socket =_sockets.erase(socket);
 				break ;
@@ -155,12 +158,13 @@ void server::handle_sockets(fd_set& fset, fd_set& wset)
 	socket = _sockets.begin();
 	while (socket != _sockets.end())
 	{
-		if (FD_ISSET(socket->first, &fset))
+		if (FD_ISSET(socket->first, &cp_fset))
 		{
 			int ret = rec(socket->first, socket->second);
 			if (ret == -1)
 			{
 				FD_CLR(socket->first, &fset);
+				FD_CLR(socket->first, &cp_fset);
 				close(socket->first);
 				socket =_sockets.erase(socket);
 				break;
@@ -176,9 +180,9 @@ void server::handle_sockets(fd_set& fset, fd_set& wset)
 	}
 }
 
-int server::add_socket(fd_set &fset, int &max_fd)
+int server::add_socket(fd_set &cp_fset,fd_set &fset, int &max_fd)
 {
-	if (FD_ISSET(_fd, &fset))
+	if (FD_ISSET(_fd, &cp_fset))
 	{
 		std::cout << "trying to accept()" << std::endl;
 		int sock = acc();

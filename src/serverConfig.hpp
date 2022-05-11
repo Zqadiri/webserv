@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   serverConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/10 14:30:13 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 14:37:46 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ class serverConfig
 		const std::list<std::string>	& getServerName(void) const;
 		const std::vector<_location>	& getLocations(void) const;
 		const std::list<std::string> &getErrorsPages(void) const;
+		const std::list<std::string> &getAllowMethods(void) const;
 		unsigned int 	serverName(serverConfig&, configFile, unsigned int&);
 		unsigned int	parseLocation(serverConfig&, configFile, unsigned int&);
 		unsigned int	listen(serverConfig &, configFile, unsigned int&);
