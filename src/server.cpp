@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/11 13:20:00 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 17:42:20 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,12 @@ server::server(const server &sv){
 server &server::operator=(const server &obj){
 	this->_addr = obj._addr;
 	this->_fd = obj._fd;
-	this->_hostPort = obj._hostPort;
 	this->_sockets = obj._sockets;
-	// this->_rec = obj._rec;
 	return *this;
 }
 
 
-server::server(t_listen &l) :  _hostPort(l), _fd(-1){
+server::server(t_listen &l) : _fd(-1){
 	bzero((char *)&_addr, sizeof(_addr));
 	_addr.sin_family = AF_INET;
 	_addr.sin_addr.s_addr = htonl(l.host);
@@ -68,11 +66,11 @@ int server::setup(void)
 int server::acc(void)
 {
 	int socket = accept(_fd, NULL, NULL);
-	// if (socket == -1)
-	// {
-	// 	std::cout << "accept() failed" << std::endl;
-	// 	return (-1);
-	// }
+	if (socket == -1)
+	{
+		std::cout << "accept() failed" << std::endl;
+		return (-1);
+	}
 	return socket;
 }
 
@@ -140,21 +138,25 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 				FD_CLR(socket->first, &cp_fset);
 				close(socket->first);
 				socket =_sockets.erase(socket);
-				break ;
+				// break ;
 			}
-			else
+			else if (ret == 0)
 			{
 				std::cout << "send() success" << std::endl;
 				FD_CLR(socket->first, &wset);
-				FD_CLR(socket->first, &fset);
+				// FD_CLR(socket->first, &fset);
 				FD_CLR(socket->first, &cp_wset);
-				FD_CLR(socket->first, &cp_fset);
-				close(socket->first);
-				socket =_sockets.erase(socket);
-				break ;
+				++socket;
+				// FD_CLR(socket->first, &cp_fset);
+				// close(socket->first);
+				// socket =_sockets.erase(socket);
+				// break ;
 			}
+			else
+				++socket;
 		}
-		++socket;
+		else
+			++socket;
 	}
 	socket = _sockets.begin();
 	while (socket != _sockets.end())
@@ -168,16 +170,20 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 				FD_CLR(socket->first, &cp_fset);
 				close(socket->first);
 				socket =_sockets.erase(socket);
-				break;
+				// break;
 			}
-			else 
+			else if (ret == 0)
 			{
 				std::cout << "recv() success" << std::endl;
 				FD_SET(socket->first, &wset);
-				break;
+				++socket;
+				// break;
 			}
+			else
+				++socket;
 		}
-		++socket;
+		else
+			++socket;
 	}
 }
 
@@ -208,3 +214,5 @@ bool server::is_sockets_empty(void) const
 std::list<std::pair<int, request> >		server::getRequest(void){
 	return this->_sockets;
 }
+
+

@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/10 19:44:15 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/11 17:33:18 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,6 @@ void		Servers::run(void){
 				this->selectServer();
 				if (serv->add_socket(fset, _fd_set, _max_fd) == 0)
 					break;
-					
 			}
 		}
 		else

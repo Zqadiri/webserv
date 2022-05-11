@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 13:18:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 13:54:02 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ const std::string							&request::getRequestURI() const { return	_requestURI;}
 const std::string							&request::getHost() const { return _host; }
 const int									&request::getPort() const { return _port; }
 const std::map<std::string, std::string>	&request::getHeaders() const { return  _headers;}
-const int									&request::getRetCode() const { return _retCode; }
+int											request::getRetCode() const { return _retCode; }
 
 void				request::setCode(int code){
 	this->_retCode = code;

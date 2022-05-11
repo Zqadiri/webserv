@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/08 18:41:23 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 14:26:00 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ class Config
 		configFile::iterator				curlLevel(configFile);
 		void								checkForDup();
 		
-		std::vector<serverConfig*>			getServers(void);
+		const std::vector<serverConfig*>			&getServers(void);
 		std::vector<t_listen>				getAllListenDir(void);
 		std::list<std::list<std::string> >	getAllServerNames(void);
 

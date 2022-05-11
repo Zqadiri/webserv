@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/10 14:38:33 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/11 14:32:00 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,9 @@ bool notAValueL(std::string value){
 
 /*---- Constructors & Destructor ------*/
 
-serverConfig::serverConfig() : _root(""), _index(""), _host(-1), _port(-1){
+serverConfig::serverConfig() : _root(""), _index(""), _hostPort(t_listen()){
+	_hostPort.host = 0;
+	_hostPort.port = -1;
 }
 
 serverConfig::~serverConfig(){
@@ -68,9 +70,10 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 	this->_server_name = obj._server_name;
 	this->_root = obj._root;
 	this->_index = obj._index;
-	this->_host = obj._host;
-	this->_host = obj._host;
-	this->_port = obj._port;
+	// this->_host = obj._host;
+	// this->_host = obj._host;
+	// this->_port = obj._port;
+	this->_hostPort = obj._hostPort;
 	this->_error_pages = obj._error_pages;
 	this->_allow_methods = obj._allow_methods;
 	this->_locations = obj._locations;
@@ -80,8 +83,9 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 /*---- Accessors ----*/
 const std::list<std::string> &serverConfig::getAllowMethods(void) const{ return this->_allow_methods;}
 const std::list<std::string> &serverConfig::getErrorsPages(void) const{ return this->_error_pages;}
-unsigned int			serverConfig::getHost(void) const { return this->_host;}
-unsigned int			serverConfig::getPort(void) const { return this->_port;}
+const t_listen				 	&serverConfig::gethostPort(void) const{ return this->_hostPort;}
+// unsigned int			serverConfig::getHost(void) const { return this->_host;}
+// unsigned int			serverConfig::getPort(void) const { return this->_port;}
 const std::list<std::string>	&serverConfig::getServerName(void) const { return this->_server_name;}
 const std::vector<_location>	&serverConfig::getLocations(void) const{ return this->_locations;}
 
@@ -179,18 +183,18 @@ uint32_t convert( const std::string& ipv4Str ){
 
 unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
-	if (_host != -1 && _host != -1)
+	if (_hostPort.host != 0 && _hostPort.port != -1)
 		throw std::runtime_error("two Listen directives");
-	_host = inet_addr("192.168.0.1");
-	_port = 80;
+	_hostPort.host = inet_addr("192.168.0.1");
+	_hostPort.port = 80;
 	std::string delim(":");
 	size_t end = con[index].find_first_of(delim, 0);
 	if (std::string(con[index].substr(0, end)).compare("localhost"))
-		serv._host = convert(con[index].substr(0, end));
+		serv._hostPort.host = convert(con[index].substr(0, end));
 	try {
 		if (end != std::string::npos){
 			end++;
-			serv._port = stoi(con[index].substr(end, con[index].find_first_of(delim, end)));
+			serv._hostPort.port = stoi(con[index].substr(end, con[index].find_first_of(delim, end)));
 		}
 	}
 	catch (std::exception &r){
