@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/10 14:37:46 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/11 14:31:18 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,9 @@ class serverConfig
 		std::list<std::string>		_server_name;
 		std::string					_root;
 		std::string					_index;
-		int 						_host;
-		int							_port;
+		// int 						_host;
+		// int							_port;
+		t_listen					_hostPort;
 		std::list<std::string>		_error_pages; //!
 		std::list<std::string>		_allow_methods;
 		std::vector<_location>		_locations;
@@ -47,8 +48,9 @@ class serverConfig
 		serverConfig(const serverConfig &obj);
 		serverConfig	&operator=(const serverConfig&);
 
-		unsigned int				 getHost(void) const;
-		unsigned int				 getPort(void) const;
+		// unsigned int				 getHost(void) const;
+		// unsigned int				 getPort(void) const;
+		const t_listen				 	&gethostPort(void) const;
 		const std::list<std::string>	& getServerName(void) const;
 		const std::vector<_location>	& getLocations(void) const;
 		const std::list<std::string> &getErrorsPages(void) const;

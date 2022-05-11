@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 17:55:41 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 21:14:08 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ const std::string							&request::getRequestURI() const { return	_requestURI;}
 const std::string							&request::getHost() const { return _host; }
 const int									&request::getPort() const { return _port; }
 const std::map<std::string, std::string>	&request::getHeaders() const { return  _headers;}
-const int									&request::getRetCode() const { return _retCode; }
+int											request::getRetCode() const { return _retCode; }
 
 void				request::setCode(int code){
 	this->_retCode = code;
@@ -221,54 +221,62 @@ int					request::ParseHeaders(std::string buff,  request& req)
 
 int					request::parseRquest(std::string buff,  request& req)
 {
-	std::fstream		_body;
+	std::cout << GREEN <<  " -----------------  " <<_status << " --------------------" << RESET << std::endl;
+	std::fstream _body;
 	std::string delim("\r\n\r\n");
 	size_t bodyCursor = buff.find(delim);
-	// size_t cursor = 0;
 	
-	if (bodyCursor == std::string::npos)
+	if (bodyCursor == std::string::npos && _status == START_LINE){
+		puts("START_LINE");
 		req._tmp += buff;
-	else{
+	}
+	else if (_status == START_LINE){
+		puts("START_LINE");
 		req._tmp.append(buff.substr(0, bodyCursor + delim.length()));
 		_status = HEADERS;
 	}
 	if (_status == HEADERS)
 	{
+		puts("HEADERS");
 		ParseHeaders(req._tmp, req);
-		_tmp.clear();
-		std::cout << "[" << buff << "]" << std::endl;
-		_tmp.append(buff.substr(bodyCursor + delim.length(), buff.length())); //! the rest of the body
 	}
 	if (_status == PRE_BODY)
 	{
-		if (_headers["Transfer-Encoding"].compare("chunked")){ //! not chunked
-			puts("here");
+		puts("PRE_BODY");
+		if (_headers["Transfer-Encoding"].compare("chunked")){ //! unchunked
 			_body.open ("/tmp/body.txt", std::fstream::in | std::fstream::out | std::fstream::app);
 			if(_body.is_open())
 				_body.write(_tmp.c_str(), _tmp.size());
 			else
 				puts("error open");
+			_status = COMPLETE;
 		}
-		else if (!_headers["Transfer-Encoding"].compare("chunked") && _headers["Content-Length"].compare(""))
+		else if (!_headers["Transfer-Encoding"].compare("chunked") && _headers["Content-Length"].compare("")){
+			req._tmp.clear();
+			req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length())); //! the rest of the body
+			buff.clear();
 			_status = BODY;
+		}
 	}
 	if (_status == BODY)
 	{
-		std::cout << RED << "body" << std::endl;
+		puts("BODY");
+		std::cout << RED << "]buff[  <<< " << buff << " >>>" << RESET << std::endl << std::endl;
+		std::cout << GREEN << "]tmp[  {{{ " << req._tmp << " }}}" << RESET << std::endl << std::endl;
+		req._tmp += buff;
 		// parseChunkedRequest();
 	}
 	return 1;
 }
 
 size_t toHex(std::string &str) {
-    std::stringstream ss;
-    size_t hex;
+	std::stringstream ss;
+	size_t hex;
 
-    ss << std::dec << str;
-    ss >> hex;
+	ss << std::dec << str;
+	ss >> hex;
 
-	hex = static_cast<int>(hex);
-    return hex;
+	return hex;
 }
   
 int					request::parseChunkedRequest(void)
@@ -280,15 +288,16 @@ int					request::parseChunkedRequest(void)
 	size_t hex = 0;
 	bool isFirst = 1;
 	std::string line;
+	std::cout <<  "line :   " << getNextLine(_tmp, cursor) << std::endl;
+	std::cout <<  "hex :   " << toHex(line) << std::endl;
 
-	while ((line = getNextLine(_tmp, cursor)) != ""){
-		std::cout << "Line : " << line << std::endl;
-		if (isFirst)
-			hex = toHex(line);
-		std::cout << "Hex : " << line << std::endl;
-		isFirst = 0;
-		
-	}	
+	// while ((line = getNextLine(_tmp, cursor)) != ""){
+	// 	std::cout << "Line : " << line << std::endl;
+	// 	if (isFirst)
+	// 		hex = toHex(line);
+	// 	std::cout << "Hex : " << line << std::endl;
+	// 	isFirst = 0;
+	// }	
 	return 0;
 }
 

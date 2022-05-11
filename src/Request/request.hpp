@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 17:14:46 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 17:56:03 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class request
 		const std::string							&getHost() const;
 		const int									&getPort() const;
 		const std::map<std::string, std::string>	&getHeaders() const;
-		const int									&getRetCode() const;
+		int											getRetCode() const;
 
 		void									setCode(int);
 

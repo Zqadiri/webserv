@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/10 18:29:00 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 14:31:07 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,15 @@ Config::Config(const Config &conf){
 
 /*---- Accessors -------*/
 
-std::vector<serverConfig*>	Config::getServers(void){
+const std::vector<serverConfig*>	&Config::getServers(void){
 	return this->servers;
 }
 
 std::vector<t_listen>		Config::getAllListenDir(void){
 	std::vector<t_listen>	listen;
 	for (size_t i = 0; i < this->servers.size(); i++){
-		t_listen	l;
-		l.host = this->servers[i]->getHost();
-		l.port = this->servers[i]->getPort();
-		listen.push_back(l);
+		t_listen t(servers[i]->gethostPort());
+		listen.push_back(t);
 	}
 	return listen;
 }
