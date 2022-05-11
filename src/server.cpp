@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/10 19:48:39 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/11 11:48:51 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,18 @@ server::server(const server &sv){
 server &server::operator=(const server &obj){
 	this->_addr = obj._addr;
 	this->_fd = obj._fd;
-	this->_port = obj._port;
-	this->_host = obj._host;
+	this->_hostPort = obj._hostPort;
 	this->_sockets = obj._sockets;
 	// this->_rec = obj._rec;
 	return *this;
 }
 
 
-server::server(t_listen &l) :  _port(l.port),_host(l.host), _fd(-1){
+server::server(t_listen &l) :  _hostPort(l), _fd(-1){
 	bzero((char *)&_addr, sizeof(_addr));
 	_addr.sin_family = AF_INET;
-	_addr.sin_addr.s_addr = htonl(_host);
-	_addr.sin_port = htons(_port);
+	_addr.sin_addr.s_addr = htonl(l.host);
+	_addr.sin_port = htons(l.port);
 }
 
 int server::setup(void)
