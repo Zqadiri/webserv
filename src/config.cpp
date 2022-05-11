@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/10 13:26:18 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 18:29:00 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,7 @@ void				Config::checkForDup(void){
 	std::vector<t_listen>				listens = this->getAllListenDir();
 	std::list<std::list<std::string> > 	servNames = this->getAllServerNames();
 
-	int  k = 0;
+	size_t  k = 0;
 	std::map<std::list<std::string> ,int> pairs;
 	for (std::list<std::list<std::string> >::iterator i = servNames.begin(); 
 					i != servNames.end(); i++)
@@ -198,7 +198,6 @@ void				Config::checkForDup(void){
 	for (std::map<std::list<std::string> ,int>::iterator i = pairs.begin(); 
 					i != pairs.end(); ++i)
 	{
-		int j = k + 1;
 		if (k >= pairs.size() - 1)
 			break;
 		std::list<std::string> inerList = i->first;

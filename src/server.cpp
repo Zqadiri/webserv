@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/10 15:29:24 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/10 18:47:55 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,8 @@ int server::rec(int &socket, request& req)
 {
 	char				buff[1024];
 	int					ret;
-
+	
+	std::cout << "trying recv\n";
 	ret = recv(socket, buff, sizeof(buff), 0);
 	std::cout << buff << std::endl;
 	if (ret == -1)

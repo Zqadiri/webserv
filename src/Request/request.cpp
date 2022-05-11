@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/10 16:07:36 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/11 12:45:18 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,7 +155,7 @@ std::string		removeSpace(std::string init){ //! duplicate
 }
 
 void				request::Host(const std::string &str, request & req){
-	int end = str.find_first_of(":");
+	size_t end = str.find_first_of(":");
 	if (end == std::string::npos){
 		req._host = removeSpace(str.substr(0, str.length()));
 		return ;
@@ -193,10 +193,12 @@ void				request::getQuery(){
 	}
 }
 
-int					request::ParseHeaders(std::string buff,  request& req, size_t cursor)
+int					request::ParseHeaders(std::string buff,  request& req)
 {
 	std::string ret, key, value;
+	size_t cursor = 0;
 
+	cursor = getFirstLine(buff, req);
 	ret = getNextLine(buff, cursor);
 	while ((ret = getNextLine(buff, cursor)).compare("\r") && ret.compare(""))
 	{
@@ -213,7 +215,7 @@ int					request::ParseHeaders(std::string buff,  request& req, size_t cursor)
 	}
 	req.getQuery();
 	_status = PRE_BODY;
-	// print_req(req);
+	print_req(req);
 	return 1;
 }
 
@@ -221,20 +223,32 @@ int					request::parseRquest(std::string buff,  request& req)
 {
 	std::string delim("\r\n\r\n");
 	size_t bodyCursor = buff.find(delim);
-	size_t cursor = 0;
-
+	// size_t cursor = 0;
+	
 	if (bodyCursor == std::string::npos)
 		req._tmp += buff;
 	else{
-		req._tmp.append(buff.substr(0, bodyCursor));
+		req._tmp.append(buff.substr(0, bodyCursor + delim.length()));
 		_status = HEADERS;
 	}
-	if (_status == START_LINE)
-		cursor = getFirstLine(buff, req);
 	if (_status == HEADERS)
-		ParseHeaders(buff, req, cursor);
+	{
+		ParseHeaders(req._tmp, req);
+		_tmp.clear();
+		_tmp.append(buff.substr(bodyCursor + delim.length(), buff.length())); //! the rest of the body
+	}
+	if (_status == PRE_BODY)
+	{
+		if (_headers["Transfer-Encoding"].compare("chuncked")){ //! not chunked
+			_body->open ("/tmp/body.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+			_body->write(_tmp.c_str(), _tmp.size());
+		}
+	}
 	if (_status == BODY)
+	{
 		std::cout << "body" << std::endl;
+		
+	}
 	return 1;
 }
 
