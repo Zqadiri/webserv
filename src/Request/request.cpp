@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 21:14:08 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/12 18:36:54 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,32 +219,42 @@ int					request::ParseHeaders(std::string buff,  request& req)
 	return 1;
 }
 
-int					request::parseRquest(std::string buff,  request& req)
+int toHex(std::string str){
+	std::stringstream ss;
+	size_t hex;
+
+	ss << std::hex << str;
+	ss >> hex;
+	return hex;
+}
+
+int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 {
-	std::cout << GREEN <<  " -----------------  " <<_status << " --------------------" << RESET << std::endl;
-	std::fstream _body;
+	std::fstream							_body;
+	// std::cout << GREEN <<  " -----------------  " <<_status << " --------------------" << RESET << std::endl;
 	std::string delim("\r\n\r\n");
+	std::string filename = "/tmp/body";
 	size_t bodyCursor = buff.find(delim);
 	
+	filename += std::to_string(socket_fd);
 	if (bodyCursor == std::string::npos && _status == START_LINE){
-		puts("START_LINE");
+		// puts("START_LINE");
 		req._tmp += buff;
 	}
 	else if (_status == START_LINE){
-		puts("START_LINE");
+		// puts("START_LINE");
 		req._tmp.append(buff.substr(0, bodyCursor + delim.length()));
 		_status = HEADERS;
 	}
-	if (_status == HEADERS)
-	{
-		puts("HEADERS");
+	if (_status == HEADERS){
+		// puts("HEADERS");
 		ParseHeaders(req._tmp, req);
 	}
 	if (_status == PRE_BODY)
 	{
-		puts("PRE_BODY");
+		// puts("PRE_BODY");
 		if (_headers["Transfer-Encoding"].compare("chunked")){ //! unchunked
-			_body.open ("/tmp/body.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
 			if(_body.is_open())
 				_body.write(_tmp.c_str(), _tmp.size());
 			else
@@ -256,48 +266,48 @@ int					request::parseRquest(std::string buff,  request& req)
 			req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length())); //! the rest of the body
 			buff.clear();
 			_status = BODY;
+			_chunkStatus = SIZE_LINE;
 		}
 	}
 	if (_status == BODY)
 	{
-		puts("BODY");
-		std::cout << RED << "]buff[  <<< " << buff << " >>>" << RESET << std::endl << std::endl;
-		std::cout << GREEN << "]tmp[  {{{ " << req._tmp << " }}}" << RESET << std::endl << std::endl;
-		req._tmp += buff;
-		// parseChunkedRequest();
+		// puts("BODY");
+		this->_tmp += buff;
+		// std::cout << RED << "]buff[  <<< " << buff << " >>>" << RESET << std::endl << std::endl;
+		// std::cout << GREEN << "]tmp[  {{{ " << req._tmp << " }}}" << RESET << std::endl << std::endl;
+		parseChunkedRequest(filename);
 	}
 	return 1;
 }
 
-size_t toHex(std::string &str) {
-	std::stringstream ss;
-	size_t hex;
-
-	ss << std::dec << str;
-	ss >> hex;
-
-	return hex;
-}
-  
-int					request::parseChunkedRequest(void)
+int request::parseChunkedRequest(std::string filename)
 {
-	size_t chunkSize = stoi(_headers["Content-Length"]);
-	
-	std::cout << "chunkSize : " << chunkSize << std::endl;
-	size_t cursor = 0;
-	size_t hex = 0;
-	bool isFirst = 1;
-	std::string line;
-	std::cout <<  "line :   " << getNextLine(_tmp, cursor) << std::endl;
-	std::cout <<  "hex :   " << toHex(line) << std::endl;
+	size_t end;
+	std::fstream _body;
 
-	// while ((line = getNextLine(_tmp, cursor)) != ""){
-	// 	std::cout << "Line : " << line << std::endl;
-	// 	if (isFirst)
-	// 		hex = toHex(line);
-	// 	std::cout << "Hex : " << line << std::endl;
-	// 	isFirst = 0;
-	// }	
+	while ((end = _tmp.find("\r\n")) != std::string::npos)
+	{
+		if (_chunkStatus == SIZE_LINE)
+		{
+			std::string hex = _tmp.substr(0, end);
+			_chunkSize = toHex(hex);
+			_tmp.erase(0, end + 2);
+			_chunkStatus = CHUNK;
+		}
+		else if (_chunkStatus == CHUNK)
+		{
+			if (_chunkSize == 0)
+				return 1;
+			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
+			if(_body.is_open())
+				_body << _tmp.substr(0, end);
+			else
+				puts("error open");
+			_tmp.erase(0, end + 2);
+			_chunkSize = 0;
+			_chunkStatus = SIZE_LINE;
+		}
+	}
 	return 0;
 }
 

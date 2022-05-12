@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 20:14:20 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/12 11:21:14 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "../includes/webserv.hpp"
 #include "./serverConfig.hpp"
 
-#define BUFFER_SIZE	200
+#define BUFFER_SIZE	100
 
 class Config
 {

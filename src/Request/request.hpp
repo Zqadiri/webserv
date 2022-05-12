@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 17:56:03 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/12 18:33:13 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,13 @@ class request
 			PRE_HEADERS,
 			HEADERS,
 			PRE_BODY,
-			BODY, 
+			BODY,
 			COMPLETE
+		};
+
+		enum chunkStatus{
+			SIZE_LINE,
+			CHUNK,
 		};
 		
 		const std::string							&getQuery() const;
@@ -50,17 +55,18 @@ class request
 		void									Host(const std::string &, request&);
 		int										getFirstLine(const std::string &, request&);
 		int										ParseHeaders(std::string,  request&);
-		int										parseChunkedRequest();
-		int										parseRquest(std::string,  request&);
+		int										parseChunkedRequest(std::string);
+		int										parseRquest(std::string,  request&, int);
 		std::string								getNextLine(const std::string &, size_t&);
 		std::string								getKey(const std::string&);
 		std::string								getValue(const std::string&, size_t);
 		int										checkMethod();
 
-
 	private:
 
+		int										_chunkSize;
 		ParseStatus 							_status;
+		chunkStatus								_chunkStatus;
 		std::string								_method;
 		std::string								_path;
 		std::string								_queryString;

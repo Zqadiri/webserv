@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/11 21:14:57 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/12 18:27:56 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,6 @@ int server::rec(int &socket, request& req)
 {
 	char				buff[BUFFER_SIZE];
 	int					ret;
-	int					ret_parse = 1;
 	
 	std::cout << "trying recv\n";
 	ret = recv(socket, buff, sizeof(buff) - 1 , 0);
@@ -113,11 +112,11 @@ int server::rec(int &socket, request& req)
 	}
 	buff[ret] = '\0';
 	std::string str(buff, ret);
-	// int ret_parse = req.parseRquest(str, req);
-	// if (ret_parse < -1){
-	// 	std::cout << "BAD REQUEST" << std::endl;
-	// 	return -1;
-	// }
+	int ret_parse = req.parseRquest(str, req, socket);
+	if (ret_parse < -1){
+		std::cout << "BAD REQUEST" << std::endl;
+		return -1;
+	}
 	return (ret_parse);
 }
 
