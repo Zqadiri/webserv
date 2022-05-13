@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/12 18:33:13 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/13 14:56:42 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "../../includes/webserv.hpp"
 #include "../server.hpp"
+#include "../utils/utils.hpp"
 
 class request
 {
@@ -75,8 +76,9 @@ class request
 		std::string								_host;
 		int										_port;
 		std::map<std::string, std::string>		_headers;
-		int										_retCode;
-		std::string								_tmp;
+		int										_retCode; 
+		std::string								_tmp; 
+
 		//! print function 
 		void	print_req(request &);
 };

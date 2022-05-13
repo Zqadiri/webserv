@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/12 18:36:54 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/13 14:53:13 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,15 +145,6 @@ int					request::getFirstLine(const std::string &buff, request& req)
 	return j;
 }
 
-std::string		removeSpace(std::string init){ //! duplicate
-	std::string ret;
-	for (size_t i = 0; i < init.length(); ++i){
-		if (!isspace(init[i]))
-			ret.push_back(init[i]);
-	}
-	return ret;
-}
-
 void				request::Host(const std::string &str, request & req){
 	size_t end = str.find_first_of(":");
 	if (end == std::string::npos){
@@ -228,53 +219,43 @@ int toHex(std::string str){
 	return hex;
 }
 
-int					request::parseRquest(std::string buff,  request& req, int socket_fd)
-{
+int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	std::fstream							_body;
-	// std::cout << GREEN <<  " -----------------  " <<_status << " --------------------" << RESET << std::endl;
 	std::string delim("\r\n\r\n");
 	std::string filename = "/tmp/body";
 	size_t bodyCursor = buff.find(delim);
 	
 	filename += std::to_string(socket_fd);
 	if (bodyCursor == std::string::npos && _status == START_LINE){
-		// puts("START_LINE");
 		req._tmp += buff;
 	}
 	else if (_status == START_LINE){
-		// puts("START_LINE");
 		req._tmp.append(buff.substr(0, bodyCursor + delim.length()));
 		_status = HEADERS;
 	}
-	if (_status == HEADERS){
-		// puts("HEADERS");
+	if (_status == HEADERS)
 		ParseHeaders(req._tmp, req);
-	}
-	if (_status == PRE_BODY)
-	{
-		// puts("PRE_BODY");
-		if (_headers["Transfer-Encoding"].compare("chunked")){ //! unchunked
+	if (_status == PRE_BODY){
+		if (_headers["Transfer-Encoding"].compare("chunked")){
 			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
 			if(_body.is_open())
-				_body.write(_tmp.c_str(), _tmp.size());
-			else
-				puts("error open");
+				_body<< _tmp.c_str();
+			else{
+				_retCode = 500;
+				return -1;				
+			}
 			_status = COMPLETE;
 		}
 		else if (!_headers["Transfer-Encoding"].compare("chunked") && _headers["Content-Length"].compare("")){
 			req._tmp.clear();
-			req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length())); //! the rest of the body
+			req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length()));
 			buff.clear();
 			_status = BODY;
 			_chunkStatus = SIZE_LINE;
 		}
 	}
-	if (_status == BODY)
-	{
-		// puts("BODY");
+	if (_status == BODY){
 		this->_tmp += buff;
-		// std::cout << RED << "]buff[  <<< " << buff << " >>>" << RESET << std::endl << std::endl;
-		// std::cout << GREEN << "]tmp[  {{{ " << req._tmp << " }}}" << RESET << std::endl << std::endl;
 		parseChunkedRequest(filename);
 	}
 	return 1;
@@ -323,5 +304,4 @@ void				request::print_req(request& req)
 		std::cout  << it->first << std::endl;
 		std::cout << " : [" << it->second << "]" << std::endl;
 	}
-	// std::cout << "body : "  << req._body << std::endl;
 }

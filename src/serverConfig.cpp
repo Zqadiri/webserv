@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   serverConfig.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 14:32:00 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/13 15:22:34 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ bool notAValueL(std::string value){
 
 serverConfig::serverConfig() : _root(""), _index(""), _hostPort(t_listen()){
 	_hostPort.host = 0;
+	_autoindex = 0;
 	_hostPort.port = -1;
 }
 
@@ -70,9 +71,6 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 	this->_server_name = obj._server_name;
 	this->_root = obj._root;
 	this->_index = obj._index;
-	// this->_host = obj._host;
-	// this->_host = obj._host;
-	// this->_port = obj._port;
 	this->_hostPort = obj._hostPort;
 	this->_error_pages = obj._error_pages;
 	this->_allow_methods = obj._allow_methods;
@@ -81,13 +79,13 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 }
 
 /*---- Accessors ----*/
-const std::list<std::string> &serverConfig::getAllowMethods(void) const{ return this->_allow_methods;}
-const std::list<std::string> &serverConfig::getErrorsPages(void) const{ return this->_error_pages;}
+
+const std::list<std::string>	&serverConfig::getAllowMethods(void) const{ return this->_allow_methods;}
+const std::list<std::string>	&serverConfig::getErrorsPages(void) const{ return this->_error_pages;}
 const t_listen				 	&serverConfig::gethostPort(void) const{ return this->_hostPort;}
-// unsigned int			serverConfig::getHost(void) const { return this->_host;}
-// unsigned int			serverConfig::getPort(void) const { return this->_port;}
 const std::list<std::string>	&serverConfig::getServerName(void) const { return this->_server_name;}
 const std::vector<_location>	&serverConfig::getLocations(void) const{ return this->_locations;}
+bool							serverConfig::getAutoIndex(void) const { return this->_autoindex; }
 
 /*---- Member Functions ----*/
 
@@ -137,6 +135,12 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 		if (!con[index].compare("}"))
 			break;
 	}
+	return index;
+}
+ 
+unsigned int	serverConfig::autoIndex(serverConfig &serv, configFile con, unsigned int& index)
+{
+	puts("autoindex");
 	return index;
 }
 

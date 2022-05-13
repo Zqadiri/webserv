@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 14:31:07 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/13 15:26:29 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "config.hpp"
+
+typedef unsigned int (serverConfig::*Ptr)(serverConfig&, configFile, unsigned int&);
 
 /*----- Exceptions-----*/
 
@@ -77,16 +79,6 @@ bool exepectedTokens(std::string value)
 			return true;
 	}
 	return false;
-}
-
-std::string		Config::removeSpace(std::string init){ //! dup
-	std::string ret;
-	for (size_t i = 0; i < init.length(); ++i)
-	{
-		if (!isspace(init[i]))
-			ret.push_back(init[i]);
-	}
-	return ret;
 }
 
 configFile		Config::slitTokens(configFile con, std::string delim)
@@ -176,9 +168,6 @@ configFile::iterator	Config::curlLevel(configFile con){
 	return it;
 }
 
-typedef unsigned int (serverConfig::*Ptr)(serverConfig&, configFile, unsigned int&);
-
-// ? check if two servers have the same server_name and the same port
 void				Config::checkForDup(void){
 	std::vector<t_listen>				listens = this->getAllListenDir();
 	std::list<std::list<std::string> > 	servNames = this->getAllServerNames();
@@ -203,18 +192,12 @@ void				Config::checkForDup(void){
 		tmp++;
 		std::list<std::string> NinerList = tmp->first;
 		for (std::list<std::string>::iterator it = inerList.begin(); 
-					it != inerList.end(); ++it)
-		{
+					it != inerList.end(); ++it){
 			for (std::list<std::string>::iterator itn = NinerList.begin(); 
-				itn != NinerList.end(); ++itn)
-			{
-				// std::cout << servNames.size() << " > " << *it  << " : " << i->second << std::endl;
-				// std::cout << j << " * " << *itn << " : " << tmp->second << std::endl;
+				itn != NinerList.end(); ++itn){
 				if (*it == *itn && i->second == tmp->second)
 					throw "duplicate Servers";
-					// std::cout << " + " << k << " : " << j <<  std::endl;
 			}
-			// std::cout << " ------- " << std::endl;
 		}
 		k++;
 	}
@@ -223,13 +206,13 @@ void				Config::checkForDup(void){
 size_t		Config::parseServer(configFile con, unsigned int &index){
 	serverConfig *server = new serverConfig();
 	bool isLocation = 0;
-	Ptr values[7] = {&serverConfig::serverName, &serverConfig::root,
+	Ptr values[8] = {&serverConfig::serverName, &serverConfig::root,
 	&serverConfig::listen, &serverConfig::parseLocation, &serverConfig::allowMethods,
-	&serverConfig::index, &serverConfig::errorPages};
+	&serverConfig::index, &serverConfig::errorPages, &serverConfig::autoIndex};
 	while (true)
 	{
 		index++;
-		for (size_t i = 0; i < 7; i++)
+		for (size_t i = 0; i < 8; i++)
 		{
 			if (i == 3)
 				isLocation = 1;
@@ -243,55 +226,55 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 	}
 	this->servers.push_back(server);
 	index--;
-	return index; //! return index to the last colla 
+	return index;
 }
 
 void	Config::print(){
 	std::cout << "[Servers n: " << this->servers.size() << "]"<< std::endl;
-// 	for (size_t i = 0; i < this->servers.size(); i++)
-// 	{
-// 		std::cout << "-------------------------------------" << std::endl;
-// 		puts("[serverName]");
-// 		for (std::list<std::string>::iterator it = this->servers[i]->_server_name.begin(); 
-// 				it != this->servers[i]->_server_name.end(); ++it)
-// 			std::cout << " > " << *it << std::endl;
-// 		puts("[root]");
-// 		std::cout << this->servers[i]->_root << std::endl;
-// 		puts("[index]");
-// 		std::cout << this->servers[i]->_index << std::endl;
-// 		puts("[listen]");
-// 		std::cout << this->servers[i]->_host << std::endl;
-// 		std::cout << this->servers[i]->_port << std::endl;
-// 		puts("[errorPages]");
-// 		for (std::list<std::string>::iterator it = this->servers[i]->_error_pages.begin(); 
-// 				it != this->servers[i]->_error_pages.end(); ++it)
-// 			std::cout << " > " << *it << std::endl;
-// 		puts("[allow_methods]");
-// 		for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
-// 				it != this->servers[i]->_allow_methods.end(); ++it)
-// 		std::cout << " > " <<*it << std::endl;
-// 		std::cout << "[locations n: " << this->servers[i]->_locations.size()  << "]"<< std::endl;
-// 		for (size_t j = 0; j < this->servers[i]->_locations.size(); j++)
-// 		{
-// 			std::cout << "[location "<< j << "]"<< std::endl;
-// 			std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
-// 			std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
-// 			std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
-// 			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
-// 			std::cout << "CGIpass " << this->servers[i]->_locations[j]._pathCGI << std::endl;
-// 			std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
-// 			puts("allow_methods");
-// 			for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
-// 				it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
-// 					std::cout << " > " << *it << std::endl;
-// 			std::cout << " >> [nestedLocation "<< this->servers[i]->_locations[j]._nestedLocations.size() << "]"<< std::endl;
-// 			for (size_t  k = 0; k < this->servers[i]->_locations[j]._nestedLocations.size(); k++){
-// 				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._path << std::endl;
-// 				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._alias << std::endl;
-// 				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._pathCGI << std::endl;
-// 				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._index << std::endl;
-// 				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._root << std::endl;
-// 			}
-// 		}
-// 	}
+	// for (size_t i = 0; i < this->servers.size(); i++)
+	// {
+	// 	std::cout << "-------------------------------------" << std::endl;
+	// 	puts("[serverName]");
+	// 	for (std::list<std::string>::iterator it = this->servers[i]->_server_name.begin(); 
+	// 			it != this->servers[i]->_server_name.end(); ++it)
+	// 		std::cout << " > " << *it << std::endl;
+	// 	puts("[root]");
+	// 	std::cout << this->servers[i]->_root << std::endl;
+	// 	puts("[index]");
+	// 	std::cout << this->servers[i]->_index << std::endl;
+	// 	puts("[listen]");
+	// 	std::cout << this->servers[i]->_host << std::endl;
+	// 	std::cout << this->servers[i]->_port << std::endl;
+	// 	puts("[errorPages]");
+	// 	for (std::list<std::string>::iterator it = this->servers[i]->_error_pages.begin(); 
+	// 			it != this->servers[i]->_error_pages.end(); ++it)
+	// 		std::cout << " > " << *it << std::endl;
+	// 	puts("[allow_methods]");
+	// 	for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
+	// 			it != this->servers[i]->_allow_methods.end(); ++it)
+	// 	std::cout << " > " <<*it << std::endl;
+	// 	std::cout << "[locations n: " << this->servers[i]->_locations.size()  << "]"<< std::endl;
+	// 	for (size_t j = 0; j < this->servers[i]->_locations.size(); j++)
+	// 	{
+	// 		std::cout << "[location "<< j << "]"<< std::endl;
+	// 		std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
+	// 		std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
+	// 		std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
+	// 		std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
+	// 		std::cout << "CGIpass " << this->servers[i]->_locations[j]._pathCGI << std::endl;
+	// 		std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
+	// 		puts("allow_methods");
+	// 		for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
+	// 			it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
+	// 				std::cout << " > " << *it << std::endl;
+	// 		std::cout << " >> [nestedLocation "<< this->servers[i]->_locations[j]._nestedLocations.size() << "]"<< std::endl;
+	// 		for (size_t  k = 0; k < this->servers[i]->_locations[j]._nestedLocations.size(); k++){
+	// 			std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._path << std::endl;
+	// 			std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._alias << std::endl;
+	// 			std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._pathCGI << std::endl;
+	// 			std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._index << std::endl;
+	// 			std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._root << std::endl;
+	// 		}
+	// 	}
+	// }
 }
