@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/13 15:22:34 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/13 20:12:38 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ const char* locationKeys[] = {
 };
 
 bool notAValue(std::string value){
-	for (size_t i = 0; i < 7; i++){
+	for (size_t i = 0; i < 8; i++){
 		if (!value.compare(keys[i]))
 			return true;
 	}
@@ -141,7 +141,12 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 unsigned int	serverConfig::autoIndex(serverConfig &serv, configFile con, unsigned int& index)
 {
 	puts("autoindex");
-	return index;
+	index++;
+	if (con[index].compare("on") && con[index].compare("off"))
+		throw "Autoindex";
+	else if (!con[index].compare("on"))
+		_autoindex = 1;
+	return index++;
 }
 
 unsigned int	serverConfig::parseLocation(serverConfig &serv, configFile con, unsigned int &index){
@@ -226,6 +231,7 @@ unsigned int	serverConfig::errorPages(serverConfig &serv, configFile con, unsign
 		serv._error_pages.push_back(con[index]);
 		index++;
 	}
+	std::cout << GREEN << con[index] << RESET << std::endl;
 	index--;
 	return index;
 }

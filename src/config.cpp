@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/13 15:26:29 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/13 20:15:43 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,9 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 			if (index >= con.size())
 				break; 
 			if (con[index] == keys[i])
+			{
 				index = (server->*values[i])(*server, con, index);
+			}
 		}
 		if (index >= con.size() || (con[index] == "}" && !isLocation) || !con[index].compare("server"))
 			break;
@@ -243,8 +245,10 @@ void	Config::print(){
 	// 	puts("[index]");
 	// 	std::cout << this->servers[i]->_index << std::endl;
 	// 	puts("[listen]");
-	// 	std::cout << this->servers[i]->_host << std::endl;
-	// 	std::cout << this->servers[i]->_port << std::endl;
+	// 	std::cout << this->servers[i]->_hostPort.host << std::endl;
+	// 	std::cout << this->servers[i]->_hostPort.port << std::endl;
+	// 	puts("[autoindex]");
+	// 	std::cout << this->servers[i]->_autoindex << std::endl;
 	// 	puts("[errorPages]");
 	// 	for (std::list<std::string>::iterator it = this->servers[i]->_error_pages.begin(); 
 	// 			it != this->servers[i]->_error_pages.end(); ++it)
