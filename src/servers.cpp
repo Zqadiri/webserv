@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/12 14:03:58 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/14 15:11:19 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ void		Servers::run(void){
 			return ;
 		}
 		// }
-		if (selected > 0)
+		if (selected > 0) 
 		{
 			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
 			{
@@ -109,36 +109,4 @@ void		Servers::run(void){
 		else
 			std::cout << "didnt select" << std::endl;
 	}
-}
-
-int		Servers::selectServer(void)
-{
-	// std::list<int> possibleMatch;
-	// // ? FISRT : Parsing the listen Directive to Find Possible Matches
-	// std::vector<t_listen>	listen = config.getAllListenDir();
-	// std::list<std::list<std::string> > servNames = config.getAllServerNames();
-	// for (size_t i = 0; i < listen.size(); i++)
-	// 	std::cout << listen.at(i).host << " - " << listen.at(i).port << std::endl;
-	// for (std::list<std::list<std::string> >::iterator i = servNames.begin(); 
-	// 				i != servNames.end(); ++i)
-	// {
-	//     std::list<std::string> inerList = *i;
-	// 	for (std::list<std::string>::iterator it = inerList.begin(); 
-	// 				it != inerList.end(); ++it)
-	// 		std::cout << " > " << *it << std::endl;
-	// 	std::cout << " ------- " << std::endl;
-	// }
-
-	// for (std::list<server>::iterator i = this->_servers.begin();
-	// 				i != this->_servers.end(); ++i){
-	// 	server s = *i;
-	// 	std::list<std::pair<int, request> > v = s.getRequest();
-	// 	for (std::list<std::pair<int, request> >::iterator i = v.begin();
-	// 			i != v.end(); ++i)
-	// 	{
-	// 		//! print vector data	
-	// 		// i->second.getHost();
-	// 	}
-	// }
-	return 0;
 }

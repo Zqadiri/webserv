@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 14:52:43 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/14 14:57:52 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,8 +239,8 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 		if (_headers["Transfer-Encoding"].compare("chunked")){
 			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
 			if(_body.is_open()){
-				// size_t end = _tmp.find("\r\n");
-				// _tmp.erase(0);
+				size_t end = _tmp.find(delim);
+				_tmp.erase(0, end + 5);
 				_body << _tmp.c_str();
 			}
 			else{
@@ -282,6 +282,7 @@ int request::parseChunkedRequest(std::string filename) // !1 not comp
 		}
 		else if (_chunkStatus == CHUNK)
 		{
+			puts("------------------------------------");
 			if (_chunkSize == 0)
 				return 1;
 			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
