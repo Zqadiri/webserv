@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/12 18:27:56 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/14 14:07:36 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ int server::rec(int &socket, request& req)
 		std::cout << "BAD REQUEST" << std::endl;
 		return -1;
 	}
+	std::cout << "ret :: " <<  ret_parse << std::endl;
 	return (ret_parse);
 }
 
