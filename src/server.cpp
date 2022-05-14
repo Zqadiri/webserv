@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/14 14:07:36 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/14 15:34:59 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,10 +108,11 @@ int server::rec(int &socket, request& req)
 	if (ret == 0)
 	{
 		std::cout << "Client disconnected" << std::endl;
-		return (0);
+		return (-1);
 	}
 	buff[ret] = '\0';
 	std::string str(buff, ret);
+	std::cout <<  str << std::endl;
 	int ret_parse = req.parseRquest(str, req, socket);
 	if (ret_parse < -1){
 		std::cout << "BAD REQUEST" << std::endl;
@@ -145,13 +146,16 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 			{
 				std::cout << "send() success" << std::endl;
 				FD_CLR(socket->first, &wset);
-				// FD_CLR(socket->first, &fset);
 				FD_CLR(socket->first, &cp_wset);
-				++socket;
-				// FD_CLR(socket->first, &cp_fset);
-				// close(socket->first);
-				// socket =_sockets.erase(socket);
-				// break ;
+				if (socket->second.getConnection().compare("keep-alive"))
+				{
+					FD_CLR(socket->first, &fset);
+					FD_CLR(socket->first, &cp_fset);
+					close(socket->first);
+					socket =_sockets.erase(socket);
+				}
+				else
+					++socket;
 			}
 			else
 				++socket;

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 15:11:19 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/14 15:25:48 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,6 @@ void		Servers::run(void){
 			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
 			{
 				serv->handle_sockets(fset, wset, _fd_set, write_set);
-				this->selectServer();
 				if (serv->add_socket(fset, _fd_set, _max_fd) == 0)
 					break;
 			}

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/13 14:55:45 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/14 15:30:26 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "./utils/utils.hpp"
 
 
-#define BUFFER_SIZE	100
+#define BUFFER_SIZE	1024
 
 class Config
 {

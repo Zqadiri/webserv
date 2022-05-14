@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 14:57:52 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/14 15:25:01 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,9 @@ const std::string							&request::getHost() const { return _host; }
 const int									&request::getPort() const { return _port; }
 const std::map<std::string, std::string>	&request::getHeaders() const { return  _headers;}
 int											request::getRetCode() const { return _retCode; }
-
+std::string									&request::getConnection(){
+	return this->_headers["Connection"];
+}
 void				request::setCode(int code){
 	this->_retCode = code;
 }
