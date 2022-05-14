@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 15:25:48 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/14 16:06:31 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,18 +74,12 @@ void		Servers::setup(void){
 void		Servers::run(void){
 	
 	std::cout << "run()\n";
-	// struct timeval		tv;
 	fd_set write_set;
 	FD_ZERO(&write_set);
 
 	while (1)
 	{
-		// tv.tv_sec = 1;
-		// tv.tv_usec = 0;
-		// int selected = 0;
 		std::cout << "select()\n";
-		// while (selected == 0)
-		// {
 		fd_set fset = _fd_set;
 		fd_set wset = write_set;
 
@@ -95,14 +89,13 @@ void		Servers::run(void){
 			std::cout << "select error" << std::endl;
 			return ;
 		}
-		// }
 		if (selected > 0) 
 		{
 			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
 			{
-				serv->handle_sockets(fset, wset, _fd_set, write_set);
-				if (serv->add_socket(fset, _fd_set, _max_fd) == 0)
-					break;
+				if (!serv->is_sockets_empty())
+					serv->handle_sockets(fset, wset, _fd_set, write_set);
+				serv->add_socket(fset, _fd_set, _max_fd);
 			}
 		}
 		else
