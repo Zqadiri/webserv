@@ -6,11 +6,12 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/13 20:33:42 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/14 12:46:57 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "config.hpp"
+#include <memory>
 
 typedef unsigned int (serverConfig::*Ptr)(serverConfig&, configFile, unsigned int&);
 
