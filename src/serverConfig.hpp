@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/13 20:04:40 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/13 20:31:24 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ struct _location
 	int						_limitBodySize;
 	bool					_alias;
 	std::string				_pathCGI;
+	bool					_autoindex;
 	std::vector<_location>	_nestedLocations;
 };
 

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/13 20:12:38 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/13 20:37:06 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ const char* locationKeys[] = {
 	"allow_methods", 
 	"client_body_buffer_size", 
 	"index",
-	"cgi_pass", 
+	"cgi_pass",
+	"autoindex"
 };
 
 bool notAValue(std::string value){
@@ -43,7 +44,7 @@ bool notAValue(std::string value){
 }
 
 bool notAValueL(std::string value){
-	for (size_t i = 0; i < 6; i++){
+	for (size_t i = 0; i < 7; i++){
 		if (!value.compare(locationKeys[i]))
 			return true;
 	}
@@ -127,6 +128,14 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 			index++;
 			l._pathCGI = con[index++];
 		}
+		else if (!con[index].compare("autoindex")){
+			index++;
+			std::cout << YELLOW << con[index] << RESET << std::endl;
+			if (con[index].compare("on") && con[index].compare("off"))
+				throw "Autoindex";
+			else if (!con[index].compare("on"))
+				_autoindex = 1;
+		}
 		else
 			index++;
 		if (!con[index].compare("location")){
@@ -140,7 +149,6 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
  
 unsigned int	serverConfig::autoIndex(serverConfig &serv, configFile con, unsigned int& index)
 {
-	puts("autoindex");
 	index++;
 	if (con[index].compare("on") && con[index].compare("off"))
 		throw "Autoindex";
