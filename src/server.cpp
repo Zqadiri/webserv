@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/15 14:33:14 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/15 16:44:05 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,11 +214,28 @@ int server::add_socket(fd_set &cp_fset,fd_set &fset, int &max_fd)
 	return (1);
 }
 
+
+
 bool server::is_sockets_empty(void) const
 {
 	return (_sockets.empty());
 }
-
+void 	server::check_timeout(fd_set& fdset, const std::time_t& current_time)
+{
+	std::list<std::pair<int, request> >::iterator socket = _sockets.begin();
+	while (socket != _sockets.end())
+	{
+		if (current_time - socket->second.getTime() > TIMEOUT)
+		{
+			std::cout << "timeout" << std::endl;
+			FD_CLR(socket->first, &fdset);
+			close(socket->first);
+			socket = _sockets.erase(socket);
+		}
+		else
+			++socket;
+	}
+}
 std::list<std::pair<int, request> >		server::getRequest(void){
 	return this->_sockets;
 }

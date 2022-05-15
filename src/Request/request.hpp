@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/15 18:18:28 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/15 18:25:34 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ class request
 		std::string									&getConnection() ;
 		const int									&getPort() const;
 		const std::map<std::string, std::string>	&getHeaders() const;
+		const std::time_t  							&getTime() const;
 		int											getRetCode() const;
 		int											getBodyLength() const;
 
@@ -80,9 +81,9 @@ class request
 		int										_port;
 		std::map<std::string, std::string>		_headers;
 		int										_retCode; 
-		std::string								_tmp;
-		size_t									_bodyLength;
-
+		std::string								_tmp; 
+		int										_bodyLength; 
+		std::time_t 							_current_time;
 		//! print function 
 		void	print_req(request &);
 };

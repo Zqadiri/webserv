@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/11 18:31:09 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/15 16:45:01 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,9 @@
 # define OR "\033[34m"
 # define YELLOW "\033[33m"
 # define RESET "\033[0m"
+
+#define TIMEOUT 20
+
 
 typedef	std::vector<std::string>	configFile;
 
