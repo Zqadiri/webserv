@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 13:30:31 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/15 17:27:02 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/15 22:12:18 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ class CGI
 
 	public:
 		CGI(const request &request, const serverConfig &server);
+		std::string		executeCgi(const std::string&,  const serverConfig &, int);
+
 };
 
 #endif
