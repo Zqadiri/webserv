@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 15:25:08 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/15 18:18:28 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,16 @@ class request
 		const std::string							&getRequestURI() const;
 		const std::string							&getVersion() const;
 		const std::string							&getHost() const;
-		std::string							&getConnection() ;
+		std::string									&getConnection() ;
 		const int									&getPort() const;
 		const std::map<std::string, std::string>	&getHeaders() const;
 		int											getRetCode() const;
+		int											getBodyLength() const;
 
-		void									setCode(int);
+		void										setCode(int);
 
 		void									getQuery();
+		void									parseAuthorization(request&);
 		void									Host(const std::string &, request&);
 		int										getFirstLine(const std::string &, request&);
 		int										ParseHeaders(std::string,  request&);
@@ -78,7 +80,8 @@ class request
 		int										_port;
 		std::map<std::string, std::string>		_headers;
 		int										_retCode; 
-		std::string								_tmp; 
+		std::string								_tmp;
+		size_t									_bodyLength;
 
 		//! print function 
 		void	print_req(request &);

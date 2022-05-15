@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/13 20:31:24 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/15 18:10:23 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ class serverConfig
 		const std::list<std::string> 	&getErrorsPages(void) const;
 		bool							getAutoIndex(void) const;
 		const std::list<std::string> 	&getAllowMethods(void) const;
+
 		unsigned int 	serverName(serverConfig&, configFile, unsigned int&);
 		unsigned int	parseLocation(serverConfig&, configFile, unsigned int&);
 		unsigned int	listen(serverConfig &, configFile, unsigned int&);

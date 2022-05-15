@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 15:25:01 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/15 18:21:44 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,10 @@ std::vector<std::string>		request::init_methods()
 /*------ Constructors ------*/
 
 request::request() : _method(""), _requestURI(""), _version(""), _host(""){
+	
 	_retCode = 200;  // ? 200 OK -> Successful responses
 	_port = 80;
+	_bodyLength = 0;
 	_status = START_LINE;
 	this->_headers["Accept"] = ""; 
 	this->_headers["Accept-Charsets"] = "";
@@ -72,6 +74,7 @@ int											request::getRetCode() const { return _retCode; }
 std::string									&request::getConnection(){
 	return this->_headers["Connection"];
 }
+int											request::getBodyLength() const{ return	_bodyLength; }
 void				request::setCode(int code){
 	this->_retCode = code;
 }
@@ -186,6 +189,12 @@ void				request::getQuery(){
 	}
 }
 
+void				request::parseAuthorization(request& req){
+	std::cout << GREEN << _headers["Authorization"] << RESET << std::endl;
+	size_t end = _headers["Authorization"].find_first_of(' ');
+	_headers["Auth-Scheme"] = _headers["Authorization"].substr(0, end);
+}
+
 int					request::ParseHeaders(std::string buff,  request& req)
 {
 	std::string ret, key, value;
@@ -207,6 +216,8 @@ int					request::ParseHeaders(std::string buff,  request& req)
 		req._headers[key] = value;
 	}
 	req.getQuery();
+	if (_headers["Authorization"].compare(""))
+		parseAuthorization(req);
 	_status = PRE_BODY;
 	// print_req(req);
 	return 1;
@@ -222,7 +233,7 @@ int toHex(std::string str){
 }
 
 int					request::parseRquest(std::string buff,  request& req, int socket_fd){
-	std::fstream							_body;
+	std::fstream _body;
 	std::string delim("\r\n\r\n");
 	std::string filename = "/tmp/body";
 	size_t bodyCursor = buff.find(delim);
@@ -243,6 +254,7 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 			if(_body.is_open()){
 				size_t end = _tmp.find(delim);
 				_tmp.erase(0, end + 5);
+				_bodyLength += _tmp.length();
 				_body << _tmp.c_str();
 			}
 			else{
@@ -268,7 +280,7 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	return 1;
 }
 
-int request::parseChunkedRequest(std::string filename) // !1 not comp
+int request::parseChunkedRequest(std::string filename)
 {
 	size_t end;
 	std::fstream _body;
@@ -284,12 +296,13 @@ int request::parseChunkedRequest(std::string filename) // !1 not comp
 		}
 		else if (_chunkStatus == CHUNK)
 		{
-			puts("------------------------------------");
 			if (_chunkSize == 0)
 				return 1;
 			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
-			if(_body.is_open())
+			if(_body.is_open()){
+				_bodyLength += _tmp.length();
 				_body << _tmp.substr(0, end);
+			}
 			else
 				puts("error open");
 			_tmp.erase(0, end + 2);
