@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 15:25:08 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/15 16:33:07 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,9 @@ class request
 		std::string							&getConnection() ;
 		const int									&getPort() const;
 		const std::map<std::string, std::string>	&getHeaders() const;
+		const std::time_t  							&getTime() const;
 		int											getRetCode() const;
-
+		
 		void									setCode(int);
 
 		void									getQuery();
@@ -79,7 +80,7 @@ class request
 		std::map<std::string, std::string>		_headers;
 		int										_retCode; 
 		std::string								_tmp; 
-
+		std::time_t 							_current_time;
 		//! print function 
 		void	print_req(request &);
 };

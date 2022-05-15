@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/11 14:12:08 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/15 16:41:26 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ class server
 		server	&operator=(const server&);
 
 		int		get_fd(void) const;
+		
 		int 	rec(int&, request&);
 		int		sen(int&, request&);
 		void 	handle_sockets(fd_set&, fd_set&,fd_set&, fd_set&);
@@ -45,6 +46,7 @@ class server
 		int		acc(void);
 		bool 	is_sockets_empty(void) const;
 		void	print_rec(void);
+		void 	check_timeout(fd_set&, const std::time_t&);
 
 		//! mine
 		std::list<std::pair<int, request> >		getRequest(void);

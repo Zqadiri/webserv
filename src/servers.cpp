@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/15 14:32:51 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/15 16:46:27 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,14 +79,26 @@ void		Servers::run(void){
 	
 	while (1)
 	{
-		std::cout << "select()\n";
+		int selected = 0;
+		struct timeval	timeout;
 		fd_set fset;
 		fd_set wset;
-		FD_ZERO(&fset);
-		FD_ZERO(&wset);
-		FD_COPY(&_fd_set, &fset);
-		FD_COPY(&write_set, &wset);
-		int selected = select(_max_fd + 1, &fset, &wset, NULL, NULL);
+		while (selected == 0)
+		{
+			std::cout << "select()\n";
+			std::time_t current = std::time(NULL);
+			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
+			{
+				serv->check_timeout(_fd_set, current);
+			}
+			timeout.tv_sec  = 1;
+			timeout.tv_usec = 0;
+			FD_ZERO(&fset);
+			FD_ZERO(&wset);
+			FD_COPY(&_fd_set, &fset);
+			FD_COPY(&write_set, &wset);
+			selected = select(_max_fd + 1, &fset, &wset, NULL, &timeout);
+		}
 		if (selected == -1)
 		{
 			std::cout << "select error" << std::endl;

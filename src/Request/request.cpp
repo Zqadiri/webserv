@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 15:25:01 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/15 16:33:18 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ std::vector<std::string>		request::init_methods()
 
 /*------ Constructors ------*/
 
-request::request() : _method(""), _requestURI(""), _version(""), _host(""){
+request::request() : _method(""), _requestURI(""), _version(""), _host(""), _current_time(std::time(NULL)){
 	_retCode = 200;  // ? 200 OK -> Successful responses
 	_port = 80;
 	_status = START_LINE;
@@ -69,6 +69,7 @@ const std::string							&request::getHost() const { return _host; }
 const int									&request::getPort() const { return _port; }
 const std::map<std::string, std::string>	&request::getHeaders() const { return  _headers;}
 int											request::getRetCode() const { return _retCode; }
+const std::time_t							&request::getTime() const { return _current_time; }
 std::string									&request::getConnection(){
 	return this->_headers["Connection"];
 }
@@ -226,7 +227,8 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	std::string delim("\r\n\r\n");
 	std::string filename = "/tmp/body";
 	size_t bodyCursor = buff.find(delim);
-	
+
+	_current_time = std::time(NULL);
 	filename += std::to_string(socket_fd);
 	if (bodyCursor == std::string::npos && _status == START_LINE){
 		req._tmp += buff;
