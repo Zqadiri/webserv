@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 16:06:31 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/15 14:32:51 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,13 +76,16 @@ void		Servers::run(void){
 	std::cout << "run()\n";
 	fd_set write_set;
 	FD_ZERO(&write_set);
-
+	
 	while (1)
 	{
 		std::cout << "select()\n";
-		fd_set fset = _fd_set;
-		fd_set wset = write_set;
-
+		fd_set fset;
+		fd_set wset;
+		FD_ZERO(&fset);
+		FD_ZERO(&wset);
+		FD_COPY(&_fd_set, &fset);
+		FD_COPY(&write_set, &wset);
 		int selected = select(_max_fd + 1, &fset, &wset, NULL, NULL);
 		if (selected == -1)
 		{

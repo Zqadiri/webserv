@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/14 16:28:51 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/15 14:33:14 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ int server::setup(void)
 		std::cout << "socket() failed" << std::endl;
 		return (-1);
 	}
+	int one = 1;
+	setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
 	if (fcntl(_fd, F_SETFL, O_NONBLOCK) == -1)
 	{
 		std::cout << "fcntl() failed" << std::endl;
@@ -55,7 +57,7 @@ int server::setup(void)
 		std::cout << "bind() failed" << std::endl;
 		return (-1);
 	}
-	if (listen(_fd, 10) == -1)
+	if (listen(_fd, 1000) == -1)
 	{
 		std::cout << "listen() failed" << std::endl;
 		return (-1);
@@ -84,8 +86,8 @@ int server::sen(int &socket, request& req)
 	int ret;
 	std::string buf;
 	(void)req;
-	buf = "HTTP/1.1 200 OK\r\nContent-Length: 30\r\nContent-Location: /index.html\r\nContent-Type: text/html\r\nDate: Tue, 19 Apr 2022 19:58:38 GMT\r\nLast-Modified: Tue, 19 Apr 2022 19:58:38 GMT\r\nServer: Webserv/1.0.0 (Unix)\r\nTransfer-Encoding: identity\r\n\r\n";
-	buf +=  "<html><body><h1>Hello World</h1></body></html>";
+	buf = "HTTP/1.1 200 OK\r\nContent-Length: 0\r\nContent-Location: /index.html\r\nContent-Type: text/html\r\nDate: Tue, 19 Apr 2022 19:58:38 GMT\r\nLast-Modified: Tue, 19 Apr 2022 19:58:38 GMT\r\nServer: Webserv/1.0.0 (Unix)\r\nTransfer-Encoding: identity\r\n\r\n";
+	// buf +=  "<html><body><h1>Hello World</h1></body></html>";
 	ret = send(socket, buf.c_str(), buf.size(), 0);
 	if (ret == -1)
 		return (-1);
@@ -123,31 +125,25 @@ int server::rec(int &socket, request& req)
 
 void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_set& wset)
 {
-	// std::cout << "handle_sockets" << std::endl;
 	std::list<std::pair<int, request> >::iterator socket = _sockets.begin();
 	while (socket != _sockets.end())
 	{
 		if (FD_ISSET(socket->first, &cp_wset))
 		{
 			
-			std::cout << "trying send to " << socket->first << "\n";
 			int ret = sen(socket->first, socket->second);
 			if (ret == -1)
 			{
 				std::cout << "send() failed" << std::endl;
 				FD_CLR(socket->first, &wset);
 				FD_CLR(socket->first, &fset);
-				FD_CLR(socket->first, &cp_wset);
-				FD_CLR(socket->first, &cp_fset);
 				close(socket->first);
 				socket =_sockets.erase(socket);
 				// break ;
 			}
 			else if (ret == 0)
 			{
-				std::cout << "send() success" << std::endl;
 				FD_CLR(socket->first, &wset);
-				FD_CLR(socket->first, &cp_wset);
 				if (socket->second.getConnection().compare("keep-alive"))
 				{
 					close(socket->first);
@@ -167,8 +163,6 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 		else
 			++socket;
 	}
-	// sleep(1);
-	std::cout << "sed -> rec\n";
 	socket = _sockets.begin();
 	while (socket != _sockets.end())
 	{
@@ -178,7 +172,6 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 			if (ret == -1)
 			{
 				FD_CLR(socket->first, &fset);
-				FD_CLR(socket->first, &cp_fset);
 				close(socket->first);
 				socket =_sockets.erase(socket);
 				// break;
@@ -187,10 +180,8 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 			{
 				std::cout << "recv() success" << std::endl;
 				FD_CLR(socket->first, &fset);
-				FD_CLR(socket->first, &cp_fset);
 				FD_SET(socket->first, &wset);
 				++socket;
-				// break;
 			}
 			else
 				++socket;
@@ -204,7 +195,6 @@ int server::add_socket(fd_set &cp_fset,fd_set &fset, int &max_fd)
 {
 	if (FD_ISSET(_fd, &cp_fset))
 	{
-		std::cout << "trying to accept in server " << _fd << std::endl;
 		int sock = acc();
 		if (sock != -1)
 		{
