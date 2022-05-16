@@ -56,7 +56,7 @@ request::request() : _method(""), _requestURI(""), _version(""), _host(""){
 }
 
 request::~request(){
-}
+} 
 
 /*------ Accessors ------*/
 

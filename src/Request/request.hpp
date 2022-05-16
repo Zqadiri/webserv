@@ -46,7 +46,7 @@ class request
 		const std::string							&getRequestURI() const;
 		const std::string							&getVersion() const;
 		const std::string							&getHost() const;
-		std::string							&getConnection() ;
+		std::string									&getConnection() ;
 		const int									&getPort() const;
 		const std::map<std::string, std::string>	&getHeaders() const;
 		int											getRetCode() const;
