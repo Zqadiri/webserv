@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 13:30:31 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/16 11:57:54 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/16 13:05:37 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ class CGI
 		CGI	&operator=(CGI const &src);
 		CGI(const request &request, const serverConfig &server);
 		std::string		executeCgi(const std::string&,  const serverConfig &, int);
-
 };
 
 #endif

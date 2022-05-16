@@ -6,12 +6,13 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/16 11:59:31 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/16 14:26:19 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CGI.hpp"
 #define GCI_BUFFERSIZE 1024
+
 //! to_string c++11
 
 /*--------- Constructors & Destructor --------*/
@@ -117,10 +118,10 @@ std::string		CGI::executeCgi(const std::string& scriptName,  const serverConfig 
 	}
 	//system call that is used to change the location of the read/write pointer of a file descriptor
 	lseek(fdIn, 0, SEEK_SET);
-	
 	pid = fork();
 	if (pid == -1){
 		std::cerr << "Fork Error"<< std::endl;
+		//!
 		return ("");
 	}
 	else if (pid == 0)
@@ -129,6 +130,7 @@ std::string		CGI::executeCgi(const std::string& scriptName,  const serverConfig 
 		dup2(fdOut, STDOUT_FILENO);
 		execve(scriptName.c_str(), NULL, env);
 		std::cerr << "Execve Error"  << std::endl;
+		//!status code 500
 	}
 	else
 	{
@@ -147,6 +149,7 @@ std::string		CGI::executeCgi(const std::string& scriptName,  const serverConfig 
 		dup2(savedIn, STDIN_FILENO);
 		dup2(savedOut, STDOUT_FILENO);
 	}
+	//!delete
 	close(fdIn);
 	close(fdOut);
 	fclose(fileIn);

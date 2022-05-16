@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/16 11:54:27 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/16 15:13:15 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,7 +191,7 @@ void				request::getQuery(){
 
 void				request::parseAuthorization(request& req){
 	(void)req;
-	std::cout << GREEN << _headers["Authorization"] << RESET << std::endl;
+	// std::cout << GREEN << _headers["Authorization"] << RESET << std::endl;
 	size_t end = _headers["Authorization"].find_first_of(' ');
 	_headers["Auth-Scheme"] = _headers["Authorization"].substr(0, end);
 }
@@ -232,6 +232,11 @@ int toHex(std::string str){
 	ss >> hex;
 	return hex;
 }
+/*
+	case1: unchunked + no content-length
+	case2: unchunked + content-length
+	case3: chuncked
+*/
 
 int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	std::fstream _body;
@@ -251,27 +256,45 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	if (_status == HEADERS)
 		ParseHeaders(req._tmp, req);
 	if (_status == PRE_BODY){
-		if (_headers["Transfer-Encoding"].compare("chunked")){
+		if (_headers["Transfer-Encoding"].compare("chunked"))
+		{
+			size_t end = _tmp.find(delim);
+			_tmp.erase(0, end + 5);
 			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
-			if(_body.is_open()){
-				size_t end = _tmp.find(delim);
-				_tmp.erase(0, end + 5);
-				_bodyLength += _tmp.length();
-				_body << _tmp.c_str();
+			if (!_headers["Content-Length"].compare("")){
+				std::cout << GREEN << "case1" << RESET << std::endl;
+				if(_body.is_open()){
+					_bodyLength += _tmp.length();
+					_body << _tmp.c_str();
+				}
+				else{
+					_retCode = 500;
+					return -1;				
+				}
+				_status = COMPLETE;
 			}
-			else{
-				_retCode = 500;
-				return -1;				
+			else if (_headers["Content-Length"].compare("")){
+				std::cout << GREEN << "case2" << RESET << std::endl;
+				if(_body.is_open()){
+					_bodyLength += _tmp.length();
+					_body << _tmp.c_str();
+				}
+				else{
+					_retCode = 500;
+					return -1;				
+				}
+				if (_bodyLength >= stoi(_headers["Content-Length"]))
+					_status = COMPLETE;
 			}
-			_status = COMPLETE;
 		}
 		else if (!_headers["Transfer-Encoding"].compare("chunked") && _headers["Content-Length"].compare("")){
+			std::cout << GREEN << "case3" << RESET << std::endl;
 			req._tmp.clear();
 			req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length()));
 			buff.clear();
 			_status = BODY;
 			_chunkStatus = SIZE_LINE;
-		}
+		}						
 	}
 	if (_status == BODY){
 		this->_tmp += buff;
