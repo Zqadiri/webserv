@@ -6,13 +6,15 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/15 22:11:42 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/16 11:59:31 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CGI.hpp"
 #define GCI_BUFFERSIZE 1024
 //! to_string c++11
+
+/*--------- Constructors & Destructor --------*/
 
 CGI::CGI(const request &request, const serverConfig &server)
 {
@@ -42,10 +44,31 @@ CGI::CGI(const request &request, const serverConfig &server)
 	
 }
 
+CGI::CGI(CGI const &src) {
+	if (this != &src) {
+		this->_env = src._env;
+	}
+	return ;
+}
+
+CGI::~CGI(void) {
+	return ;
+}
+
+CGI	&CGI::operator=(CGI const &src) {
+	if (this != &src) {
+		this->_env = src._env;
+	}
+	return *this;
+}
+
+/*--------- Member functions --------*/
+
 // https://en.cppreference.com/w/cpp/io/c/tmpfile
 
 std::string		CGI::executeCgi(const std::string& scriptName,  const serverConfig &server, int socket_fd)
 {
+	(void)server;
 	std::string output;
 	pid_t		pid;
 	int			savedIn;

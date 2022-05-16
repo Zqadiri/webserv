@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/15 22:09:50 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/16 11:54:27 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,7 @@ void				request::getQuery(){
 }
 
 void				request::parseAuthorization(request& req){
+	(void)req;
 	std::cout << GREEN << _headers["Authorization"] << RESET << std::endl;
 	size_t end = _headers["Authorization"].find_first_of(' ');
 	_headers["Auth-Scheme"] = _headers["Authorization"].substr(0, end);
