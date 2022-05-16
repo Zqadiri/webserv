@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+         #
+#    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/05/15 14:34:02 by nwakour          ###   ########.fr        #
+#    Updated: 2022/05/16 11:53:10 by zqadiri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,7 @@ SRCS		=  	./src/config.cpp \
 				./src/serverConfig.cpp \
 				./src/servers.cpp \
 				./src/Request/request.cpp \
+				./src/CGI/CGI.cpp \
 				./src/utils/utils.cpp \
 				webserv.cpp
 
@@ -26,7 +27,7 @@ CC			= c++
 
 FLAGS		=  -std=c++98
 
-# WWW			= -Wall -Wextra -Werror -fsanitize=address -g
+WWW			= -Wall -Wextra -Werror -fsanitize=address
 
 all:		$(NAME)
 

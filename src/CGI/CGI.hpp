@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 13:30:31 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/15 14:30:32 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/16 13:05:37 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,19 @@
 
 #include "../../includes/webserv.hpp"
 #include "../Request/request.hpp"
+#include "../config.hpp"
 
 class CGI
 {
-
 	private:
-	char **_env;
-	
+		std::map<std::string, std::string>	_env;
+
 	public:
-	CGI(const request &request, const serverConfig &server);
-	
+		CGI(CGI const &);
+		~CGI(void);
+		CGI	&operator=(CGI const &src);
+		CGI(const request &request, const serverConfig &server);
+		std::string		executeCgi(const std::string&,  const serverConfig &, int);
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 15:25:01 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/16 15:13:15 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,10 @@ std::vector<std::string>		request::init_methods()
 
 /*------ Constructors ------*/
 
-request::request() : _method(""), _requestURI(""), _version(""), _host(""){
+request::request() : _method(""), _requestURI(""), _version(""), _host(""), _current_time(std::time(NULL)){
 	_retCode = 200;  // ? 200 OK -> Successful responses
 	_port = 80;
+	_bodyLength = 0;
 	_status = START_LINE;
 	this->_headers["Accept"] = ""; 
 	this->_headers["Accept-Charsets"] = "";
@@ -69,9 +70,11 @@ const std::string							&request::getHost() const { return _host; }
 const int									&request::getPort() const { return _port; }
 const std::map<std::string, std::string>	&request::getHeaders() const { return  _headers;}
 int											request::getRetCode() const { return _retCode; }
+const std::time_t							&request::getTime() const { return _current_time; }
 std::string									&request::getConnection(){
 	return this->_headers["Connection"];
 }
+int											request::getBodyLength() const{ return	_bodyLength; }
 void				request::setCode(int code){
 	this->_retCode = code;
 }
@@ -186,6 +189,13 @@ void				request::getQuery(){
 	}
 }
 
+void				request::parseAuthorization(request& req){
+	(void)req;
+	// std::cout << GREEN << _headers["Authorization"] << RESET << std::endl;
+	size_t end = _headers["Authorization"].find_first_of(' ');
+	_headers["Auth-Scheme"] = _headers["Authorization"].substr(0, end);
+}
+
 int					request::ParseHeaders(std::string buff,  request& req)
 {
 	std::string ret, key, value;
@@ -207,6 +217,8 @@ int					request::ParseHeaders(std::string buff,  request& req)
 		req._headers[key] = value;
 	}
 	req.getQuery();
+	if (_headers["Authorization"].compare(""))
+		parseAuthorization(req);
 	_status = PRE_BODY;
 	// print_req(req);
 	return 1;
@@ -220,13 +232,19 @@ int toHex(std::string str){
 	ss >> hex;
 	return hex;
 }
+/*
+	case1: unchunked + no content-length
+	case2: unchunked + content-length
+	case3: chuncked
+*/
 
 int					request::parseRquest(std::string buff,  request& req, int socket_fd){
-	std::fstream							_body;
+	std::fstream _body;
 	std::string delim("\r\n\r\n");
 	std::string filename = "/tmp/body";
 	size_t bodyCursor = buff.find(delim);
-	
+
+	_current_time = std::time(NULL);
 	filename += std::to_string(socket_fd);
 	if (bodyCursor == std::string::npos && _status == START_LINE){
 		req._tmp += buff;
@@ -238,26 +256,45 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	if (_status == HEADERS)
 		ParseHeaders(req._tmp, req);
 	if (_status == PRE_BODY){
-		if (_headers["Transfer-Encoding"].compare("chunked")){
+		if (_headers["Transfer-Encoding"].compare("chunked"))
+		{
+			size_t end = _tmp.find(delim);
+			_tmp.erase(0, end + 5);
 			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
-			if(_body.is_open()){
-				size_t end = _tmp.find(delim);
-				_tmp.erase(0, end + 5);
-				_body << _tmp.c_str();
+			if (!_headers["Content-Length"].compare("")){
+				std::cout << GREEN << "case1" << RESET << std::endl;
+				if(_body.is_open()){
+					_bodyLength += _tmp.length();
+					_body << _tmp.c_str();
+				}
+				else{
+					_retCode = 500;
+					return -1;				
+				}
+				_status = COMPLETE;
 			}
-			else{
-				_retCode = 500;
-				return -1;				
+			else if (_headers["Content-Length"].compare("")){
+				std::cout << GREEN << "case2" << RESET << std::endl;
+				if(_body.is_open()){
+					_bodyLength += _tmp.length();
+					_body << _tmp.c_str();
+				}
+				else{
+					_retCode = 500;
+					return -1;				
+				}
+				if (_bodyLength >= stoi(_headers["Content-Length"]))
+					_status = COMPLETE;
 			}
-			_status = COMPLETE;
 		}
 		else if (!_headers["Transfer-Encoding"].compare("chunked") && _headers["Content-Length"].compare("")){
+			std::cout << GREEN << "case3" << RESET << std::endl;
 			req._tmp.clear();
 			req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length()));
 			buff.clear();
 			_status = BODY;
 			_chunkStatus = SIZE_LINE;
-		}
+		}						
 	}
 	if (_status == BODY){
 		this->_tmp += buff;
@@ -268,7 +305,7 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	return 1;
 }
 
-int request::parseChunkedRequest(std::string filename) // !1 not comp
+int request::parseChunkedRequest(std::string filename)
 {
 	size_t end;
 	std::fstream _body;
@@ -284,12 +321,13 @@ int request::parseChunkedRequest(std::string filename) // !1 not comp
 		}
 		else if (_chunkStatus == CHUNK)
 		{
-			puts("------------------------------------");
 			if (_chunkSize == 0)
 				return 1;
 			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
-			if(_body.is_open())
+			if(_body.is_open()){
+				_bodyLength += _tmp.length();
 				_body << _tmp.substr(0, end);
+			}
 			else
 				puts("error open");
 			_tmp.erase(0, end + 2);

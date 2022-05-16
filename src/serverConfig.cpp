@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/13 20:37:06 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/16 11:53:52 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ unsigned int	serverConfig::autoIndex(serverConfig &serv, configFile con, unsigne
 	if (con[index].compare("on") && con[index].compare("off"))
 		throw "Autoindex";
 	else if (!con[index].compare("on"))
-		_autoindex = 1;
+		serv._autoindex = 1;
 	return index++;
 }
 
