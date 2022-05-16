@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/15 16:44:05 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/16 18:48:36 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int server::setup(void)
 		std::cout << "bind() failed" << std::endl;
 		return (-1);
 	}
-	if (listen(_fd, 1000) == -1)
+	if (listen(_fd, 20) == -1)
 	{
 		std::cout << "listen() failed" << std::endl;
 		return (-1);
@@ -83,11 +83,12 @@ int server::get_fd(void) const
 
 int server::sen(int &socket, request& req)
 {
+	std::cout << "trying send to " << socket << "\n";
 	int ret;
 	std::string buf;
 	(void)req;
-	buf = "HTTP/1.1 200 OK\r\nContent-Length: 0\r\nContent-Location: /index.html\r\nContent-Type: text/html\r\nDate: Tue, 19 Apr 2022 19:58:38 GMT\r\nLast-Modified: Tue, 19 Apr 2022 19:58:38 GMT\r\nServer: Webserv/1.0.0 (Unix)\r\nTransfer-Encoding: identity\r\n\r\n";
-	// buf +=  "<html><body><h1>Hello World</h1></body></html>";
+	buf = "HTTP/1.1 200 OK\r\nContent-Length: 46\r\nContent-Location: /index.html\r\nContent-Type: text/html\r\nDate: Tue, 19 Apr 2022 19:58:38 GMT\r\nLast-Modified: Tue, 19 Apr 2022 19:58:38 GMT\r\nServer: Webserv/1.0.0 (Unix)\r\nTransfer-Encoding: identity\r\n\r\n";
+	buf +=  "<html><body><h1>Hello World</h1></body></html>\r\n\r\n";
 	ret = send(socket, buf.c_str(), buf.size(), 0);
 	if (ret == -1)
 		return (-1);
@@ -205,7 +206,7 @@ int server::add_socket(fd_set &cp_fset,fd_set &fset, int &max_fd)
 			}
 			std::cout << sock << " accepted" << std::endl;
 			FD_SET(sock, &fset);
-			_sockets.push_back(std::make_pair(sock, request()));
+			_sockets.push_back(std::make_pair(sock, request(sock)));
 			if (sock > max_fd)
 				max_fd = sock;
 			return (0);
@@ -213,8 +214,6 @@ int server::add_socket(fd_set &cp_fset,fd_set &fset, int &max_fd)
 	}
 	return (1);
 }
-
-
 
 bool server::is_sockets_empty(void) const
 {

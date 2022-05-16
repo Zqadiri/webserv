@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/15 18:25:34 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/16 18:16:14 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class request
 	static std::vector<std::string>			init_methods();
 	
 	public:
-		request();
+		request(int);
 		~request();
 
 		enum ParseStatus {
@@ -72,7 +72,7 @@ class request
 		int										_chunkSize;
 		ParseStatus 							_status;
 		chunkStatus								_chunkStatus;
-		std::string								_method;
+		std::string								_method; //
 		std::string								_path;
 		std::string								_queryString;
 		std::string								_requestURI;
