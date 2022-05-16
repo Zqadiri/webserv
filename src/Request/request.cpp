@@ -63,7 +63,7 @@ request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _h
 }
 
 request::~request(){
-}
+} 
 
 /*------ Accessors ------*/
 
