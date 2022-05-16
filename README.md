@@ -6,6 +6,10 @@
 
 [C++ Tutorial: Sockets - Server & Client - 2020](http://bogotobogo.com/cplusplus/sockets_server_client.php)
 
+## HTTP Server
+
+[The HTTP Server Explained](https://medium.com/@gabriellamedas/the-http-server-explained-c41380307917)
+
 ## OSI Model
 
 [](https://www.cloudflare.com/fr-fr/learning/ddos/glossary/open-systems-interconnection-model-osi/)
@@ -36,6 +40,8 @@ A Request for Comments (RFC) is a formal document drafted by the Internet Engine
 
 ## ****Server and Location Block Selection Algorithms****
 
+[Nginx Server and Location Block Selection Algorithms: Overview](https://www.cloudsigma.com/nginx-server-and-location-block-selection-algorithms-overview/)
+
 [Understanding Nginx Server and Location Block Selection Algorithms | DigitalOcean](https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms)
 
 ## Set a Socket  to be non-blocking
@@ -55,3 +61,17 @@ A Request for Comments (RFC) is a formal document drafted by the Internet Engine
 ## Select :**How one thread listens to many sockets**
 
 [https://www.youtube.com/watch?v=Y6pFtgRdUts](https://www.youtube.com/watch?v=Y6pFtgRdUts)
+
+## Load Testing with siege
+
+[Load Testing Web Servers with Siege](https://www.linode.com/docs/guides/load-testing-with-siege/)
+
+## **CGI Environment Variables**
+
+[Chapter 3: CGI Environment Variables](http://www.cgi101.com/book/ch3/text.html)
+
+## **CGI Programming in C**
+
+[Developing CGIs with C and C++](https://cmd.inp.nsk.su/old/cmd2/manuals/unix/UNIX_Unleashed/ch20.htm)
+
+[Getting Started with CGI Programming in C](https://jkorpela.fi/forms/cgic.html)
