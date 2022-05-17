@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/16 22:17:29 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/17 14:52:45 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,11 +238,18 @@ int toHex(std::string str){
 	ss >> hex;
 	return hex;
 }
+
 /*
 	case1: unchunked + no content-length
 	case2: unchunked + content-length
 	case3: chuncked
 */
+
+int			request::InternalServerError(){
+	std::cerr << YELLOW << "InternalServerError" << RESET << std::endl;
+	_retCode = 500;
+	return -1;	
+}
 
 int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	std::fstream _body;
@@ -263,44 +270,20 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	if (_status == PRE_BODY){
 		req._tmp.clear();
 		req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length()));
-		if (_headers["Transfer-Encoding"].compare("chunked")){
-			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
-			if (!_headers["Content-Length"].compare("")){
-				std::cout << GREEN << "case1" << RESET << std::endl;
-				if(_body.is_open()){
-					_bodyLength += _tmp.length();
-					_body << _tmp.c_str();
-				}
-				else{
-					_retCode = 500;
-					return -1;				
-				}
-				_status = COMPLETE;
-			}
-			else if (_headers["Content-Length"].compare("")){
-				std::cout << GREEN << "case2" << RESET << std::endl;
-				if(_body.is_open()){
-					_bodyLength += _tmp.length();
-					_body << _tmp.c_str();
-				}
-				else{
-					_retCode = 500;
-					return -1;				
-				}
-				if (_bodyLength >= stoi(_headers["Content-Length"]))
-					_status = COMPLETE;
-			}
-		}
+		buff.clear();
+		if (_headers["Transfer-Encoding"].compare("chunked"))
+			_status = BODY;
 		else if (!_headers["Transfer-Encoding"].compare("chunked")){
 			std::cout << GREEN << "case3" << RESET << std::endl;
-			req._tmp.clear();
-			req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length()));
-			buff.clear();
-			_status = BODY;
+			_status = CHUNKS;
 			_chunkStatus = SIZE_LINE;
-		}						
+		}
 	}
 	if (_status == BODY){
+		this->_tmp += buff;
+		parseUnchunkedRequest(filename);
+	}
+	if (_status == CHUNKS){
 		this->_tmp += buff;
 		parseChunkedRequest(filename);
 	}
@@ -309,9 +292,25 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	return 1;
 }
 
+int request::parseUnchunkedRequest(std::string filename)
+{
+	std::fstream _body;
+
+	_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
+	if(_body.is_open()){
+		_bodyLength += _tmp.length();
+		_body << _tmp.c_str();
+	}
+	else
+		InternalServerError();
+	_tmp.clear();
+	if (_bodyLength >= stoi(_headers["Content-Length"]))
+		_status = COMPLETE;
+	return 0;
+}
+
 int request::parseChunkedRequest(std::string filename)
 {
-	// std::cout << GREEN << "----- parseChunkedRequest ----" << RESET << std::endl;
 	size_t end;
 	std::fstream _body;
 
@@ -333,11 +332,10 @@ int request::parseChunkedRequest(std::string filename)
 			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
 			if(_body.is_open()){
 				_bodyLength += _tmp.length();
-				std::cout << RED << _tmp.substr(0, end)  << "[]"<< RESET << std::endl;
 				_body << _tmp.substr(0, end);
 			}
 			else
-				puts("error open");
+				InternalServerError();
 			_tmp.erase(0, end + 2);
 			_chunkSize = 0;
 			_chunkStatus = SIZE_LINE;
@@ -346,8 +344,7 @@ int request::parseChunkedRequest(std::string filename)
 	return 0;
 }
 
-void				request::print_req(request& req)
-{
+void				request::print_req(request& req){
 	std::cout << "method :  ["  << req._method << "]" << std::endl;
 	std::cout << "path : [" << req._requestURI << "]" << std::endl;
 	std::cout << "version :  ["  << req._version << "]" << std::endl;

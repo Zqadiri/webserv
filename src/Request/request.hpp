@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/16 18:16:14 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/17 14:35:50 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ class request
 			HEADERS,
 			PRE_BODY,
 			BODY,
+			CHUNKS,
 			COMPLETE
 		};
 
@@ -53,6 +54,7 @@ class request
 		int											getRetCode() const;
 		int											getBodyLength() const;
 
+		int											InternalServerError();
 		void										setCode(int);
 
 		void									getQuery();
@@ -61,6 +63,7 @@ class request
 		int										getFirstLine(const std::string &, request&);
 		int										ParseHeaders(std::string,  request&);
 		int										parseChunkedRequest(std::string);
+		int 	parseUnchunkedRequest(std::string);
 		int										parseRquest(std::string,  request&, int);
 		std::string								getNextLine(const std::string &, size_t&);
 		std::string								getKey(const std::string&);
