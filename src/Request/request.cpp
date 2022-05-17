@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/17 15:18:19 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/17 15:58:26 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,6 +252,7 @@ int			request::InternalServerError(){
 }
 
 int					request::parseRquest(std::string buff,  request& req, int socket_fd){
+	std::cout << GREEN << "-------- " << RESET << std::endl;
 	std::fstream _body;
 	std::string delim("\r\n\r\n");
 	std::string filename = "/tmp/body";
