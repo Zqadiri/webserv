@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/17 14:52:45 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/17 15:18:19 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -304,7 +304,7 @@ int request::parseUnchunkedRequest(std::string filename)
 	else
 		InternalServerError();
 	_tmp.clear();
-	if (_bodyLength >= stoi(_headers["Content-Length"]))
+	if (_headers["Content-Length"].compare("") && _bodyLength >= stoi(_headers["Content-Length"]))
 		_status = COMPLETE;
 	return 0;
 }
