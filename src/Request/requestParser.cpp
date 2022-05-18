@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/17 16:40:24 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/18 18:51:47 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ int					request::ParseHeaders(std::string buff,  request& req)
 	if (_headers["Authorization"].compare(""))
 		parseAuthorization(req);
 	_status = PRE_BODY;
+	if (!_headers["Content-Length"].compare(""))
+		throw "Content Length not found";
 	// print_req(req);
 	return 1;
 }
@@ -97,7 +99,6 @@ int			request::InternalServerError(){
 }
 
 int					request::parseRquest(std::string buff,  request& req, int socket_fd){
-	std::cout << GREEN << "-------- " << RESET << std::endl;
 	std::fstream _body;
 	std::string delim("\r\n\r\n");
 	std::string filename = "/tmp/body";
@@ -118,18 +119,16 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 		req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length()));
 		buff.clear();
 		if (_headers["Transfer-Encoding"].compare("chunked")){
-			std::cout << GREEN << "UNCHUNKED" << RESET << std::endl;	
 			_status = BODY;
 		}
 		else if (!_headers["Transfer-Encoding"].compare("chunked")){
-			std::cout << GREEN << "CHUNKED" << RESET << std::endl;
 			_status = CHUNKS;
 			_chunkStatus = SIZE_LINE;
 		}
 	}
 	if (_status == BODY){
 		this->_tmp += buff;
-		parseUnchunkedRequest(filename);
+		parseUnchunkedRequest(filename, buff);
 	}
 	if (_status == CHUNKS){
 		this->_tmp += buff;
@@ -140,7 +139,7 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	return 1;
 }
 
-int request::parseUnchunkedRequest(std::string filename)
+int request::parseUnchunkedRequest(std::string filename, std::string buff)
 {
 	std::fstream _body;
 
