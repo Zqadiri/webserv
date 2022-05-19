@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/15 16:41:26 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/19 18:47:07 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,11 @@ class server
 		int						_fd;
 		std::list<std::pair<int, request> >	_sockets;
 		std::vector<request*>	_requests;
+		serverConfig* _config;
 
 	public:
 		server(void);
-		server(t_listen&);
+		server(t_listen&, serverConfig*);
 		~server();
 		server(const server&);
 		server	&operator=(const server&);

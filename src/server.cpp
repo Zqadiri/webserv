@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/19 11:32:49 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/19 18:46:39 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ server &server::operator=(const server &obj){
 }
 
 
-server::server(t_listen &l) : _fd(-1){
+server::server(t_listen &l, serverConfig* conf) : _fd(-1), _config(conf){
 	bzero((char *)&_addr, sizeof(_addr));
 	_addr.sin_family = AF_INET;
 	_addr.sin_addr.s_addr = htonl(l.host);
@@ -83,6 +83,7 @@ int server::get_fd(void) const
 
 int server::sen(int &socket, request& req)
 {
+	//! _config
 	std::cout << "trying send to " << socket << "\n";
 	int ret;
 	std::string buf;

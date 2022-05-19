@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/15 16:46:27 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/19 18:54:11 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,11 @@ void		Servers::conf(char **argv){
 
 void		Servers::setup(void){
 	std::vector<t_listen>	listen = config.getAllListenDir();
+	std::vector<serverConfig*> servers = config.getServers();
 	_max_fd = 0;
 	FD_ZERO(&_fd_set);
-	for(std::vector<t_listen>::iterator it = listen.begin(); it != listen.end(); ++it){
-		server sev(*it);
+	for(int i = 0; i < listen.size(); ++i){
+		server sev(listen[i], servers[i]);
 		if (sev.setup() != -1)
 		{
 			int fd = sev.get_fd();
@@ -64,10 +65,10 @@ void		Servers::setup(void){
 			if (fd > _max_fd)
 				_max_fd = fd;
 			_servers.push_back(sev);
-			std::cout << "Server: "<< fd << " " << it->port << " Setup Done" << std::endl;
+			std::cout << "Server: "<< fd << " " << listen[i].port << " Setup Done" << std::endl;
 		}
 		else
-			std::cout << "Server: "<< it->port << " Setup Failed" << std::endl;
+			std::cout << "Server: "<< listen[i].port << " Setup Failed" << std::endl;
 	}
 }
 
