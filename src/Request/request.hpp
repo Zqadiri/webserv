@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/17 17:14:15 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/19 14:28:49 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ class request
 		int										getFirstLine(const std::string &, request&);
 		int										ParseHeaders(std::string,  request&);
 		int										parseChunkedRequest(std::string);
-		int 	parseUnchunkedRequest(std::string, std::string);
+		int										parseUnchunkedRequest(std::string, std::string);
 		int										parseRquest(std::string,  request&, int);
 		std::string								getNextLine(const std::string &, size_t&);
 		std::string								getKey(const std::string&);
@@ -75,7 +75,7 @@ class request
 		int										_chunkSize;
 		ParseStatus 							_status;
 		chunkStatus								_chunkStatus;
-		std::string								_method; //
+		std::string								_method;
 		std::string								_path;
 		std::string								_queryString;
 		std::string								_requestURI;

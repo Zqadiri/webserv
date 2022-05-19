@@ -6,7 +6,7 @@
 #    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/05/17 16:12:10 by zqadiri          ###   ########.fr        #
+#    Updated: 2022/05/19 15:02:12 by zqadiri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,7 @@ SRCS		=  	./src/config.cpp \
 				./src/serverConfig.cpp \
 				./src/servers.cpp \
 				./src/Request/request.cpp \
+				./src/Response/Response.cpp \
 				./src/Request/requestParser.cpp \
 				./src/CGI/CGI.cpp \
 				./src/utils/utils.cpp \

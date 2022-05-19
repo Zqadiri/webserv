@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/18 18:51:47 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/19 11:31:17 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,9 @@ int					request::ParseHeaders(std::string buff,  request& req)
 	req.getQuery();
 	if (_headers["Authorization"].compare(""))
 		parseAuthorization(req);
-	_status = PRE_BODY;
 	if (!_headers["Content-Length"].compare(""))
-		throw "Content Length not found";
+		return -1;
+	_status = PRE_BODY;
 	// print_req(req);
 	return 1;
 }
@@ -113,7 +113,10 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 		_status = HEADERS;
 	}
 	if (_status == HEADERS)
-		ParseHeaders(req._tmp, req);
+	{
+		if (ParseHeaders(req._tmp, req) < 0) 
+			return -1;
+	}
 	if (_status == PRE_BODY){
 		req._tmp.clear();
 		req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length()));
