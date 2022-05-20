@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 17:22:35 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/20 18:04:17 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/20 18:13:39 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ class ResponseHeaders
 		ResponseHeaders &operator=(const ResponseHeaders &);
 
 
-		void                    setContentLentgh(const std::string&);
+		void                    setContentLentgh(size_t);
 		void                    setContentLanguage(const std::string&);
 		void                    setContentLocation(const std::string&);
 		void                    setContentType(const std::string&);
