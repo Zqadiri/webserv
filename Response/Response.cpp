@@ -17,7 +17,7 @@ Response::Response(Response &cp)
     this->_status_code = cp._status_code;
 }
 
-void    Response::Status_code_fill(request &req)
+std::string    Response::Request_status_checked(request &req, serverConfig* servconf)
 {
     this->_status_code = req.getRetCode();
     if(this->_status_code != 200)
@@ -25,34 +25,44 @@ void    Response::Status_code_fill(request &req)
         // 400 505 500 checked in request
         if(this->_status_code == 400)
         {
-
+            _pages_to_string = ConvertHtml("../response_errors_pages/400.html");
+            return(_pages_to_string);
         }
         else if(this-> _status_code == 505)
         {
-
+            _pages_to_string = ConvertHtml("../response_errors_pages/505.html");
+            return(_pages_to_string);
         }
         else if(this->_status_code == 500)
         {
-
+            _pages_to_string = ConvertHtml("../response_errors_pages/500.html");
+            return(_pages_to_string);
         }
-        // 403 404 405 502 left
-
+        else if(servconf.get)
+        
     }
     // if i checked everything and the status code left is 200
     // else
     //     this->_status_code = 200;
 }
 
-std::string Response::ReadHtml(std::string path)
+std::string Response::ConvertHtml(std::string path)
 {
-    std::ofstream   myfile;
+    std::fstream    myfile;
+    std::string     fill;
     std::string     ret;
 
     myfile.open(path);
+    while(myfile)
+    {
+        std::getline(myfile, fill);
+        ret += fill;
+        ret += "\n";
+    }
     myfile.close();
+    return (ret);
 }
 
 Response::~Response()
 {
-
 }

@@ -89,7 +89,7 @@ int server::sen(int &socket, request& req)
 	std::cout << "trying send to " << socket << "\n";
 	int ret;
 	std::string buf;
-	buf = response.Return_string(req);
+	buf = response.Return_string(req, this->_config);
 	// (void)req;
 	// buf = "HTTP/1.1 200 OK\r\nContent-Length: 46\r\nContent-Location: /index.html\r\nContent-Type: text/html\r\nDate: Tue, 19 Apr 2022 19:58:38 GMT\r\nLast-Modified: Tue, 19 Apr 2022 19:58:38 GMT\r\nServer: Webserv/1.0.0 (Unix)\r\nTransfer-Encoding: identity\r\n\r\n";
 	// buf +=  "<html><body><h1>Hello World</h1></body></html>\r\n\r\n";
