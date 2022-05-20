@@ -24,22 +24,13 @@ std::string    Response::Request_status_checked(request &req, serverConfig* serv
     {
         // 400 505 500 checked in request
         if(this->_status_code == 400)
-        {
-            _pages_to_string = ConvertHtml("../response_errors_pages/400.html");
-            return(_pages_to_string);
-        }
+            _pages_to_string = ConvertHtml("./response_errors_pages/400.html");
         else if(this-> _status_code == 505)
-        {
-            _pages_to_string = ConvertHtml("../response_errors_pages/505.html");
-            return(_pages_to_string);
-        }
+            _pages_to_string = ConvertHtml("./response_errors_pages/505.html");
         else if(this->_status_code == 500)
-        {
-            _pages_to_string = ConvertHtml("../response_errors_pages/500.html");
-            return(_pages_to_string);
-        }
+            _pages_to_string = ConvertHtml("./response_errors_pages/500.html");
         else if(servconf.get)
-        
+        return _pages_to_string;
     }
     // if i checked everything and the status code left is 200
     // else
