@@ -85,7 +85,7 @@ class request
 		std::map<std::string, std::string>		_headers;
 		int										_retCode; 
 		std::string								_tmp; 
-		int										_bodyLength; 
+		int										_bodyLength;
 		std::time_t 							_current_time;
 		//! print function 
 		void	print_req(request &);
