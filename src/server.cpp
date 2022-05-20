@@ -6,12 +6,13 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/20 11:44:56 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/20 13:24:21 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 #include "../includes/webserv.hpp"
+#include "../Response/Response.hpp"
 
 server::server(){
 }
@@ -83,12 +84,12 @@ int server::get_fd(void) const
 
 int server::sen(int &socket, request& req)
 {
+	//! _config
+	Response response;
 	std::cout << "trying send to " << socket << "\n";
 	int ret;
 	std::string buf;
-	(void)req;
-	buf = "HTTP/1.1 200 OK\r\nContent-Length: 46\r\nContent-Location: /index.html\r\nContent-Type: text/html\r\nDate: Tue, 19 Apr 2022 19:58:38 GMT\r\nLast-Modified: Tue, 19 Apr 2022 19:58:38 GMT\r\nServer: Webserv/1.0.0 (Unix)\r\nTransfer-Encoding: identity\r\n\r\n";
-	buf +=  "<html><body><h1>Hello World</h1></body></html>\r\n\r\n";
+	buf = response.Return_string(req);
 	ret = send(socket, buf.c_str(), buf.size(), 0);
 	if (ret == -1)
 		return (-1);
