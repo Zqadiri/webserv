@@ -19,6 +19,8 @@ class Response
         void        Methods_exec(request &request);
         std::string Return_string(request &request);
         std::string ConvertHtml(std::string path);
+        std::string Content_type();
+        std::string File_lenght();
         void        GET();
         void        POST();
         void        DELETE();
