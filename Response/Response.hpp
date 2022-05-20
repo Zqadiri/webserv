@@ -15,14 +15,15 @@ class Response
         ~Response();
 
         //Response start
-        void        Status_code_fill(request &request);
+        std::string Request_status_checked(request &request, serverConfig*);
         void        Start_exec();
-        std::string Return_string(request &request);
-        std::string ReadHtml(std::string path);
+        std::string Return_string(request &request, serverConfig*);
+        std::string ConvertHtml(std::string path);
 
     private:
         std::string _response_string;
         int         _status_code;
+        std::string _pages_to_string;
         // request     request();
 }; 
 

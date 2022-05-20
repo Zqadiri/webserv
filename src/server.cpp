@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/20 16:03:22 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/20 16:16:08 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int server::sen(int &socket, request& req)
 	std::cout << "trying send to " << socket << "\n";
 	int ret;
 	std::string buf;
-	// buf = response.Return_string(req);
+	buf = response.Return_string(req, this->_config);
 	ret = send(socket, buf.c_str(), buf.size(), 0);
 	if (ret == -1)
 		return (-1);
