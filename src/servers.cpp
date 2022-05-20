@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/19 18:54:11 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/20 12:09:38 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void		Servers::setup(void){
 	std::vector<serverConfig*> servers = config.getServers();
 	_max_fd = 0;
 	FD_ZERO(&_fd_set);
-	for(int i = 0; i < listen.size(); ++i){
+	for(size_t i = 0; i < listen.size(); ++i){
 		server sev(listen[i], servers[i]);
 		if (sev.setup() != -1)
 		{
