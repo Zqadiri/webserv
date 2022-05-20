@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/20 12:10:24 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/20 15:43:07 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,10 @@ int					request::ParseHeaders(std::string buff,  request& req)
 	if (_headers["Authorization"].compare(""))
 		parseAuthorization(req);
 	if (!_headers["Content-Length"].compare(""))
+	{
+		this->_retCode = 411;
 		return -1;
+	}
 	_status = PRE_BODY;
 	// print_req(req);
 	return 1;

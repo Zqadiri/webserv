@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/16 11:53:52 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/20 16:15:01 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ const char* keys[] = {
 	"allow_methods",
 	"index", 
 	"error_pages",
-	"autoindex"
+	"autoindex",
+	"client_body_buffer_size"
 };
 
 const char* locationKeys[] = {
@@ -36,7 +37,7 @@ const char* locationKeys[] = {
 };
 
 bool notAValue(std::string value){
-	for (size_t i = 0; i < 8; i++){
+	for (size_t i = 0; i < 9; i++){
 		if (!value.compare(keys[i]))
 			return true;
 	}
@@ -57,6 +58,7 @@ serverConfig::serverConfig() : _root(""), _index(""), _hostPort(t_listen()){
 	_hostPort.host = 0;
 	_autoindex = 0;
 	_hostPort.port = -1;
+	_limitBodySize = -1;
 }
 
 serverConfig::~serverConfig(){
@@ -84,6 +86,7 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 const std::list<std::string>	&serverConfig::getAllowMethods(void) const{ return this->_allow_methods;}
 const std::list<std::string>	&serverConfig::getErrorsPages(void) const{ return this->_error_pages;}
 const t_listen				 	&serverConfig::gethostPort(void) const{ return this->_hostPort;}
+int								serverConfig::getlimitBodySize(void) const {return this->_limitBodySize; }
 const std::list<std::string>	&serverConfig::getServerName(void) const { return this->_server_name;}
 const std::vector<_location>	&serverConfig::getLocations(void) const{ return this->_locations;}
 bool							serverConfig::getAutoIndex(void) const { return this->_autoindex; }
@@ -130,7 +133,6 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 		}
 		else if (!con[index].compare("autoindex")){
 			index++;
-			std::cout << YELLOW << con[index] << RESET << std::endl;
 			if (con[index].compare("on") && con[index].compare("off"))
 				throw "Autoindex";
 			else if (!con[index].compare("on"))
@@ -230,6 +232,19 @@ unsigned int	serverConfig::root(serverConfig &serv, configFile con, unsigned int
 unsigned int	serverConfig::index(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
 	serv._index = con[index];
+	return index;
+}
+
+unsigned int	serverConfig::limitBodySize(serverConfig &serv, configFile con, unsigned int &index){
+	index++;
+	// puts("-------------<<<>>>>-------------");
+	// std::cout << YELLOW << con[index] << RESET << std::endl;
+	try {
+		serv._limitBodySize = stoi(con[index]);
+	}
+	catch (std::exception &r){
+		std::cout << "Bad Limit" << std::endl;
+	}
 	return index;
 }
 

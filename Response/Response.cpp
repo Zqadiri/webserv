@@ -43,14 +43,14 @@ void    Response::Status_code_fill(request &req)
     //     this->_status_code = 200;
 }
 
-std::string Response::ReadHtml(std::string path)
-{
-    std::ofstream   myfile;
-    std::string     ret;
+// std::string Response::ReadHtml(std::string path)
+// {
+//     std::ofstream   myfile;
+//     std::string     ret;
 
-    myfile.open(path);
-    myfile.close();
-}
+//     myfile.open(path);
+//     myfile.close();
+// }
 
 Response::~Response()
 {

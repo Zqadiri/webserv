@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 13:45:58 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/20 16:14:04 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,20 +207,21 @@ void				Config::checkForDup(void){
 size_t		Config::parseServer(configFile con, unsigned int &index){
 	serverConfig *server = new serverConfig();
 	bool isLocation = 0;
-	Ptr values[8] = {&serverConfig::serverName, &serverConfig::root,
+	Ptr values[9] = {&serverConfig::serverName, &serverConfig::root,
 	&serverConfig::listen, &serverConfig::parseLocation, &serverConfig::allowMethods,
-	&serverConfig::index, &serverConfig::errorPages, &serverConfig::autoIndex};
+	&serverConfig::index, &serverConfig::errorPages, &serverConfig::autoIndex, &serverConfig::limitBodySize};
 	while (true)
 	{
 		index++;
-		for (size_t i = 0; i < 8; i++)
+		for (size_t i = 0; i < 9; i++)
 		{
 			if (i == 3)
 				isLocation = 1;
 			if (index >= con.size())
-				break; 
+				break;
 			if (con[index] == keys[i])
 			{
+				// std::cout << GREEN << con[index] << RESET << std::endl;
 				index = (server->*values[i])(*server, con, index);
 			}
 		}
