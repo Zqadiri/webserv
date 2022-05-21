@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 17:23:12 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 11:11:21 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 12:03:49 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void		ResponseHeaders::initValues(void){
 
 //! The length of the response body expressed in 8-bit bytes
 void			ResponseHeaders::setContentLength(size_t len){
-	this->_contentLength = std::to_string(len);
+	this->_contentLength = to_string(len);
 }
 
 //! The natural language or languages of the intended audience for the enclosed content
@@ -107,6 +107,11 @@ void			ResponseHeaders::setWWWAuthenticate(const std::string &str){
 	this->_WWWAuthenticate = str;
 }
 
+//! Valid methods for a specified resource. To be used for a 405 Method not allowed
+void			ResponseHeaders::setAllow(const std::string &str){
+	this->_Allow = str;
+}
+
 std::string		ResponseHeaders::writeHeader(void){
 	std::string	header = "";
 
@@ -132,5 +137,8 @@ std::string		ResponseHeaders::writeHeader(void){
 		header += "Transfer-Encoding: " + _transferEncoding + "\r\n";
 	if (_WWWAuthenticate != "")
 		header += "WWW-Authenticate: " + _WWWAuthenticate + "\r\n";
+	if (_Allow != "")
+		header += "Allow: " + _Allow + "\r\n";
 	return (header);
 }
+

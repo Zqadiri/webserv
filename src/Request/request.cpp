@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/17 16:16:08 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 12:04:06 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _h
 	
 	std::fstream body;
 	std::string filename = "/tmp/body";
-	filename += std::to_string(socket_fd);
+	filename += to_string(socket_fd);
 	_retCode = 200;  // ? 200 OK -> Successful responses
 	_port = 80;
 	_bodyLength = 0;

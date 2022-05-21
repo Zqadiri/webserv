@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/21 10:56:15 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 11:17:07 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,11 +84,10 @@ int server::get_fd(void) const
 
 int server::sen(int &socket, request& req)
 {
-	(void)req;
 	Response response;
 	std::cout << "trying send to " << socket << "\n";
 	int ret;
-	std::string buf;
+	std::string buf;//!chunked
 	buf = response.Return_string(req);
 	ret = send(socket, buf.c_str(), buf.size(), 0);
 	if (ret == -1)
@@ -115,7 +114,6 @@ int server::rec(int &socket, request& req)
 	}
 	buff[ret] = '\0';
 	std::string str(buff, ret);
-	// std::cout << GREEN << str << RESET << std::endl;
 	int ret_parse = req.parseRquest(str, req, socket);
 	std::cout << "ret :: " <<  ret_parse << std::endl;
 	if (ret_parse < -1){ //! return -1 if the content length header is absent

@@ -6,14 +6,13 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/19 16:02:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 12:03:55 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CGI.hpp"
-#define GCI_BUFFERSIZE 1024
 
-//! to_string c++11
+#define GCI_BUFFERSIZE 1024
 
 /*--------- Constructors & Destructor --------*/
 
@@ -27,7 +26,7 @@ CGI::CGI(const request &request, const serverConfig &server)
 		this->_env["SERVER_NAME"] = this->_env["REMOTE_ADDR"];
 	this->_env["SERVER_SOFTWARE"] = "Webserv"; //?
 	this->_env["SERVER_PROTOCOL"] = "HTTP/1.1";
-	this->_env["SERVER_PORT"] = std::to_string(server.gethostPort().port);
+	this->_env["SERVER_PORT"] = to_string(server.gethostPort().port);
 	this->_env["REQUEST_METHOD"] = request.getMethod();
 	this->_env["PATH_INFO"] = request.getPath();
 	this->_env["QUERY_STRING"] = request.getQuery();
@@ -36,9 +35,9 @@ CGI::CGI(const request &request, const serverConfig &server)
 
 	this->_env["CONTENT_TYPE"] = headers["Content-Type"];
 	this->_env["PATH_TRANSLATED"] = this->_env["PATH_INFO"];
-	this->_env["REMOTE_ADDR"] = std::to_string(server.gethostPort().host);
+	this->_env["REMOTE_ADDR"] = to_string(server.gethostPort().host);
 	this->_env["REQUEST_URI"] = request.getPath() + request.getQuery();
-	this->_env["CONTENT_LENGTH"] = std::to_string(request.getBodyLength());
+	this->_env["CONTENT_LENGTH"] = to_string(request.getBodyLength());
 }
 
 CGI::CGI(CGI const &src) {
@@ -63,7 +62,7 @@ CGI	&CGI::operator=(CGI const &src) {
 
 // https://en.cppreference.com/w/cpp/io/c/tmpfile
 
-std::string		CGI::executeCgi(const std::string& scriptName, int socket_fd)
+std::string		CGI::executeCgi(const std::string& scriptName, size_t socket_fd)
 {
 	std::string output;
 	pid_t		pid;
@@ -99,7 +98,7 @@ std::string		CGI::executeCgi(const std::string& scriptName, int socket_fd)
 	long	fdIn = fileno(fileIn);
 	long	fdOut = fileno(fileOut);
 
-	filename += std::to_string(socket_fd);
+	filename += to_string(socket_fd);
 	_body.open(filename, std::fstream::in);
 	if(!_body) {
 		std::cerr << "Error" << std::endl;

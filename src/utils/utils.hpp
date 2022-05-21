@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 14:50:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/13 14:53:01 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 12:03:01 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,6 @@
 #include "../../includes/webserv.hpp"
 
 std::string			removeSpace(std::string init);
-
+std::string         to_string(size_t n);
 
 #endif 

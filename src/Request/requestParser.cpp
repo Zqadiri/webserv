@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/20 15:43:07 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 12:04:10 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 	size_t bodyCursor = buff.find(delim);
 
 	_current_time = std::time(NULL);
-	filename += std::to_string(socket_fd);
+	filename += to_string(socket_fd);
 	if (bodyCursor == std::string::npos && _status == START_LINE)
 		req._tmp += buff;
 	else if (_status == START_LINE){

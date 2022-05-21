@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 13:30:31 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/19 15:34:45 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 12:00:55 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "../../includes/webserv.hpp"
 #include "../Request/request.hpp"
 #include "../config.hpp"
+#include "../utils/utils.hpp"
 
 class CGI
 {
@@ -27,7 +28,7 @@ class CGI
 		~CGI(void);
 		CGI	&operator=(CGI const &src);
 		CGI(const request &request, const serverConfig &server);
-		std::string		executeCgi(const std::string&, int);
+		std::string		executeCgi(const std::string&, size_t);
 };
 
 #endif
