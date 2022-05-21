@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 13:49:26 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 15:59:57 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ std::string			request::getNextLine(const std::string &buff, size_t &cursor)
 	return ret;
 }
 
-void				request::getQuery(){
+void				request::getQueryString(){
 	size_t		i =  this->_path.find_first_of('?');
 
 	if (i != std::string::npos){

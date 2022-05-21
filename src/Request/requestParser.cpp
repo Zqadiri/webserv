@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 12:04:10 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 15:59:49 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int					request::ParseHeaders(std::string buff,  request& req)
 		value = removeSpace(getValue(ret, key.size()));
 		req._headers[key] = value;
 	}
-	req.getQuery();
+	req.getQueryString();
 	if (_headers["Authorization"].compare(""))
 		parseAuthorization(req);
 	if (!_headers["Content-Length"].compare(""))
