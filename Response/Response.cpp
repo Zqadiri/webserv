@@ -63,7 +63,7 @@ std::fstream    Response::Methods_exec(request &req, int fd)
 std::string Response::Content_type(request &req)
 {
     std::string ret;
-    ret = req.getContentType();
+    ret = req.getContentFromMap("Content-Type");
     return ret;
 }
 
@@ -76,7 +76,8 @@ std::string Response::File_lenght()
 
 std::fstream    Response::GET(int fd, request &req)
 {
-    _file_change = "/tmp/response_file_" + fd;
+    _file_change = "/tmp/response_file_";
+    _file_change += to_string(fd);
     std::fstream    myfile(_file_change);
     std::string     content_type;
     std::string     length;
@@ -150,7 +151,8 @@ std::fstream Response::Return_string(request &req, serverConfig *servconf, int f
     std::fstream file_ret;
 
     Request_statuscode_checked(req, servconf);
-    file_ret = Methods_exec(req, fd);
+    // file_ret << Methods_exec(req, fd);
+    Methods_exec(req, fd);
     return file_ret;
 }
 

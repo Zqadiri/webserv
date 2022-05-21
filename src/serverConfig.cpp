@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/20 16:15:01 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 15:31:00 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ const char* keys[] = {
 	"index", 
 	"error_pages",
 	"autoindex",
-	"client_body_buffer_size"
+	"client_body_buffer_size",
+	"cgi_pass"
 };
 
 const char* locationKeys[] = {
@@ -37,7 +38,7 @@ const char* locationKeys[] = {
 };
 
 bool notAValue(std::string value){
-	for (size_t i = 0; i < 9; i++){
+	for (size_t i = 0; i < 10; i++){
 		if (!value.compare(keys[i]))
 			return true;
 	}
@@ -159,6 +160,13 @@ unsigned int	serverConfig::autoIndex(serverConfig &serv, configFile con, unsigne
 	return index++;
 }
 
+unsigned int	serverConfig::cgiPass(serverConfig &serv, configFile con, unsigned int& index)
+{
+	index++;
+	serv._cgi_pass = con[index];
+	return index++;
+}
+
 unsigned int	serverConfig::parseLocation(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
 	_location l;
@@ -237,8 +245,6 @@ unsigned int	serverConfig::index(serverConfig &serv, configFile con, unsigned in
 
 unsigned int	serverConfig::limitBodySize(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
-	// puts("-------------<<<>>>>-------------");
-	// std::cout << YELLOW << con[index] << RESET << std::endl;
 	try {
 		serv._limitBodySize = stoi(con[index]);
 	}
@@ -254,7 +260,6 @@ unsigned int	serverConfig::errorPages(serverConfig &serv, configFile con, unsign
 		serv._error_pages.push_back(con[index]);
 		index++;
 	}
-	std::cout << GREEN << con[index] << RESET << std::endl;
 	index--;
 	return index;
 }

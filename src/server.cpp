@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/21 11:17:07 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 15:33:52 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,20 +77,20 @@ int server::acc(void)
 	return socket;
 }
 
-int server::get_fd(void) const
-{
+int server::get_fd(void) const{
 	return (_fd);
 }
 
 int server::sen(int &socket, request& req)
 {
-	Response response;
+	(void)req;
+	std::string		buf;
+	// Response		response;
 	std::cout << "trying send to " << socket << "\n";
-	int ret;
-	std::fstream buf;//!chunked
-	buf = response.Return_string(req, _config, socket);
-	//
-	// ret = send(socket, buf.c_str(), buf.size(), 0);
+	int				ret;
+	
+	// response.Return_string(req, _config, socket);
+	ret = send(socket, buf.c_str(), buf.size(), 0);
 	if (ret == -1)
 		return (-1);
 	return (0);
@@ -145,7 +145,7 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 			else if (ret == 0)
 			{
 				FD_CLR(socket->first, &wset);
-				if (socket->second.getConnection().compare("keep-alive"))
+				if (socket->second.getContentFromMap("Connection").compare("keep-alive"))
 				{
 					close(socket->first);
 					socket =_sockets.erase(socket);
