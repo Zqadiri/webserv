@@ -44,7 +44,7 @@ std::string    Response::Request_statuscode_checked(request &req, serverConfig* 
     return _pages_to_string;
 }
 
-std::fstream    Response::Methods_exec(request &req, int fd)
+void    Response::Methods_exec(request &req, int fd, serverConfig *servconf)
 {
     std::string str;
 
@@ -52,7 +52,7 @@ std::fstream    Response::Methods_exec(request &req, int fd)
     if (this->_status_code == 200)
     {
         if(str == "GET")
-            return GET(fd, req);
+            return GET(fd, req, servconf);
         else if(str == "POST")
             return POST();
         else if(str == "DELETE")
@@ -69,60 +69,72 @@ std::string Response::Content_type(request &req)
 
 std::string Response::File_lenght()
 {
-    // we gonna calculate the length of our file (header + body lenght)
+    // we gonna calculate the length of our file (body lenght)
     std::string ret;
     return ret;
 }
 
-std::fstream    Response::GET(int fd, request &req)
+bool    isCGI()
 {
-    _file_change = "/tmp/response_file_" + fd;
-    std::fstream    myfile(_file_change);
-    std::string     content_type;
-    std::string     length;
-
-    // first line in header----------------
-    myfile << "HTTP/1.1 ";
-    if(this->_status_code == 200)
-        myfile << "200 OK\n";
-    else
-    {
-        // should i just add the status code with an error message or should i
-        // add for every error a specific status code??
-        if(this->_status_code == 400)
-            myfile << "400\n";
-        else if(this->_status_code == 505)
-            myfile << "505\n";
-        else if(this->_status_code == 500)
-            myfile << "500\n";
-        else if(this->_status_code == 405)
-            myfile << "405\n";
-        else if(this->_status_code == 413)
-            myfile << "413\n";
-    }
-
-    // Current Date
-
-    // second line in header------------------
-    myfile << "Content-Type: ";
-    content_type = Content_type(req);
-    myfile << content_type;
-    myfile << "\n";
-
-    //third line in header----------------------
-    myfile << "Length: ";
-    length = File_lenght();
-    myfile << length;
-    myfile.close();
-    return (myfile);
+    // check if the the file is a php one and config.conf hav a cgi_pass variable
+    return false;
 }
 
-std::fstream    Response::POST()
+void    Response::GET(int fd, request &req, serverConfig *servconf)
+{
+    CGI cgi_handler(req, *servconf);
+    if(!isCGI())
+    {
+        _file_change = "/tmp/response_file_";
+        _file_change += to_string(fd);
+        std::fstream    myfile(_file_change);
+        std::string     content_type;
+        std::string     length;
+
+        // first line in header----------------
+        myfile << "HTTP/1.1 ";
+        if(this->_status_code == 200)
+            myfile << "200 OK\n";
+        else
+        {
+            // should i just add the status code with an error message or should i
+            // add for every error a specific status code??
+            if(this->_status_code == 400)
+                myfile << "400\n";
+            else if(this->_status_code == 505)
+                myfile << "505\n";
+            else if(this->_status_code == 500)
+                myfile << "500\n";
+            else if(this->_status_code == 405)
+                myfile << "405\n";
+            else if(this->_status_code == 413)
+                myfile << "413\n";
+        }
+
+        // Current Date
+
+        // second line in header------------------
+        myfile << "Content-Type: ";
+        content_type = Content_type(req);
+        myfile << content_type;
+        myfile << "\n";
+
+        //third line in header----------------------
+        myfile << "Length: ";
+        length = File_lenght();
+        myfile << length;
+        myfile.close();
+    }
+    else
+        cgi_handler.executeCgi(req.getRequestURI(), fd);
+}
+
+void    Response::POST()
 {
     
 }
 
-std::fstream    Response::DELETE()
+void    Response::DELETE()
 {
     
 }
@@ -145,13 +157,11 @@ std::string Response::ConvertHtml(std::string path)
     return (ret);
 }
 
-std::fstream Response::Return_string(request &req, serverConfig *servconf, int fd)
+void    Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
-    std::fstream file_ret;
 
     Request_statuscode_checked(req, servconf);
-    file_ret = Methods_exec(req, fd);
-    return file_ret;
+    Methods_exec(req, fd, servconf);
 }
 
 Response::~Response()

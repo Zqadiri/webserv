@@ -3,6 +3,7 @@
 
 #include "../includes/webserv.hpp"
 #include "../src/Request/request.hpp"
+#include "../src/CGI/CGI.hpp"
 
 class Response
 {
@@ -16,20 +17,23 @@ class Response
 
         //Response start
         std::string     Request_statuscode_checked(request &request, serverConfig*);
-        std::fstream    Methods_exec(request &request, int fd);
-        std::fstream    Return_string(request &request, serverConfig*, int fd);
+        void            Methods_exec(request &request, int fd, serverConfig *);
+        void            Return_string(request &request, serverConfig*, int fd);
         std::string     ConvertHtml(std::string path);
         std::string     Content_type(request &req);
         std::string     File_lenght();
-        std::fstream    GET(int fd, request &req);
-        std::fstream    POST();
-        std::fstream    DELETE();
+        bool            isCGI();
+        void            GET(int fd, request &req, serverConfig*);
+        void            POST();
+        void            DELETE();
+        // std::fstream    get_file_stream(){return this->_file;};
 
     private:
-        std::string _response_string;
-        int         _status_code;
-        std::string _pages_to_string;
-        std::string _file_change;
+        // std::fstream    _file;
+        std::string     _response_string;
+        int             _status_code;
+        std::string     _pages_to_string;
+        std::string     _file_change;
         // request     request();
 };
 

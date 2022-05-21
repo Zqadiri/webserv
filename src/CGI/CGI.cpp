@@ -16,7 +16,7 @@
 
 /*--------- Constructors & Destructor --------*/
 
-CGI::CGI(const request &request, const serverConfig &server)
+CGI::CGI( request &request,  serverConfig &server)
 {
 	std::map<std::string, std::string>	headers = request.getHeaders();
 	this->_env["GATEWAY_INTERFACE"] = "CGI/1.1";

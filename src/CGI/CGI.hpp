@@ -27,7 +27,7 @@ class CGI
 		CGI(CGI const &);
 		~CGI(void);
 		CGI	&operator=(CGI const &src);
-		CGI(const request &request, const serverConfig &server);
+		CGI( request &request,  serverConfig &server);
 		std::string		executeCgi(const std::string&, size_t);
 };
 
