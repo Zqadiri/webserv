@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/20 12:10:11 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 13:49:19 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,7 @@ class request
 		const std::string							&getRequestURI() const;
 		const std::string							&getVersion() const;
 		const std::string							&getHost() const;
-		std::string									&getContentType();
-		std::string									&getConnection() ;
+		std::string									&getContentFromMap(std::string);
 		const int									&getPort() const;
 		const std::map<std::string, std::string>	&getHeaders() const;
 		const std::time_t  							&getTime() const;
@@ -57,7 +56,6 @@ class request
 		int											InternalServerError();
 		void										setCode(int);
 
-		void									getQuery();
 		void									parseAuthorization(request&);
 		void									Host(const std::string &, request&);
 		int										getFirstLine(const std::string &, request&);

@@ -63,7 +63,7 @@ void    Response::Methods_exec(request &req, int fd, serverConfig *servconf)
 std::string Response::Content_type(request &req)
 {
     std::string ret;
-    ret = req.getContentType();
+    ret = req.getContentFromMap("Content-Type");
     return ret;
 }
 

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/21 12:03:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 14:44:47 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,11 @@
 
 #define GCI_BUFFERSIZE 1024
 
+/*
+This information is passed through QUERY_STRING header and by using QUERY_STRING
+environment variable it can be easily accessed in your CGI program. Only 1024 characters can be there in a request string as the GET method has the size limitation. Information
+can be passed by simply concatenating key-value pairs along with any URL.
+*/
 /*--------- Constructors & Destructor --------*/
 
 CGI::CGI( request &request,  serverConfig &server)
@@ -115,7 +120,6 @@ std::string		CGI::executeCgi(const std::string& scriptName, size_t socket_fd)
 	pid = fork();
 	if (pid == -1){
 		std::cerr << "Fork Error"<< std::endl;
-		//!
 		return ("");
 	}
 	else if (pid == 0)
