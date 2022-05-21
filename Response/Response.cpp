@@ -1,4 +1,5 @@
 #include "Response.hpp"
+#include "MimeTypes.hpp"
 
 Response::Response()
 {
@@ -60,10 +61,10 @@ void    Response::Methods_exec(request &req, int fd, serverConfig *servconf)
     }
 }
 
-std::string Response::Content_type(request &req)
+std::string Response::Content_type()
 {
     std::string ret;
-    ret = req.getContentFromMap("Content-Type");
+    ret = this->_file_extension;
     return ret;
 }
 
@@ -74,8 +75,25 @@ std::string Response::File_lenght()
     return ret;
 }
 
-bool    Response::isCGI()
+void    Response::File_type(request &req)
 {
+
+    std::string str;
+    std::string str2;
+    int         index;
+
+    str = req.getRequestURI();
+    index = str.find_first_of(".");
+    str2 = str.substr(index+1, str.length());
+    this->_file_extension = MimeTypes::getType(str.c_str());
+}
+
+bool    Response::isCGI(request &req, serverConfig *servconf)
+{
+    (void)req;
+    // that means that the cgi pass variable is in the server config file
+    if (servconf->getCGIpass().compare(""))
+        return true;
     // check if the the file is a php one and config.conf hav a cgi_pass variable
     return false;
 }
@@ -83,7 +101,7 @@ bool    Response::isCGI()
 void    Response::GET(int fd, request &req, serverConfig *servconf)
 {
     CGI cgi_handler(req, *servconf);
-    if(!isCGI())
+    if(!isCGI(req, servconf))
     {
         _file_change = "/tmp/response_file_";
         _file_change += to_string(fd);
@@ -94,30 +112,30 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
         // first line in header----------------
         myfile << "HTTP/1.1 ";
         if(this->_status_code == 200)
-            myfile << "200 OK\n";
+            myfile << "200 OK\r\n";
         else
         {
             // should i just add the status code with an error message or should i
             // add for every error a specific status code??
             if(this->_status_code == 400)
-                myfile << "400\n";
+                myfile << "400\r\n";
             else if(this->_status_code == 505)
-                myfile << "505\n";
+                myfile << "505\r\n";
             else if(this->_status_code == 500)
-                myfile << "500\n";
+                myfile << "500\r\n";
             else if(this->_status_code == 405)
-                myfile << "405\n";
+                myfile << "405\r\n";
             else if(this->_status_code == 413)
-                myfile << "413\n";
+                myfile << "413\r\n";
         }
 
         // Current Date
 
-        // second line in header------------------
+        //Content Type------------------
         myfile << "Content-Type: ";
-        content_type = Content_type(req);
+        content_type = Content_type();
         myfile << content_type;
-        myfile << "\n";
+        myfile << "\r\n"; //blanate d zineb
 
         //third line in header----------------------
         myfile << "Length: ";
@@ -159,7 +177,6 @@ std::string Response::ConvertHtml(std::string path)
 
 void    Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
-
     Request_statuscode_checked(req, servconf);
     Methods_exec(req, fd, servconf);
 }

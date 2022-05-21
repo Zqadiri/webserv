@@ -55,6 +55,7 @@ class serverConfig
 		const std::list<std::string> 	&getErrorsPages(void) const;
 		int								getlimitBodySize(void) const;
 		bool							getAutoIndex(void) const;
+		std::string						getCGIpass(void) const;
 		const std::list<std::string> 	&getAllowMethods(void) const;
 
 		unsigned int 	serverName(serverConfig&, configFile, unsigned int&);

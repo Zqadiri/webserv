@@ -84,9 +84,10 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 
 /*---- Accessors ----*/
 
-const std::list<std::string>	&serverConfig::getAllowMethods(void) const{ return this->_allow_methods;}
-const std::list<std::string>	&serverConfig::getErrorsPages(void) const{ return this->_error_pages;}
-const t_listen				 	&serverConfig::gethostPort(void) const{ return this->_hostPort;}
+std::string						serverConfig::getCGIpass(void) const{ return _cgi_pass; }
+const std::list<std::string>	&serverConfig::getAllowMethods(void) const{ return this->_allow_methods; }
+const std::list<std::string>	&serverConfig::getErrorsPages(void) const{ return this->_error_pages; }
+const t_listen				 	&serverConfig::gethostPort(void) const{ return this->_hostPort; }
 int								serverConfig::getlimitBodySize(void) const {return this->_limitBodySize; }
 const std::list<std::string>	&serverConfig::getServerName(void) const { return this->_server_name;}
 const std::vector<_location>	&serverConfig::getLocations(void) const{ return this->_locations;}

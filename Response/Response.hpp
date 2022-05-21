@@ -7,6 +7,7 @@
 
 class Response
 {
+
     public:
         //canonical form
         Response();
@@ -20,9 +21,10 @@ class Response
         void            Methods_exec(request &request, int fd, serverConfig *);
         void            Return_string(request &request, serverConfig*, int fd);
         std::string     ConvertHtml(std::string path);
-        std::string     Content_type(request &req);
+        std::string     Content_type();
         std::string     File_lenght();
-        bool            isCGI();
+        void            File_type(request &req);
+        bool            isCGI(request &req, serverConfig *servconf);
         void            GET(int fd, request &req, serverConfig*);
         void            POST();
         void            DELETE();
@@ -34,6 +36,7 @@ class Response
         int             _status_code;
         std::string     _pages_to_string;
         std::string     _file_change;
+        const char*     _file_extension;
         // request     request();
 };
 

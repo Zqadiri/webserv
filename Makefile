@@ -18,6 +18,7 @@ SRCS		=	./src/config.cpp \
 				./src/servers.cpp \
 				./src/Request/request.cpp \
 				./Response/Response.cpp \
+				./Response/MimeTypes.cpp \
 				./src/Request/requestParser.cpp \
 				./src/CGI/CGI.cpp \
 				./src/utils/utils.cpp \
