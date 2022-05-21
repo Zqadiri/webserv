@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/21 14:44:47 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 15:55:46 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ This information is passed through QUERY_STRING header and by using QUERY_STRING
 environment variable it can be easily accessed in your CGI program. Only 1024 characters can be there in a request string as the GET method has the size limitation. Information
 can be passed by simply concatenating key-value pairs along with any URL.
 */
+
 /*--------- Constructors & Destructor --------*/
 
 CGI::CGI( request &request,  serverConfig &server)
@@ -37,7 +38,6 @@ CGI::CGI( request &request,  serverConfig &server)
 	this->_env["QUERY_STRING"] = request.getQuery();
 	if (headers.find("Auth-Scheme") != headers.end() && headers["Auth-Scheme"] != "")
 		this->_env["AUTH_TYPE"] = headers["Auth-Scheme"];
-
 	this->_env["CONTENT_TYPE"] = headers["Content-Type"];
 	this->_env["PATH_TRANSLATED"] = this->_env["PATH_INFO"];
 	this->_env["REMOTE_ADDR"] = to_string(server.gethostPort().host);
@@ -64,8 +64,6 @@ CGI	&CGI::operator=(CGI const &src) {
 }
 
 /*--------- Member functions --------*/
-
-// https://en.cppreference.com/w/cpp/io/c/tmpfile
 
 std::string		CGI::executeCgi(const std::string& scriptName, size_t socket_fd)
 {
@@ -115,6 +113,7 @@ std::string		CGI::executeCgi(const std::string& scriptName, size_t socket_fd)
 		std::getline (_body, myline);
 		write(fdIn,myline.c_str(), myline.length());
 	}
+
 	//system call that is used to change the location of the read/write pointer of a file descriptor
 	lseek(fdIn, 0, SEEK_SET);
 	pid = fork();
@@ -127,7 +126,7 @@ std::string		CGI::executeCgi(const std::string& scriptName, size_t socket_fd)
 		dup2(fdIn, STDIN_FILENO);
 		dup2(fdOut, STDOUT_FILENO);
 		execve(scriptName.c_str(), NULL, env);
-		std::cerr << "Execve Error"  << std::endl;
+		std::cerr << "Execve Error" << std::endl;
 		//!status code 500
 	}
 	else

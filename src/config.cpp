@@ -148,7 +148,7 @@ void					Config::parseFile(const char *fileName)
 		else
 			throw	Config::FileNotWellFormated();
 	}
-	print();
+	// print();
 	checkForDup();
 }
 

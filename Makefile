@@ -17,6 +17,7 @@ SRCS		=	./src/config.cpp \
 				./src/serverConfig.cpp \
 				./src/servers.cpp \
 				./src/Request/request.cpp \
+				./Response/Response.cpp \
 				./src/Request/requestParser.cpp \
 				./src/CGI/CGI.cpp \
 				./src/utils/utils.cpp \
@@ -42,6 +43,5 @@ fclean:		clean
 			@ rm -f $(NAME)
 
 re:			fclean $(NAME)
-			@./webserv /Users/zqadiri/Desktop/webserv/conf/config.conf
 
 .PHONY: 		all fclean clean re

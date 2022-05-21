@@ -74,7 +74,7 @@ std::string Response::File_lenght()
     return ret;
 }
 
-bool    isCGI()
+bool    Response::isCGI()
 {
     // check if the the file is a php one and config.conf hav a cgi_pass variable
     return false;
