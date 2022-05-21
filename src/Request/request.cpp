@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 12:04:06 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 13:48:10 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,10 @@ request::~request(){
 
 /*------ Accessors ------*/
 
-std::string									&request::getContentType(){return this->_headers["Content-Type"];}
+std::string									&request::getContentFromMap(std::string key){
+	return this->_headers[key];
+}
+
 const std::string							&request::getMethod() const { return	_method;}
 const std::string							&request::getPath() const { return _path;}
 const std::string							&request::getQuery() const { return _queryString;}

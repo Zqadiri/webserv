@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/20 12:10:11 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 13:47:49 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ class request
 		const std::string							&getRequestURI() const;
 		const std::string							&getVersion() const;
 		const std::string							&getHost() const;
-		std::string									&getContentType();
+		std::string									&getContentFromMap(std::string);
 		std::string									&getConnection() ;
 		const int									&getPort() const;
 		const std::map<std::string, std::string>	&getHeaders() const;
