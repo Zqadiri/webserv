@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 17:22:35 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/20 18:13:39 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 11:09:29 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 class ResponseHeaders
 {
 	private:
-		std::string				_contentLentgh;
+		std::string				_contentLength;
 		std::string				_contentLanguage;
 		std::string				_contentLocation;
 		std::string				_contentType;
@@ -38,7 +38,7 @@ class ResponseHeaders
 		ResponseHeaders &operator=(const ResponseHeaders &);
 
 
-		void                    setContentLentgh(size_t);
+		void                    setContentLength(size_t);
 		void                    setContentLanguage(const std::string&);
 		void                    setContentLocation(const std::string&);
 		void                    setContentType(const std::string&);
@@ -50,6 +50,8 @@ class ResponseHeaders
 		void					setServer(const std::string&);
 		void					setWWWAuthenticate(const std::string&);
 
+		std::string				writeHeader(void);
+		void					initValues(void);
 	
 };
 

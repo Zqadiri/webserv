@@ -6,8 +6,7 @@ Response::Response()
     this->_response_string = "";
 }
 
-Response &Response::operator=(const Response &rhs)
-{
+Response &Response::operator=(const Response &rhs){
     this->_status_code = rhs._status_code;
     return (*this);
 }
@@ -67,11 +66,15 @@ std::string Response::Content_type()
 {
     // we will check on the file type(by type i mean extension)
     // but where im getting the file??
+    std::string ret;
+    return ret;
 }
 
 std::string Response::File_lenght()
 {
     // we gonna calculate the length of our file (header + body lenght)
+    std::string ret;
+    return ret;
 }
 
 void    Response::GET()
