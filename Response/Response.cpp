@@ -39,14 +39,12 @@ std::string    Response::Request_statuscode_checked(request &req, serverConfig* 
             _pages_to_string = ConvertHtml("./response_errors_pages/413.html");
         }
     }
-    // return _pages_to_string;
-    // if i checked everything and the status code left is 200
     else
         _pages_to_string = "Successfull";
     return _pages_to_string;
 }
 
-void    Response::Methods_exec(request &req)
+std::fstream    Response::Methods_exec(request &req, int fd)
 {
     std::string str;
 
@@ -54,19 +52,18 @@ void    Response::Methods_exec(request &req)
     if (this->_status_code == 200)
     {
         if(str == "GET")
-            GET();
+            return GET(fd, req);
         else if(str == "POST")
-            POST();
+            return POST();
         else if(str == "DELETE")
-            DELETE();
+            return DELETE();
     }
 }
 
-std::string Response::Content_type()
+std::string Response::Content_type(request &req)
 {
-    // we will check on the file type(by type i mean extension)
-    // but where im getting the file??
     std::string ret;
+    ret = req.getContentType();
     return ret;
 }
 
@@ -77,16 +74,15 @@ std::string Response::File_lenght()
     return ret;
 }
 
-void    Response::GET()
+std::fstream    Response::GET(int fd, request &req)
 {
-    // !!!!!! Zqadiri : stopped here to see what r u doing in that header stuff
-    std::fstream    myfile("Get_response.txt");
+    _file_change = "/tmp/response_file_" + fd;
+    std::fstream    myfile(_file_change);
     std::string     content_type;
     std::string     length;
 
     // first line in header----------------
     myfile << "HTTP/1.1 ";
-    myfile << this->_status_code;
     if(this->_status_code == 200)
         myfile << "200 OK\n";
     else
@@ -105,9 +101,11 @@ void    Response::GET()
             myfile << "413\n";
     }
 
+    // Current Date
+
     // second line in header------------------
     myfile << "Content-Type: ";
-    content_type = Content_type();
+    content_type = Content_type(req);
     myfile << content_type;
     myfile << "\n";
 
@@ -116,14 +114,15 @@ void    Response::GET()
     length = File_lenght();
     myfile << length;
     myfile.close();
+    return (myfile);
 }
 
-void    Response::POST()
+std::fstream    Response::POST()
 {
     
 }
 
-void    Response::DELETE()
+std::fstream    Response::DELETE()
 {
     
 }
@@ -144,6 +143,15 @@ std::string Response::ConvertHtml(std::string path)
     }
     myfile.close();
     return (ret);
+}
+
+std::fstream Response::Return_string(request &req, serverConfig *servconf, int fd)
+{
+    std::fstream file_ret;
+
+    Request_statuscode_checked(req, servconf);
+    file_ret = Methods_exec(req, fd);
+    return file_ret;
 }
 
 Response::~Response()

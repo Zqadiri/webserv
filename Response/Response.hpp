@@ -15,20 +15,21 @@ class Response
         ~Response();
 
         //Response start
-        std::string Request_statuscode_checked(request &request, serverConfig*);
-        void        Methods_exec(request &request);
-        std::string Return_string(request &request);
-        std::string ConvertHtml(std::string path);
-        std::string Content_type();
-        std::string File_lenght();
-        void        GET();
-        void        POST();
-        void        DELETE();
+        std::string     Request_statuscode_checked(request &request, serverConfig*);
+        std::fstream    Methods_exec(request &request, int fd);
+        std::fstream    Return_string(request &request, serverConfig*, int fd);
+        std::string     ConvertHtml(std::string path);
+        std::string     Content_type(request &req);
+        std::string     File_lenght();
+        std::fstream    GET(int fd, request &req);
+        std::fstream    POST();
+        std::fstream    DELETE();
 
     private:
         std::string _response_string;
         int         _status_code;
         std::string _pages_to_string;
+        std::string _file_change;
         // request     request();
 };
 

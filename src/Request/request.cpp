@@ -67,6 +67,7 @@ request::~request(){
 
 /*------ Accessors ------*/
 
+std::string									&request::getContentType(){return this->_headers["Content-Type"];}
 const std::string							&request::getMethod() const { return	_method;}
 const std::string							&request::getPath() const { return _path;}
 const std::string							&request::getQuery() const { return _queryString;}

@@ -47,13 +47,13 @@ class request
 		const std::string							&getRequestURI() const;
 		const std::string							&getVersion() const;
 		const std::string							&getHost() const;
+		std::string									&getContentType();
 		std::string									&getConnection() ;
 		const int									&getPort() const;
 		const std::map<std::string, std::string>	&getHeaders() const;
 		const std::time_t  							&getTime() const;
 		int											getRetCode() const;
 		int											getBodyLength() const;
-
 		int											InternalServerError();
 		void										setCode(int);
 

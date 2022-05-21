@@ -87,9 +87,10 @@ int server::sen(int &socket, request& req)
 	Response response;
 	std::cout << "trying send to " << socket << "\n";
 	int ret;
-	std::string buf;//!chunked
-	buf = response.Return_string(req);
-	ret = send(socket, buf.c_str(), buf.size(), 0);
+	std::fstream buf;//!chunked
+	buf = response.Return_string(req, _config, socket);
+	//
+	// ret = send(socket, buf.c_str(), buf.size(), 0);
 	if (ret == -1)
 		return (-1);
 	return (0);
