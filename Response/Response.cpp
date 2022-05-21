@@ -85,6 +85,7 @@ void    Response::File_type(request &req)
     str = req.getRequestURI();
     index = str.find_first_of(".");
     str2 = str.substr(index+1, str.length());
+    this->_check_extension_mine = str2;
     this->_file_extension = MimeTypes::getType(str.c_str());
 }
 
@@ -92,7 +93,7 @@ bool    Response::isCGI(request &req, serverConfig *servconf)
 {
     (void)req;
     // that means that the cgi pass variable is in the server config file
-    if (servconf->getCGIpass().compare(""))
+    if (servconf->getCGIpass().compare("") || this->_check_extension_mine == "php")
         return true;
     // check if the the file is a php one and config.conf hav a cgi_pass variable
     return false;
@@ -115,8 +116,6 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
             myfile << "200 OK\r\n";
         else
         {
-            // should i just add the status code with an error message or should i
-            // add for every error a specific status code??
             if(this->_status_code == 400)
                 myfile << "400\r\n";
             else if(this->_status_code == 505)

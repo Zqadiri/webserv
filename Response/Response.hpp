@@ -37,6 +37,7 @@ class Response
         std::string     _pages_to_string;
         std::string     _file_change;
         const char*     _file_extension;
+        std::string     _check_extension_mine;
         // request     request();
 };
 

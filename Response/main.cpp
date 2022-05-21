@@ -11,8 +11,7 @@ void File_type(std::string req)
     str = req;
     index = str.find_first_of(".");
     str2 = str.substr(index+1, str.length());
-    const char *ext = MimeTypes::getType(str.c_str());
-    std::cout << ext << std::endl;
+    std::cout << str2 << std::endl;
     // return ext;
 }
 int main()
