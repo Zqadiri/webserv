@@ -6,6 +6,7 @@ Response::Response()
 {
     this->_status_code = 0;
     this->_response_string = "";
+    this->_get_file_success_open = true;
 }
 
 Response &Response::operator=(const Response &rhs){
@@ -101,8 +102,8 @@ bool    Response::isCGI(request &req, serverConfig *servconf)
     (void)req;
     (void)servconf;
     // that means that the cgi pass variable is in the server config file
-    // if (servconf->getCGIpass().compare("") || this->_check_extension_mine == "php")
-        // return true;
+    if (this->_check_extension_mine == "php")
+        return true;
     // check if the the file is a php one and config.conf hav a cgi_pass variable
     return false;
 }
@@ -117,7 +118,11 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
         std::fstream    myfile(_file_change);
         std::string     content_type;
         int             length;
+        std::fstream    body_file; //waiting for the path
+        std::string     fill;
+        time_t          rawtime;
 
+        this->_get_file_success_open = true;
         // first line in header----------------
         myfile << "HTTP/1.1 ";
         if(this->_status_code == 200)
@@ -125,20 +130,25 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
         else
         {
             if(this->_status_code == 400)
-                myfile << "400\r\n";
+                myfile << "400 Bad Request\r\n";
             else if(this->_status_code == 505)
-                myfile << "505\r\n";
+                myfile << "505 Http Version Not Supported\r\n";
             else if(this->_status_code == 500)
-                myfile << "500\r\n";
+                myfile << "500 Internal Server Error\r\n";
             else if(this->_status_code == 405)
-                myfile << "405\r\n";
+                myfile << "405 Not Allowed\r\n";
             else if(this->_status_code == 413)
-                myfile << "413\r\n";
+                myfile << "413 Payload Too Large\r\n";
         }
 
         // Current Date-----------------
+        time(&rawtime);
+        myfile << "Date: ";
+        myfile << std::string(ctime(&rawtime));
 
         //Server------------------------
+        myfile << "Server: ";
+        myfile << "Myserver\r\n";
 
         //Content Type------------------
         myfile << "Content-Type: ";
@@ -147,9 +157,28 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
         myfile << "\r\n"; //blanate d zineb
 
         //Body length----------------------
-        myfile << "Length: ";
+        myfile << "Content-Length: ";
         length = File_lenght(req);
         myfile << to_string(length);
+
+        //blank line
+        myfile << "\r\n";
+
+        //Body part start
+        body_file.open("path");
+        if(body_file)
+        {
+            while(!body_file.eof())
+            {
+                std::getline(body_file, fill);
+                myfile << fill;
+                myfile << "\n";
+            }
+        }
+        else
+            this->_get_file_success_open = false;
+
+        //end of method and close file    
         myfile.close();
     }
     // else

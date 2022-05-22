@@ -17,27 +17,37 @@
 //     // return ext;
 // }
 
-int File_lenght(std::string req)
+std::string time_func()
 {
-    // we gonna calculate the length of our file (body lenght)
-    int             ret;
-    std::fstream    myfile(req);
-    struct          stat sb;
+    time_t          rawtime;
+    std::string     str;
 
-    if(!stat(req.c_str(), &sb))
-    {
-        ret = sb.st_size;
-        puts("1");
-    }
-    else
-        ret = -1;
-    return ret;
+    time(&rawtime);
+    str = std::string(ctime(&rawtime));
+    return str;
 }
+
+// int File_lenght(std::string req)
+// {
+//     // we gonna calculate the length of our file (body lenght)
+//     int             ret;
+//     std::fstream    myfile(req);
+//     struct          stat sb;
+
+//     if(!stat(req.c_str(), &sb))
+//     {
+//         ret = sb.st_size;
+//         puts("1");
+//     }
+//     else
+//         ret = -1;
+//     return ret;
+// }
 
 int main()
 {
-    int str;
+    std::string     str;
     // Response res;
-    str = File_lenght("./response_errors_pages/400.html");
+    str = time_func();
     std::cout << str << std::endl;
 }
