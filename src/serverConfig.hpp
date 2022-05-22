@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 15:29:10 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/22 12:58:45 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ class serverConfig
 		std::list<std::string>		_error_pages;
 		std::list<std::string>		_allow_methods;
 		std::vector<_location>		_locations;
-		std::string					_cgi_pass;
 		 
 	public:
 		serverConfig();
@@ -55,7 +54,6 @@ class serverConfig
 		const std::list<std::string> 	&getErrorsPages(void) const;
 		int								getlimitBodySize(void) const;
 		bool							getAutoIndex(void) const;
-		std::string						getCGIpass(void) const;
 		const std::list<std::string> 	&getAllowMethods(void) const;
 
 		unsigned int 	serverName(serverConfig&, configFile, unsigned int&);

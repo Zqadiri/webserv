@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/21 15:55:46 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/21 18:51:56 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ std::string		CGI::executeCgi(const std::string& scriptName, size_t socket_fd)
 	}
 	else
 	{
-		// get the outout from the file to a the return string
+		// get the output from the file to a string
 		char	buffer[GCI_BUFFERSIZE] = {0};
 		int		ret = 1;
 
@@ -146,7 +146,7 @@ std::string		CGI::executeCgi(const std::string& scriptName, size_t socket_fd)
 		dup2(savedIn, STDIN_FILENO);
 		dup2(savedOut, STDOUT_FILENO);
 	}
-	//!delete
+	//!delet the array
 	close(fdIn);
 	close(fdOut);
 	fclose(fileIn);

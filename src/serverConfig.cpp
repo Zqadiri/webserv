@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 15:31:00 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/22 12:59:49 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,7 @@ const char* keys[] = {
 	"index", 
 	"error_pages",
 	"autoindex",
-	"client_body_buffer_size",
-	"cgi_pass"
+	"client_body_buffer_size"
 };
 
 const char* locationKeys[] = {
@@ -38,7 +37,7 @@ const char* locationKeys[] = {
 };
 
 bool notAValue(std::string value){
-	for (size_t i = 0; i < 10; i++){
+	for (size_t i = 0; i < 9; i++){
 		if (!value.compare(keys[i]))
 			return true;
 	}
@@ -84,7 +83,6 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 
 /*---- Accessors ----*/
 
-std::string						serverConfig::getCGIpass(void) const{ return _cgi_pass; }
 const std::list<std::string>	&serverConfig::getAllowMethods(void) const{ return this->_allow_methods; }
 const std::list<std::string>	&serverConfig::getErrorsPages(void) const{ return this->_error_pages; }
 const t_listen				 	&serverConfig::gethostPort(void) const{ return this->_hostPort; }
@@ -158,13 +156,6 @@ unsigned int	serverConfig::autoIndex(serverConfig &serv, configFile con, unsigne
 		throw "Autoindex";
 	else if (!con[index].compare("on"))
 		serv._autoindex = 1;
-	return index++;
-}
-
-unsigned int	serverConfig::cgiPass(serverConfig &serv, configFile con, unsigned int& index)
-{
-	index++;
-	serv._cgi_pass = con[index];
 	return index++;
 }
 

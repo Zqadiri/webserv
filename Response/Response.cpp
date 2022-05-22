@@ -92,16 +92,17 @@ void    Response::File_type(request &req)
 bool    Response::isCGI(request &req, serverConfig *servconf)
 {
     (void)req;
+    (void)servconf;
     // that means that the cgi pass variable is in the server config file
-    if (servconf->getCGIpass().compare("") || this->_check_extension_mine == "php")
-        return true;
+    // if (servconf->getCGIpass().compare("") || this->_check_extension_mine == "php")
+        // return true;
     // check if the the file is a php one and config.conf hav a cgi_pass variable
     return false;
 }
 
 void    Response::GET(int fd, request &req, serverConfig *servconf)
 {
-    CGI cgi_handler(req, *servconf);
+    // CGI cgi_handler(req, *servconf);
     if(!isCGI(req, servconf))
     {
         _file_change = "/tmp/response_file_";
@@ -142,16 +143,16 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
         myfile << length;
         myfile.close();
     }
-    else
-        cgi_handler.executeCgi(req.getRequestURI(), fd);
+    // else
+    //     cgi_handler.executeCgi(req.getRequestURI(), fd);
 }
 
-void    Response::POST()
+void        Response::POST()
 {
     
 }
 
-void    Response::DELETE()
+void        Response::DELETE()
 {
     
 }

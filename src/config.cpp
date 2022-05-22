@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 15:49:22 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/22 13:09:39 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ void					Config::parseFile(const char *fileName)
 		else
 			throw	Config::FileNotWellFormated();
 	}
-	// print();
+	// print(); 
 	checkForDup();
 }
 
@@ -207,14 +207,13 @@ void				Config::checkForDup(void){
 size_t		Config::parseServer(configFile con, unsigned int &index){
 	serverConfig *server = new serverConfig();
 	bool isLocation = 0;
-	Ptr values[10] = {&serverConfig::serverName, &serverConfig::root,
+	Ptr values[9] = {&serverConfig::serverName, &serverConfig::root,
 	&serverConfig::listen, &serverConfig::parseLocation, &serverConfig::allowMethods,
-	&serverConfig::index, &serverConfig::errorPages, &serverConfig::autoIndex, &serverConfig::limitBodySize,
-	&serverConfig::cgiPass};
+	&serverConfig::index, &serverConfig::errorPages, &serverConfig::autoIndex, &serverConfig::limitBodySize};
 	while (true)
 	{
 		index++;
-		for (size_t i = 0; i < 10; i++)
+		for (size_t i = 0; i < 9; i++)
 		{
 			if (i == 3)
 				isLocation = 1;
@@ -244,8 +243,6 @@ void	Config::print(){
 		std::cout << this->servers[i]->_root << std::endl;
 		puts("[index]");
 		std::cout << this->servers[i]->_index << std::endl;
-		puts("[CGI]");
-		std::cout << this->servers[i]->_cgi_pass << std::endl;
 		puts("[listen]");
 		std::cout << this->servers[i]->_hostPort.host << std::endl;
 		std::cout << this->servers[i]->_hostPort.port << std::endl;

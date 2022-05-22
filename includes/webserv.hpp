@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/16 18:49:53 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/22 13:06:46 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@
 # define RESET "\033[0m"
 
 #define TIMEOUT 20
-#define BUFFER_SIZE	100
+#define BUFFER_SIZE	1024
 
 typedef	std::vector<std::string>	configFile;
 

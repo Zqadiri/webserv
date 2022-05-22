@@ -6,7 +6,7 @@
 #    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/05/21 15:33:09 by zqadiri          ###   ########.fr        #
+#    Updated: 2022/05/22 13:17:39 by zqadiri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ CC			= c++
 
 FLAGS		=  -std=c++98
 
-WWW			= -Wall -Wextra -Werror -fsanitize=address
+WWW			= -Wall -Wextra -Werror -fsanitize=address -g
 
 all:		$(NAME)
 
@@ -45,4 +45,4 @@ fclean:		clean
 
 re:			fclean $(NAME)
 
-.PHONY: 		all fclean clean re
+.PHONY: 	all fclean clean re

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 15:59:49 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/22 13:16:58 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,13 @@ int					request::ParseHeaders(std::string buff,  request& req)
 	req.getQueryString();
 	if (_headers["Authorization"].compare(""))
 		parseAuthorization(req);
-	if (!_headers["Content-Length"].compare(""))
-	{
-		this->_retCode = 411;
+	if (!_method.compare("GET") || !_method.compare("DELETE")){
+		std::cout << "----------------- in ------------------" << std::endl;
+		_status = COMPLETE;
+		return 1;
+	}
+	if (!_headers["Content-Length"].compare("")){
+		this->_retCode = 411; 
 		return -1;
 	}
 	_status = PRE_BODY;
