@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/22 18:37:35 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/22 19:46:12 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,9 +144,8 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 		this->_tmp += buff;
 		parseChunkedRequest(filename);
 	}
-	if (_status == COMPLETE)
-	{
-		print_req(*this);
+	if (_status == COMPLETE){
+		// print_req(*this);
 		return 0;
 	}
 	return 1;
@@ -172,6 +171,7 @@ int request::parseUnchunkedRequest(std::string filename)
 int request::parseChunkedRequest(std::string filename)
 {
 	size_t end;
+	
 	std::fstream _body;
 
 	while ((end = _tmp.find("\r\n")) != std::string::npos)

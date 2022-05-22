@@ -71,13 +71,13 @@ void    Response::Methods_exec(request &req, int fd, serverConfig *servconf)
 std::string Response::Content_type()
 {
     std::string ret("");
-    ret = this->_file_extension; //! read-memory-access
+    ret = this->_file_extension; //! read-memory-access (const char * to std::string)
     return ret;
 }
 
 int         Response::File_lenght(request &req)
 {
-    // // we gonna calculate the length of our file (body lenght)
+    // we gonna calculate the length of our file (body lenght)
     (void)req;
     int             ret = 0;
     // struct          stat sb;
@@ -124,7 +124,7 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
     CGI cgi_handler(req, *servconf);
     if(!isCGI(req, servconf))
     {
-	    std::cout << GREEN << "> NON CGI <" << _file_change <<  RESET << std::endl;
+	    std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
         std::fstream    myfile;
         std::string     content_type;
         int             length(0);
@@ -170,7 +170,7 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
         //Body length----------------------
         File_type(req);
         myfile << "Content-Length: ";
-        length = File_lenght(req); //! equal to 18446744073709551615
+        length = File_lenght(req); //! equal to 18446744073709551615 !
         myfile << to_string(length);
         myfile << "\r\n";
 
