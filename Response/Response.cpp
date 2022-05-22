@@ -101,7 +101,7 @@ bool    Response::isCGI(request &req, serverConfig *servconf)
 {
     (void)req;
     // that means that the cgi pass variable is in the server config file
-    if (servconf->getCGIpass().compare("") || this->_check_extension_mine == "php")
+    if (this->_check_extension_mine == "php")
         return true;
     // check if the the file is a php one and config.conf hav a cgi_pass variable
     return false;
@@ -161,7 +161,7 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
         myfile << to_string(length);
 
         //blank line
-        myfile << "\n";
+        myfile << "\r\n";
 
         //Body part start
         body_file.open("path");
