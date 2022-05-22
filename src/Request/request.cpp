@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/22 17:38:41 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/22 18:42:00 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _h
 }
 
 request::~request(){
-	std::cout << "-------------------------- DES -----------------------" << std::endl;
 } 
 
 /*------ Accessors ------*/
@@ -151,8 +150,10 @@ void				request::getQueryString(){
 
 	if (i != std::string::npos){
 		this->_queryString = removeSpace(this->_path.substr( i, std::string::npos));
-		this->_path = this->_path.substr(0, i);
+		this->_requestURI = this->_path.substr(0, i);
 	}
+	else
+		this->_requestURI = this->_path;
 }
 
 void				request::parseAuthorization(request& req){
@@ -169,7 +170,8 @@ void				request::parseAuthorization(request& req){
 
 void				request::print_req(request& req){
 	std::cout << "method :  ["  << req._method << "]" << std::endl;
-	std::cout << "path : [" << req._requestURI << "]" << std::endl;
+	std::cout << "path : [" << req._path << "]" << std::endl;
+	std::cout << "requestURI : [" << req._requestURI << "]" << std::endl;
 	std::cout << "version :  ["  << req._version << "]" << std::endl;
 	std::cout << "Host :  ["  << req._host<< "]"  << std::endl;	
 	std::cout << "Port :  ["  << req._port << "]" << std::endl;

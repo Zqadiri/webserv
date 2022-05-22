@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/22 13:16:58 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/22 18:37:35 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int					request::getFirstLine(const std::string &buff, request& req)
 		return badRequest(req);
 	if ((i = buff.find_first_of(' ', j)) == std::string::npos)
 		return badRequest(req);
-	req._path.assign(buff, j, i - j);
+	req._path.assign(line, j, i - j);
 	j += i - j;
 	if ((j = buff.find_first_not_of(' ', j)) == std::string::npos){
 		req._retCode = 400;
@@ -51,7 +51,7 @@ int					request::getFirstLine(const std::string &buff, request& req)
 	}
 	if (buff[j] == 'H' && buff[j + 1] == 'T' && buff[j + 2] == 'T' &&
 			buff[j + 3] == 'P' && buff[j + 4] == '/'){
-		req._version.assign(buff, j + 5, 3);
+		req._version.assign(line, j + 5, 3);
 	}
 	if (req._version.compare("1.0") && req._version.compare("1.1")){
 		req._retCode = 505;
@@ -145,7 +145,10 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 		parseChunkedRequest(filename);
 	}
 	if (_status == COMPLETE)
+	{
+		print_req(*this);
 		return 0;
+	}
 	return 1;
 }
 
