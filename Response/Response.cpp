@@ -2,11 +2,16 @@
 #include "MimeTypes.hpp"
 #include <sys/stat.h>
 
-Response::Response()
+Response::Response(int socket)
 {
+    std::fstream myfile;
     this->_status_code = 0;
     this->_response_string = "";
     this->_get_file_success_open = true;
+    _file_change = "/tmp/response_file_";
+    _file_change += to_string(socket);
+    myfile.open(_file_change, std::fstream::in | std::fstream::out | std::fstream::trunc);
+    myfile.close();
 }
 
 Response &Response::operator=(const Response &rhs){
@@ -65,21 +70,22 @@ void    Response::Methods_exec(request &req, int fd, serverConfig *servconf)
 
 std::string Response::Content_type()
 {
-    std::string ret;
-    ret = this->_file_extension;
+    std::string ret("");
+    ret = this->_file_extension; //! read-memory-access
     return ret;
 }
 
 int         Response::File_lenght(request &req)
 {
-    // we gonna calculate the length of our file (body lenght)
-    int             ret;
-    struct          stat sb;
+    // // we gonna calculate the length of our file (body lenght)
+    (void)req;
+    int             ret = 0;
+    // struct          stat sb;
 
-    if(!stat(req.getRequestURI().c_str(), &sb))
-        ret = sb.st_size;
-    else
-        ret = -1;
+    // if(!stat(req.getRequestURI().c_str(), &sb))
+    //     ret = sb.st_size;
+    // else
+    //     ret = -1;
     return ret;
 }
 
@@ -108,20 +114,25 @@ bool    Response::isCGI(request &req, serverConfig *servconf)
     return false;
 }
 
+std::string Response::getfileChange(){
+    return _file_change;
+}
+
 void    Response::GET(int fd, request &req, serverConfig *servconf)
 {
-    // CGI cgi_handler(req, *servconf);
+    (void )fd;
+    CGI cgi_handler(req, *servconf);
     if(!isCGI(req, servconf))
     {
-        _file_change = "/tmp/response_file_";
-        _file_change += to_string(fd);
-        std::fstream    myfile(_file_change);
+	    std::cout << GREEN << "> NON CGI <" << _file_change <<  RESET << std::endl;
+        std::fstream    myfile;
         std::string     content_type;
-        int             length;
+        int             length(0);
         std::fstream    body_file; //waiting for the path
         std::string     fill;
         time_t          rawtime;
 
+        myfile.open(_file_change, std::fstream::in | std::fstream::app);
         this->_get_file_success_open = true;
         // first line in header----------------
         myfile << "HTTP/1.1 ";
@@ -148,24 +159,23 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
 
         //Server------------------------
         myfile << "Server: ";
-        myfile << "Myserver\r\n";
+        myfile << "Myserver\r\n"; //!
 
         //Content Type------------------
         myfile << "Content-Type: ";
-        content_type = Content_type();
-        myfile << content_type;
+        // content_type = Content_type();
+        // myfile << content_type;
         myfile << "\r\n"; //blanate d zineb
 
         //Body length----------------------
+        File_type(req);
         myfile << "Content-Length: ";
-        length = File_lenght(req);
+        length = File_lenght(req); //! equal to 18446744073709551615
         myfile << to_string(length);
-
-        //blank line
         myfile << "\r\n";
 
         //Body part start
-        body_file.open("path");
+        body_file.open(req.getRequestURI());
         if(body_file)
         {
             while(!body_file.eof())
@@ -181,8 +191,11 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
         //end of method and close file    
         myfile.close();
     }
-    // else
-    //     cgi_handler.executeCgi(req.getRequestURI(), fd);
+    else
+    {
+	    std::cout << GREEN << "> CGI <" <<  RESET << std::endl;
+        cgi_handler.executeCgi(req.getRequestURI(), fd);
+    }
 }
 
 void        Response::POST()

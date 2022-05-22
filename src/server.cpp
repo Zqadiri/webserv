@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/22 15:37:30 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/22 18:00:22 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,6 @@ server &server::operator=(const server &obj){
 
 
 server::server(t_listen &l, serverConfig* conf) : _fd(-1), _config(conf){
-
-	
 	bzero((char *)&_addr, sizeof(_addr));
 	_addr.sin_family = AF_INET;
 	_addr.sin_addr.s_addr = htonl(l.host);
@@ -86,13 +84,21 @@ int server::get_fd(void) const{
 
 int server::sen(int &socket, request& req)
 {
-	(void)req;
 	std::string		buf;
-	Response		response;
+	std::string		myline;
+	std::fstream 	_res;
+	Response		response(socket);
 	std::cout << "trying send to " << socket << "\n";
 	int				ret;
-	std::cout << _config->_root << std::endl;
 	response.Return_string(req, _config, socket);
+	_res.open(response.getfileChange().c_str(), std::fstream::in);
+	while (_res)
+	{
+		std::getline (_res, myline);
+		buf += myline;
+		buf += "\r\n";
+	}
+	std::cout << GREEN << ">" << buf  << "<" << RESET << std::endl;
 	ret = send(socket, buf.c_str(), buf.size(), 0);
 	if (ret == -1)
 		return (-1);

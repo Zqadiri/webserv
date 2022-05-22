@@ -10,7 +10,7 @@ class Response
 
     public:
         //canonical form
-        Response();
+        Response(int);
         // Response(request request);
         Response(Response &cp);
         Response & operator=(const Response &rhs);
@@ -28,6 +28,7 @@ class Response
         void            GET(int fd, request &req, serverConfig*);
         void            POST();
         void            DELETE();
+        std::string getfileChange();
         // std::fstream    get_file_stream(){return this->_file;};
 
     private:

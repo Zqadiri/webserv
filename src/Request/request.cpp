@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 15:59:57 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/22 17:38:41 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _h
 }
 
 request::~request(){
+	std::cout << "-------------------------- DES -----------------------" << std::endl;
 } 
 
 /*------ Accessors ------*/
