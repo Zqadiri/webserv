@@ -186,6 +186,7 @@ std::string Response::ConvertHtml(std::string path)
 
 void    Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
+	// std::cout << servconf->_root << std::endl;
     Request_statuscode_checked(req, servconf);
     Methods_exec(req, fd, servconf);
 }
