@@ -1,5 +1,6 @@
 #include "Response.hpp"
 #include "MimeTypes.hpp"
+#include <sys/stat.h>
 
 Response::Response()
 {
@@ -68,10 +69,16 @@ std::string Response::Content_type()
     return ret;
 }
 
-std::string Response::File_lenght()
+int         Response::File_lenght(request &req)
 {
     // we gonna calculate the length of our file (body lenght)
-    std::string ret;
+    int             ret;
+    struct          stat sb;
+
+    if(!stat(req.getRequestURI().c_str(), &sb))
+        ret = sb.st_size;
+    else
+        ret = -1;
     return ret;
 }
 
@@ -109,7 +116,7 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
         _file_change += to_string(fd);
         std::fstream    myfile(_file_change);
         std::string     content_type;
-        std::string     length;
+        int             length;
 
         // first line in header----------------
         myfile << "HTTP/1.1 ";
@@ -129,7 +136,9 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
                 myfile << "413\r\n";
         }
 
-        // Current Date
+        // Current Date-----------------
+
+        //Server------------------------
 
         //Content Type------------------
         myfile << "Content-Type: ";
@@ -137,10 +146,10 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
         myfile << content_type;
         myfile << "\r\n"; //blanate d zineb
 
-        //third line in header----------------------
+        //Body length----------------------
         myfile << "Length: ";
-        length = File_lenght();
-        myfile << length;
+        length = File_lenght(req);
+        myfile << to_string(length);
         myfile.close();
     }
     // else
