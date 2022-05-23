@@ -24,7 +24,7 @@ Response::Response(Response &cp)
     this->_status_code = cp._status_code;
 }
 
-std::string    Response::Request_statuscode_checked(request &req, serverConfig* servconf)
+std::string     Response::Request_statuscode_checked(request &req, serverConfig* servconf)
 {
     this->_status_code = req.getRetCode();
     if(this->_status_code != 200)
@@ -52,7 +52,7 @@ std::string    Response::Request_statuscode_checked(request &req, serverConfig* 
     return _pages_to_string;
 }
 
-void    Response::Methods_exec(request &req, int fd, serverConfig *servconf)
+void            Response::Methods_exec(request &req, int fd, serverConfig *servconf)
 {
     std::string str;
 
@@ -64,18 +64,18 @@ void    Response::Methods_exec(request &req, int fd, serverConfig *servconf)
         else if(str == "POST")
             return POST();
         else if(str == "DELETE")
-            return DELETE();
+            return DELETE(req);
     }
 }
 
-std::string Response::Content_type()
+std::string     Response::Content_type()
 {
     std::string ret("");
-    ret = this->_file_extension; //! read-memory-access (const char * to std::string)
+    ret = std::string(this->_file_extension); //! read-memory-access (const char * to std::string)
     return ret;
 }
 
-int         Response::File_lenght(request &req)
+int             Response::File_lenght(request &req)
 {
     // we gonna calculate the length of our file (body lenght)
     (void)req;
@@ -89,7 +89,7 @@ int         Response::File_lenght(request &req)
     return ret;
 }
 
-void    Response::File_type(request &req)
+void            Response::File_type(request &req)
 {
 
     std::string str;
@@ -103,7 +103,7 @@ void    Response::File_type(request &req)
     this->_file_extension = MimeTypes::getType(str.c_str());
 }
 
-bool    Response::isCGI(request &req, serverConfig *servconf)
+bool            Response::isCGI(request &req, serverConfig *servconf)
 {
     (void)req;
     (void)servconf;
@@ -114,11 +114,37 @@ bool    Response::isCGI(request &req, serverConfig *servconf)
     return false;
 }
 
-std::string Response::getfileChange(){
+std::string     Response::getfileChange(){
     return _file_change;
 }
 
-void    Response::GET(int fd, request &req, serverConfig *servconf)
+void            Response::delete_files_in_directory()
+{
+
+}
+
+void            Response::delete_path_file()
+{
+
+}
+
+// bool            Response::isDir(request &req)
+// {
+//     struct stat s;
+//     if(stat(req.getRequestURI().c_str(), &s) == 0 )
+//     {
+//         if( s.st_mode & S_IFDIR )
+//             delete_files_in_directory();
+//         else if( s.st_mode & S_IFREG )
+//             delete_path_file();
+//     }
+//     else
+//     {
+//         //error
+//     }
+// }
+
+void            Response::GET(int fd, request &req, serverConfig *servconf)
 {
     (void )fd;
     CGI cgi_handler(req, *servconf);
@@ -198,17 +224,23 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
     }
 }
 
-void        Response::POST()
+void            Response::POST()
 {
     
 }
 
-void        Response::DELETE()
+void            Response::DELETE(request &req)
 {
+    (void)req;
+    // if i understand i have to check if i have a directory or a file
+    // if it's a file i have to check if i have permissions to delete it
+    // if it's a directory i have to i have to check the permissions on it and then loop throught it and delete the files
+    // check errnos and set the remaining status code
+
     
 }
 
-std::string Response::ConvertHtml(std::string path)
+std::string     Response::ConvertHtml(std::string path)
 {
     // convert Html errors pages to a string
     std::fstream    myfile;
@@ -226,7 +258,7 @@ std::string Response::ConvertHtml(std::string path)
     return (ret);
 }
 
-void    Response::Return_string(request &req, serverConfig *servconf, int fd)
+void            Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	// std::cout << servconf->_root << std::endl;
     Request_statuscode_checked(req, servconf);
