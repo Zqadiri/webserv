@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/22 19:46:12 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/23 15:47:19 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 		parseChunkedRequest(filename);
 	}
 	if (_status == COMPLETE){
-		// print_req(*this);
+
 		return 0;
 	}
 	return 1;
