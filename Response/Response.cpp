@@ -8,6 +8,7 @@ Response::Response(int socket)
 	this->_status_code = 0;
 	this->_response_string = "";
 	this->_get_file_success_open = true;
+	this->_file_extension = "";
 	_file_change = "/tmp/response_file_";
 	_file_change += to_string(socket);
 	myfile.open(_file_change, std::fstream::in | std::fstream::out | std::fstream::trunc);
@@ -24,7 +25,7 @@ Response::Response(Response &cp)
 	this->_status_code = cp._status_code;
 }
 
-std::string    Response::Request_statuscode_checked(request &req, serverConfig* servconf)
+std::string     Response::Request_statuscode_checked(request &req, serverConfig* servconf)
 {
 	this->_status_code = req.getRetCode();
 	if(this->_status_code != 200)
@@ -52,33 +53,34 @@ std::string    Response::Request_statuscode_checked(request &req, serverConfig* 
 	return _pages_to_string;
 }
 
-void    Response::Methods_exec(request &req, int fd, serverConfig *servconf)
+void            Response::Methods_exec(request &req, int fd, serverConfig *servconf)
 {
 	std::string str;
 
-	str = req.getMethod();
-	if (this->_status_code == 200)
-	{
-		if(str == "GET")
-			return GET(fd, req, servconf);
-		else if(str == "POST")
-			return POST();
-		else if(str == "DELETE")
-			return DELETE(req, servconf);
-	}
+    str = req.getMethod();
+    if (this->_status_code == 200)
+    {
+        if(str == "GET")
+            return GET(fd, req, servconf);
+        else if(str == "POST")
+            return POST();
+        else if(str == "DELETE")
+            return DELETE(req, servconf);
+    }
 }
 
-std::string Response::Content_type()
+std::string     Response::Content_type()
 {
-	std::string ret("");
-	ret = std::string(this->_file_extension);
-	return ret;
+    std::string ret;
+    ret = std::string(this->_file_extension); //! read-memory-access (const char * to std::string)
+	std::cout <<"type " << ret << std::endl;
+    return ret;
 }
 
-int         Response::File_lenght(request &req)
+int             Response::File_lenght(request &req)
 {
 	// we gonna calculate the length of our file (body lenght)
-	(void)req;
+	// (void)req;
 	int             ret = 0;
 	struct          stat sb;
 
@@ -86,24 +88,29 @@ int         Response::File_lenght(request &req)
 		ret = sb.st_size;
 	else
 		ret = -1;
+	
+	std::cout << GREEN << ret << RESET << std::endl;
 	return ret;
 }
 
-void    Response::File_type(request &req)
+void            Response::File_type(request &req)
 {
 
 	std::string str;
 	std::string str2;
 	int         index;
+	const char * type;
 
 	str = req.getRequestURI();
 	index = str.find_first_of(".");
 	str2 = str.substr(index+1, str.length());
 	this->_check_extension_mine = str2;
-	this->_file_extension = MimeTypes::getType(str.c_str());
+	type = MimeTypes::getType(str2.c_str());
+	if(type != NULL)
+		this->_file_extension = std::string(type);
 }
 
-bool    Response::isCGI(request &req, serverConfig *servconf)
+bool            Response::isCGI(request &req, serverConfig *servconf)
 {
 	(void)req;
 	(void)servconf;
@@ -114,11 +121,37 @@ bool    Response::isCGI(request &req, serverConfig *servconf)
 	return false;
 }
 
-std::string Response::getfileChange(){
-	return _file_change;
+std::string     Response::getfileChange(){
+    return _file_change;
 }
 
-void    Response::GET(int fd, request &req, serverConfig *servconf)
+void            Response::delete_files_in_directory()
+{
+
+}
+
+void            Response::delete_path_file()
+{
+
+}
+
+// bool            Response::isDir(request &req)
+// {
+//     struct stat s;
+//     if(stat(req.getRequestURI().c_str(), &s) == 0 )
+//     {
+//         if( s.st_mode & S_IFDIR )
+//             delete_files_in_directory();
+//         else if( s.st_mode & S_IFREG )
+//             delete_path_file();
+//     }
+//     else
+//     {
+//         //error
+//     }
+// }
+
+void            Response::GET(int fd, request &req, serverConfig *servconf)
 {
 	(void )fd;
 	CGI cgi_handler(req, *servconf);
@@ -162,13 +195,13 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
 		myfile << "Myserver\r\n";
 
 		//Content Type------------------
+		File_type(req);
 		myfile << "Content-Type: ";
-		// content_type = Content_type();
-		// myfile << content_type;
+		content_type = Content_type();
+		myfile << content_type;
 		myfile << "\r\n"; //blanate d zineb
 
 		//Body length----------------------
-		File_type(req);
 		myfile << "Content-Length: ";
 		length = File_lenght(req);
 		myfile << to_string(length);
@@ -198,7 +231,7 @@ void    Response::GET(int fd, request &req, serverConfig *servconf)
 	}
 }
 
-void        Response::POST()
+void            Response::POST()
 {
 	
 }
@@ -237,10 +270,10 @@ void        Response::DELETE(request &req, serverConfig *servconf)
 		_status_code = 404; // 404 Not Found
 	if (_status_code == 403 || _status_code == 404)
 		puts("need body ");
-		// add response headers data 
+	// add response headers data 
 }
 
-std::string Response::ConvertHtml(std::string path)
+std::string     Response::ConvertHtml(std::string path)
 {
 	// convert Html errors pages to a string
 	std::fstream    myfile;
@@ -258,7 +291,7 @@ std::string Response::ConvertHtml(std::string path)
 	return (ret);
 }
 
-void    Response::Return_string(request &req, serverConfig *servconf, int fd)
+void            Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	// std::cout << servconf->_root << std::endl;
 	Request_statuscode_checked(req, servconf);

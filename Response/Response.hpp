@@ -27,8 +27,11 @@ class Response
         bool            isCGI(request &req, serverConfig *servconf);
         void            GET(int fd, request &req, serverConfig*);
         void            POST();
-        void            DELETE(request &, serverConfig *);
-        std::string getfileChange();
+        void            DELETE(request &req, serverConfig*);
+        std::string     getfileChange();
+        void            delete_files_in_directory();
+        void            delete_path_file();
+        bool            isDir(request &req);
         // std::fstream    get_file_stream(){return this->_file;};
 
     private:
@@ -37,7 +40,7 @@ class Response
         int             _status_code;
         std::string     _pages_to_string;
         std::string     _file_change;
-        const char*     _file_extension;
+        std::string     _file_extension;
         std::string     _check_extension_mine;
         bool            _get_file_success_open;
         // request     request();
