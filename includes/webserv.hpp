@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/22 13:06:46 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/23 16:24:43 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <sys/stat.h>
 
 // Network 
 #include <sys/socket.h>

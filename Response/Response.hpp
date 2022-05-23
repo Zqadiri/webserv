@@ -27,7 +27,7 @@ class Response
         bool            isCGI(request &req, serverConfig *servconf);
         void            GET(int fd, request &req, serverConfig*);
         void            POST();
-        void            DELETE();
+        void            DELETE(request &, serverConfig *);
         std::string getfileChange();
         // std::fstream    get_file_stream(){return this->_file;};
 
