@@ -80,12 +80,12 @@ int             Response::File_lenght(request &req)
     // we gonna calculate the length of our file (body lenght)
     (void)req;
     int             ret = 0;
-    // struct          stat sb;
+    struct          stat sb;
 
-    // if(!stat(req.getRequestURI().c_str(), &sb))
-    //     ret = sb.st_size;
-    // else
-    //     ret = -1;
+    if(!stat(req.getRequestURI().c_str(), &sb))
+        ret = sb.st_size;
+    else
+        ret = -1;
     return ret;
 }
 
@@ -196,7 +196,7 @@ void            Response::GET(int fd, request &req, serverConfig *servconf)
         //Body length----------------------
         File_type(req);
         myfile << "Content-Length: ";
-        length = File_lenght(req); //! equal to 18446744073709551615 !
+        length = File_lenght(req);
         myfile << to_string(length);
         myfile << "\r\n";
 
