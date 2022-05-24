@@ -37,7 +37,7 @@ int File_lenght(std::string req)
     if(!stat(req.c_str(), &sb))
     {
         ret = sb.st_size;
-        puts("1");
+        // puts("1");
     }
     else
         ret = -1;

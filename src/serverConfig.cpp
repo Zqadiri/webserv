@@ -107,7 +107,7 @@ unsigned int	serverConfig::serverName(serverConfig &serv, configFile con, unsign
 unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &index){
 	while (true)
 	{
-		if (!con[index].compare("root")){
+		if (!con[index].compare("root")){ 
 			index++;
 			l._root = con[index];
 			index++;

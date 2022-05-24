@@ -29,9 +29,8 @@ class Response
         void            POST();
         void            DELETE(request &req, serverConfig*);
         std::string     getfileChange();
-        void            delete_files_in_directory();
-        void            delete_path_file();
-        bool            isDir(request &req);
+        std::string     CompletePath(request &req, serverConfig*);
+        int             IsFile(const std::string& path);
         // std::fstream    get_file_stream(){return this->_file;};
 
     private:
@@ -39,7 +38,8 @@ class Response
         std::string     _response_string;
         int             _status_code;
         std::string     _pages_to_string;
-        std::string     _file_change;
+        std::string     _file_change_get;
+        std::string     _file_change_delete;
         std::string     _file_extension;
         std::string     _check_extension_mine;
         bool            _get_file_success_open;

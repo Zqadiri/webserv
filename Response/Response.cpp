@@ -5,13 +5,19 @@
 Response::Response(int socket)
 {
 	std::fstream myfile;
+
 	this->_status_code = 0;
 	this->_response_string = "";
 	this->_get_file_success_open = true;
 	this->_file_extension = "";
-	_file_change = "/tmp/response_file_";
-	_file_change += to_string(socket);
-	myfile.open(_file_change, std::fstream::in | std::fstream::out | std::fstream::trunc);
+	//response file get method
+	this->_file_change_get = "/tmp/response_file_get_";
+	this->_file_change_get += to_string(socket);
+	//response file delete method
+	this->_file_change_delete = "/tmp/response_file_delete_";
+	this->_file_change_delete += to_string(socket);
+
+	myfile.open(_file_change_get, std::fstream::in | std::fstream::out | std::fstream::trunc);
 	myfile.close();
 }
 
@@ -99,7 +105,7 @@ void            Response::File_type(request &req)
 	std::string str;
 	std::string str2;
 	int         index;
-	const char * type;
+	const char	*type;
 
 	str = req.getRequestURI();
 	index = str.find_first_of(".");
@@ -122,39 +128,15 @@ bool            Response::isCGI(request &req, serverConfig *servconf)
 }
 
 std::string     Response::getfileChange(){
-    return _file_change;
+    return _file_change_get;
 }
-
-void            Response::delete_files_in_directory()
-{
-
-}
-
-void            Response::delete_path_file()
-{
-
-}
-
-// bool            Response::isDir(request &req)
-// {
-//     struct stat s;
-//     if(stat(req.getRequestURI().c_str(), &s) == 0 )
-//     {
-//         if( s.st_mode & S_IFDIR )
-//             delete_files_in_directory();
-//         else if( s.st_mode & S_IFREG )
-//             delete_path_file();
-//     }
-//     else
-//     {
-//         //error
-//     }
-// }
 
 void            Response::GET(int fd, request &req, serverConfig *servconf)
 {
 	(void )fd;
-	CGI cgi_handler(req, *servconf);
+	CGI			cgi_handler(req, *servconf);
+	std::string	str_uri;
+
 	if(!isCGI(req, servconf))
 	{
 		std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
@@ -165,7 +147,7 @@ void            Response::GET(int fd, request &req, serverConfig *servconf)
 		std::string     fill;
 		time_t          rawtime;
 
-		myfile.open(_file_change, std::fstream::in | std::fstream::app);
+		myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
 		this->_get_file_success_open = true;
 		// first line in header----------------
 		myfile << "HTTP/1.1 ";
@@ -208,20 +190,32 @@ void            Response::GET(int fd, request &req, serverConfig *servconf)
 		myfile << "\r\n";
 
 		//Body part start
-		body_file.open(req.getRequestURI());
-		if(body_file)
+		// i need to take the path and see if it's a file or directory, if it's a directory i need to search for the default file
+		// if it's a file i need to open it and fill the body with it's content
+
+
+		str_uri = CompletePath(req, servconf);
+		body_file.open(str_uri); // has to be changed
+		if(IsFile(str_uri))
 		{
-			while(!body_file.eof())
+			if(body_file)
 			{
-				std::getline(body_file, fill);
-				myfile << fill;
-				myfile << "\n";
+				while(!body_file.eof())
+				{
+					std::getline(body_file, fill);
+					myfile << fill;
+					myfile << "\n";
+				}
 			}
+			else
+				this->_get_file_success_open = false;
 		}
 		else
-			this->_get_file_success_open = false;
-
-		//end of method and close file    
+		{
+			// i have to check on the file and autoindex and list all the files
+			// i donno how to do it yet
+		}
+		//end of method and close file
 		myfile.close();
 	}
 	else
@@ -236,14 +230,14 @@ void            Response::POST()
 	
 }
 
-int		IsFile(const std::string& path)
+int				Response::IsFile(const std::string& path)
 {
 	struct stat buf;
 	//int stat(const char *path, struct stat *buf)
 	if (stat(path.c_str(), &buf) == 0 )
 	{
 		if (buf.st_mode & S_IFDIR) // direc
-			return 0;
+			return 2;
 		else if (buf.st_mode & S_IFREG) // regular file
 			return 1;
 		else
@@ -253,9 +247,30 @@ int		IsFile(const std::string& path)
 		return 0;
 }
 
-// ! ressource : https://reqbin.com/Article/HttpDelete#:~:text=The%20HTTP%20DELETE%20method%20is,servers%20to%20reject%20the%20request.
+std::string		Response::CompletePath(request &req, serverConfig *servconfig)
+{
+	size_t					i;
+	std::string				str_ret;
+	std::vector<_location>	ve;
 
-void        Response::DELETE(request &req, serverConfig *servconf)
+	i = 0;
+	ve = servconfig->getLocations();
+	str_ret = "";
+	while(i < ve.size())
+	{
+		if(ve[i]._path == req.getRequestURI())
+		{
+			str_ret += ve[i]._root;
+			str_ret += ve[i]._path;
+			return str_ret;
+		}
+		i++;
+	}
+	return str_ret;
+}
+
+// ! ressource : https://reqbin.com/Article/HttpDelete#:~:text=The%20HTTP%20DELETE%20method%20is,servers%20to%20reject%20the%20request.
+void			Response::DELETE(request &req, serverConfig *servconf)
 {
 	(void)servconf;
 	if (IsFile(req.getPath()))
@@ -270,7 +285,12 @@ void        Response::DELETE(request &req, serverConfig *servconf)
 		_status_code = 404; // 404 Not Found
 	if (_status_code == 403 || _status_code == 404)
 		puts("need body ");
-	// add response headers data 
+	// add response headers data
+	std::fstream	myfile;
+	myfile.open(_file_change_delete, std::fstream::in | std::fstream::app);
+	myfile << "HTTP/1.1 204 No Content\r\n";
+	myfile << "Server: ";
+	myfile << "Myserver\r\n";
 }
 
 std::string     Response::ConvertHtml(std::string path)
