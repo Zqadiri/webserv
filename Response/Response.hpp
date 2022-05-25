@@ -23,7 +23,7 @@ class Response
         std::string     ConvertHtml(std::string path);
         std::string     Content_type();
         int             File_lenght(request &req);
-        void            File_type(request &req);
+        void            File_type(request &req, serverConfig*);
         bool            isCGI(request &req, serverConfig *servconf);
         void            GET(int fd, request &req, serverConfig*);
         void            POST();

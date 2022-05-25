@@ -99,7 +99,7 @@ int             Response::File_lenght(request &req)
 	return ret;
 }
 
-void            Response::File_type(request &req)
+void            Response::File_type(request &req, serverConfig *serverConfig)
 {
 
 	std::string str;
@@ -112,7 +112,11 @@ void            Response::File_type(request &req)
 	str2 = str.substr(index+1, str.length());
 	this->_check_extension_mine = str2;
 	type = MimeTypes::getType(str2.c_str());
-	if(type != NULL)
+	if(type == NULL)
+	{
+		
+	}
+	else
 		this->_file_extension = std::string(type);
 }
 
