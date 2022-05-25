@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/22 12:58:45 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/25 13:04:37 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 struct _location
 {
+	// location data
 	std::string				_path;
 	std::list<std::string>	_allow_methods;
 	std::string				_root;
@@ -25,12 +26,12 @@ struct _location
 	bool					_alias;
 	std::string				_pathCGI;
 	bool					_autoindex;
-	std::vector<_location>	_nestedLocations;
 };
 
 class serverConfig
 {
 	public:
+		// server data
 		std::list<std::string>		_server_name;
 		std::string					_root;
 		std::string					_index;
@@ -39,8 +40,8 @@ class serverConfig
 		int							_limitBodySize;
 		std::list<std::string>		_error_pages;
 		std::list<std::string>		_allow_methods;
-		std::vector<_location>		_locations;
-		 
+		std::vector<_location>		_locations; // vector of locations
+		  
 	public:
 		serverConfig();
 		serverConfig(std::string _root, std::string _index, std::string _host);
@@ -48,6 +49,7 @@ class serverConfig
 		serverConfig(const serverConfig &obj);
 		serverConfig	&operator=(const serverConfig&);
 
+		// Accessors
 		const t_listen				 	&gethostPort(void) const;
 		const std::list<std::string>	&getServerName(void) const;
 		const std::vector<_location>	&getLocations(void) const;

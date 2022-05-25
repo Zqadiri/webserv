@@ -6,13 +6,11 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/22 12:59:49 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/25 13:02:50 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "serverConfig.hpp"
-
-static bool isNested = 0;
 
 const char* keys[] = {
 	"server_names", 
@@ -140,9 +138,6 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 		}
 		else
 			index++;
-		if (!con[index].compare("location")){
-			isNested = 1;
-		}
 		if (!con[index].compare("}"))
 			break;
 	}
@@ -169,12 +164,7 @@ unsigned int	serverConfig::parseLocation(serverConfig &serv, configFile con, uns
 		index = location(l, con, index);
 	else
 		throw "MSG";
-	if (!isNested)
-		serv._locations.push_back(l);
-	else {
-		l._nestedLocations.push_back(l);
-		isNested = 0;
-	}
+	serv._locations.push_back(l);
 	return index;
 }
 
