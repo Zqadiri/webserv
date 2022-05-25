@@ -31,7 +31,7 @@ Response::Response(Response &cp)
 	this->_status_code = cp._status_code;
 }
 
-std::string     Response::Request_statuscode_checked(request &req, serverConfig* servconf)
+std::string     			Response::Request_statuscode_checked(request &req, serverConfig* servconf)
 {
 	this->_status_code = req.getRetCode();
 	if(this->_status_code != 200)
@@ -59,7 +59,7 @@ std::string     Response::Request_statuscode_checked(request &req, serverConfig*
 	return _pages_to_string;
 }
 
-void            Response::Methods_exec(request &req, int fd, serverConfig *servconf)
+void            			Response::Methods_exec(request &req, int fd, serverConfig *servconf)
 {
 	std::string str;
 
@@ -75,7 +75,7 @@ void            Response::Methods_exec(request &req, int fd, serverConfig *servc
     }
 }
 
-std::string     Response::Content_type()
+std::string     			Response::Content_type()
 {
     std::string ret;
     ret = std::string(this->_file_extension); //! read-memory-access (const char * to std::string)
@@ -83,14 +83,14 @@ std::string     Response::Content_type()
     return ret;
 }
 
-int             Response::File_lenght(request &req)
+int             			Response::File_lenght(request &req, serverConfig* servconf)
 {
 	// we gonna calculate the length of our file (body lenght)
 	// (void)req;
 	int             ret = 0;
 	struct          stat sb;
 
-	if(!stat(req.getRequestURI().c_str(), &sb))
+	if(!stat(CompletePath(req, servconf).c_str(), &sb))
 		ret = sb.st_size;
 	else
 		ret = -1;
@@ -99,14 +99,33 @@ int             Response::File_lenght(request &req)
 	return ret;
 }
 
-void            Response::File_type(request &req, serverConfig *serverConfig)
+std::vector<std::string>	Response::getFilesInDirectory(std::string path)
+{
+	DIR 						*dir;
+	struct dirent				*diread;
+	std::vector<std::string>	files;
+
+	if ((dir = opendir(path.c_str())) != nullptr) 
+	{
+        while ((diread = readdir(dir)) != nullptr) 
+            files.push_back(diread->d_name);
+        closedir (dir);
+    }
+	else 
+		std::cout << RED << "getfiles in direcoty have a problem opening the folder" << RESET << std::endl;
+	return files;
+}
+
+void            			Response::File_type(request &req, serverConfig *serverConfig)
 {
 
 	std::string str;
 	std::string str2;
+	std::string	s;
 	int         index;
 	const char	*type;
 
+	s = "";
 	str = req.getRequestURI();
 	index = str.find_first_of(".");
 	str2 = str.substr(index+1, str.length());
@@ -114,13 +133,55 @@ void            Response::File_type(request &req, serverConfig *serverConfig)
 	type = MimeTypes::getType(str2.c_str());
 	if(type == NULL)
 	{
-		
+		s += serverConfig->_root;
+		s += serverConfig->_index;
+		std::cout << GREEN << "This is the path :-----------------------" << s << RESET << std::endl;
+		if(serverConfig->_autoindex == false)
+		{
+			if(IsFile(s) == 2)
+				std::cout << RED << "error in filetype: Directory and autoindex off without a file" << std::endl;
+			else if(IsFile(s) == 1)
+			{
+				puts("--------------------------------");
+				str = serverConfig->_index;
+				std::cout << "str is here -----------------------------" << str << std::endl;
+				index = str.find_first_of(".");
+				str2 = str.substr(index+1, str.length());
+				this->_check_extension_mine = str2;
+				type = MimeTypes::getType(str2.c_str());
+				this->_file_extension = std::string(type);
+				std:: cout << RED << "TYPE:-------------------" << type << RESET << std::endl;
+			}
+			else
+				std:: cout << RED << "Error: Problem With ur file opening" << RESET << std::endl;
+		}
+		else
+		{
+			if(IsFile(s) == 2)
+			{
+				std::fstream	file;
+
+				file.open("/tmp/auto_index.html");
+				file << "<html>\n";
+				file << "<head>\n";
+				file << "<title>Index of /</title>\n";
+				file << "</head>\n";
+				file << "<body>\n";
+				file << "<center>\n";
+				file << "<h1>Index of/</h1>\n";
+				file << "<hr style=\"width:70%\">\n";
+				file << "</center>\n";
+				// loop through the folder and get the names;
+				file << "</body>\n";
+				file << "/<html>";
+			}
+		}
 	}
 	else
 		this->_file_extension = std::string(type);
 }
 
-bool            Response::isCGI(request &req, serverConfig *servconf)
+bool            			Response::isCGI(request &req, serverConfig *servconf)
 {
 	(void)req;
 	(void)servconf;
@@ -131,11 +192,11 @@ bool            Response::isCGI(request &req, serverConfig *servconf)
 	return false;
 }
 
-std::string     Response::getfileChange(){
+std::string     			Response::getfileChange(){
     return _file_change_get;
 }
 
-void            Response::GET(int fd, request &req, serverConfig *servconf)
+void            			Response::GET(int fd, request &req, serverConfig *servconf)
 {
 	(void )fd;
 	CGI			cgi_handler(req, *servconf);
@@ -181,7 +242,7 @@ void            Response::GET(int fd, request &req, serverConfig *servconf)
 		myfile << "Myserver\r\n";
 
 		//Content Type------------------
-		File_type(req);
+		File_type(req, servconf);
 		myfile << "Content-Type: ";
 		content_type = Content_type();
 		myfile << content_type;
@@ -189,7 +250,7 @@ void            Response::GET(int fd, request &req, serverConfig *servconf)
 
 		//Body length----------------------
 		myfile << "Content-Length: ";
-		length = File_lenght(req);
+		length = File_lenght(req, servconf);
 		myfile << to_string(length);
 		myfile << "\r\n";
 
@@ -229,12 +290,12 @@ void            Response::GET(int fd, request &req, serverConfig *servconf)
 	}
 }
 
-void            Response::POST()
+void            			Response::POST()
 {
 	
 }
 
-int				Response::IsFile(const std::string& path)
+int							Response::IsFile(const std::string& path)
 {
 	struct stat buf;
 	//int stat(const char *path, struct stat *buf)
@@ -251,7 +312,7 @@ int				Response::IsFile(const std::string& path)
 		return 0;
 }
 
-std::string		Response::CompletePath(request &req, serverConfig *servconfig)
+std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 {
 	size_t					i;
 	std::string				str_ret;
@@ -275,7 +336,7 @@ std::string		Response::CompletePath(request &req, serverConfig *servconfig)
 
 // ! ressource : https://reqbin.com/Article/HttpDelete#:~:text=The%20HTTP%20DELETE%20method%20is,servers%20to%20reject%20the%20request.
 
-void			Response::DELETE(request &req, serverConfig *servconf)
+void						Response::DELETE(request &req, serverConfig *servconf)
 {
 	(void)servconf;
 	if (IsFile(req.getPath()))
@@ -298,7 +359,7 @@ void			Response::DELETE(request &req, serverConfig *servconf)
 	myfile << "Myserver\r\n";
 }
 
-std::string     Response::ConvertHtml(std::string path)
+std::string     			Response::ConvertHtml(std::string path)
 {
 	// convert Html errors pages to a string
 	std::fstream    myfile;
@@ -316,7 +377,7 @@ std::string     Response::ConvertHtml(std::string path)
 	return (ret);
 }
 
-void            Response::Return_string(request &req, serverConfig *servconf, int fd)
+void            			Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	// std::cout << servconf->_root << std::endl;
 	Request_statuscode_checked(req, servconf);

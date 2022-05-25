@@ -54,7 +54,7 @@ bool notAValueL(std::string value){
 
 serverConfig::serverConfig() : _root(""), _index(""), _hostPort(t_listen()){
 	_hostPort.host = 0;
-	_autoindex = 0;
+	_autoindex = false;
 	_hostPort.port = -1;
 	_limitBodySize = -1;
 }
@@ -134,7 +134,7 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 			if (con[index].compare("on") && con[index].compare("off"))
 				throw "Autoindex";
 			else if (!con[index].compare("on"))
-				_autoindex = 1;
+				l._autoindex = 1;
 		}
 		else
 			index++;
@@ -150,7 +150,7 @@ unsigned int	serverConfig::autoIndex(serverConfig &serv, configFile con, unsigne
 	if (con[index].compare("on") && con[index].compare("off"))
 		throw "Autoindex";
 	else if (!con[index].compare("on"))
-		serv._autoindex = 1;
+		serv._autoindex = true;
 	return index++;
 }
 

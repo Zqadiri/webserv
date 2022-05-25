@@ -4,6 +4,7 @@
 #include "../includes/webserv.hpp"
 #include "../src/Request/request.hpp"
 #include "../src/CGI/CGI.hpp"
+#include "dirent.h"
 
 class Response
 {
@@ -17,20 +18,21 @@ class Response
         ~Response();
 
         //Response start
-        std::string     Request_statuscode_checked(request &request, serverConfig*);
-        void            Methods_exec(request &request, int fd, serverConfig *);
-        void            Return_string(request &request, serverConfig*, int fd);
-        std::string     ConvertHtml(std::string path);
-        std::string     Content_type();
-        int             File_lenght(request &req);
-        void            File_type(request &req, serverConfig*);
-        bool            isCGI(request &req, serverConfig *servconf);
-        void            GET(int fd, request &req, serverConfig*);
-        void            POST();
-        void            DELETE(request &req, serverConfig*);
-        std::string     getfileChange();
-        std::string     CompletePath(request &req, serverConfig*);
-        int             IsFile(const std::string& path);
+        std::string                 Request_statuscode_checked(request &request, serverConfig*);
+        void                        Methods_exec(request &request, int fd, serverConfig *);
+        void                        Return_string(request &request, serverConfig*, int fd);
+        std::string                 ConvertHtml(std::string path);
+        std::string                 Content_type();
+        int                         File_lenght(request &req, serverConfig*);
+        void                        File_type(request &req, serverConfig*);
+        bool                        isCGI(request &req, serverConfig *servconf);
+        void                        GET(int fd, request &req, serverConfig*);
+        void                        POST();
+        void                        DELETE(request &req, serverConfig*);
+        std::string                 getfileChange();
+        std::string                 CompletePath(request &req, serverConfig*);
+        int                         IsFile(const std::string& path);
+        std::vector<std::string>    getFilesInDirectory(std::string);
         // std::fstream    get_file_stream(){return this->_file;};
 
     private:
