@@ -274,6 +274,7 @@ std::string		Response::CompletePath(request &req, serverConfig *servconfig)
 }
 
 // ! ressource : https://reqbin.com/Article/HttpDelete#:~:text=The%20HTTP%20DELETE%20method%20is,servers%20to%20reject%20the%20request.
+
 void			Response::DELETE(request &req, serverConfig *servconf)
 {
 	(void)servconf;

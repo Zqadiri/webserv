@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 16:00:01 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/25 13:01:02 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,22 +41,21 @@ class request
 			CHUNK,
 		};
 		
-		const std::string							&getQuery() const;
-		const std::string							&getMethod() const;
-		const std::string							&getPath() const;
-		const std::string							&getRequestURI() const;
-		const std::string							&getVersion() const;
-		const std::string							&getHost() const;
-		std::string									&getContentFromMap(std::string);
-		const int									&getPort() const;
-		const std::map<std::string, std::string>	&getHeaders() const;
+		const std::string							&getQuery() const; // return the query string [?*]
+		const std::string							&getMethod() const; //request method
+		const std::string							&getPath() const; // get te full request path
+		const std::string							&getRequestURI() const; // path without the query string
+		const std::string							&getVersion() const; // http version
+		const std::string							&getHost() const; // request Host
+		std::string									&getContentFromMap(std::string); // to get content from the header map
+		const int									&getPort() const; // request port
+		const std::map<std::string, std::string>	&getHeaders() const; // headers 
 		const std::time_t  							&getTime() const;
-		int											getRetCode() const;
+		int											getRetCode() const; // status code
 		int											getBodyLength() const;
 		int											InternalServerError();
 		void										setCode(int);
 
-		void									getQueryString();
 		void									parseAuthorization(request&);
 		void									Host(const std::string &, request&);
 		int										getFirstLine(const std::string &, request&);
@@ -67,6 +66,7 @@ class request
 		std::string								getNextLine(const std::string &, size_t&);
 		std::string								getKey(const std::string&);
 		std::string								getValue(const std::string&, size_t);
+		void									getQueryString();
 		int										checkMethod();
 
 	private:
@@ -86,6 +86,7 @@ class request
 		std::string								_tmp; 
 		int										_bodyLength;
 		std::time_t 							_current_time;
+
 		//! print function 
 		void	print_req(request &);
 };

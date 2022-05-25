@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/22 13:09:39 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/25 13:03:11 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,14 +271,6 @@ void	Config::print(){
 			for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
 				it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
 					std::cout << " > " << *it << std::endl;
-			std::cout << " >> [nestedLocation "<< this->servers[i]->_locations[j]._nestedLocations.size() << "]"<< std::endl;
-			for (size_t  k = 0; k < this->servers[i]->_locations[j]._nestedLocations.size(); k++){
-				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._path << std::endl;
-				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._alias << std::endl;
-				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._pathCGI << std::endl;
-				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._index << std::endl;
-				std::cout << this->servers[i]->_locations[j]._nestedLocations[k]._root << std::endl;
-			}
 		}
 	}
 }
