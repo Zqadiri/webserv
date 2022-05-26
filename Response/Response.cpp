@@ -79,18 +79,20 @@ std::string     			Response::Content_type()
 {
     std::string ret;
     ret = std::string(this->_file_extension); //! read-memory-access (const char * to std::string)
-	std::cout <<"type " << ret << std::endl;
     return ret;
 }
 
-int             			Response::File_lenght(request &req, serverConfig* servconf)
+int             			Response::File_lenght(request &req, serverConfig* servconf, std::string str)
 {
 	// we gonna calculate the length of our file (body lenght)
 	// (void)req;
 	int             ret = 0;
 	struct          stat sb;
+	// std::string		str;
 
-	if(!stat(CompletePath(req, servconf).c_str(), &sb))
+	(void)req;
+	(void)servconf;
+	if(!stat(str.c_str(), &sb))
 		ret = sb.st_size;
 	else
 		ret = -1;
@@ -139,10 +141,12 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 		if(serverConfig->_autoindex == false)
 		{
 			if(IsFile(s) == 2)
-				std::cout << RED << "error in filetype: Directory and autoindex off without a file" << std::endl;
+			{
+				this->_status_code = 403;
+				this->_pages_to_string = ConvertHtml("./response_errors_pages/403.html");
+			}
 			else if(IsFile(s) == 1)
 			{
-				puts("--------------------------------");
 				str = serverConfig->_index;
 				std::cout << "str is here -----------------------------" << str << std::endl;
 				index = str.find_first_of(".");
@@ -150,10 +154,12 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 				this->_check_extension_mine = str2;
 				type = MimeTypes::getType(str2.c_str());
 				this->_file_extension = std::string(type);
-				std:: cout << RED << "TYPE:-------------------" << type << RESET << std::endl;
 			}
 			else
-				std:: cout << RED << "Error: Problem With ur file opening" << RESET << std::endl;
+			{
+				this->_status_code = 404;
+				this->_pages_to_string = ConvertHtml("./response_errors_pages/404.html");
+			}
 		}
 		else
 		{
@@ -202,6 +208,8 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	CGI			cgi_handler(req, *servconf);
 	std::string	str_uri;
 
+	File_type(req, servconf);
+	std::cout << RED << "status code----------------" << this->_status_code << std::endl;
 	if(!isCGI(req, servconf))
 	{
 		std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
@@ -214,6 +222,10 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 
 		myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
 		this->_get_file_success_open = true;
+
+		str_uri = CompletePath(req, servconf);
+		std::cout << GREEN << "str uri is here " << str_uri << RESET << std::endl;
+
 		// first line in header----------------
 		myfile << "HTTP/1.1 ";
 		if(this->_status_code == 200)
@@ -230,6 +242,8 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 				myfile << "405 Not Allowed\r\n";
 			else if(this->_status_code == 413)
 				myfile << "413 Payload Too Large\r\n";
+			else if(this->_status_code == 404)
+				myfile << "404 Not Found\r\n";
 		}
 
 		// Current Date-----------------
@@ -244,22 +258,23 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		//Content Type------------------
 		File_type(req, servconf);
 		myfile << "Content-Type: ";
-		content_type = Content_type();
+		if(this->_status_code == 200)
+			content_type = Content_type();
+		else
+			content_type = "text/html";
 		myfile << content_type;
 		myfile << "\r\n"; //blanate d zineb
 
 		//Body length----------------------
 		myfile << "Content-Length: ";
-		length = File_lenght(req, servconf);
+		length = File_lenght(req, servconf, str_uri);
 		myfile << to_string(length);
-		myfile << "\r\n";
+		myfile << "\n\n";
 
 		//Body part start
 		// i need to take the path and see if it's a file or directory, if it's a directory i need to search for the default file
 		// if it's a file i need to open it and fill the body with it's content
 
-
-		str_uri = CompletePath(req, servconf);
 		body_file.open(str_uri); // has to be changed
 		if(IsFile(str_uri))
 		{
@@ -269,7 +284,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 				{
 					std::getline(body_file, fill);
 					myfile << fill;
-					myfile << "\n";
+					myfile << "\n\n";
 				}
 			}
 			else
@@ -321,15 +336,33 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	i = 0;
 	ve = servconfig->getLocations();
 	str_ret = "";
-	while(i < ve.size())
+	if(this->_status_code == 200)
 	{
-		if(ve[i]._path == req.getRequestURI())
+		if(req.getRequestURI() == "/")
 		{
-			str_ret += ve[i]._root;
-			str_ret += ve[i]._path;
-			return str_ret;
+				str_ret += servconfig->_root;
+				str_ret += servconfig->_index;
+				return str_ret;
 		}
-		i++;
+		else
+		{
+			while(i < ve.size())
+			{
+				if(ve[i]._path == req.getRequestURI())
+				{
+					str_ret += ve[i]._root;
+					str_ret += ve[i]._path;
+					return str_ret;
+				}
+				i++;
+			}
+		}
+	}
+	else
+	{
+		str_ret += "./Response/response_errors_pages/";
+		str_ret += to_string(this->_status_code);
+		str_ret += ".html";
 	}
 	return str_ret;
 }
