@@ -45,6 +45,7 @@ class Response
         std::string     _file_extension;
         std::string     _check_extension_mine;
         bool            _get_file_success_open;
+        bool            _my_auto_index;
         // request     request();
 };
 

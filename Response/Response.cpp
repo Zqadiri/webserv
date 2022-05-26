@@ -17,6 +17,7 @@ Response::Response(int socket)
 	this->_file_change_delete = "/tmp/response_file_delete_";
 	this->_file_change_delete += to_string(socket);
 
+	this->_my_auto_index = false;
 	myfile.open(_file_change_get, std::fstream::in | std::fstream::out | std::fstream::trunc);
 	myfile.close();
 }
@@ -114,7 +115,10 @@ std::vector<std::string>	Response::getFilesInDirectory(std::string path)
         closedir (dir);
     }
 	else 
-		std::cout << RED << "getfiles in direcoty have a problem opening the folder" << RESET << std::endl;
+	{
+		this->_status_code = 404;
+		this->_pages_to_string = ConvertHtml("./response_errors_pages/404.html");
+	}
 	return files;
 }
 
@@ -165,9 +169,14 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 		{
 			if(IsFile(s) == 2)
 			{
-				std::fstream	file;
+				int							i;
+				std::fstream				file;
+				std::vector<std::string>	ve;
 
-				file.open("/tmp/auto_index.html");
+				i = -1;
+				this->_my_auto_index = true;
+				// std::cout << "-----------------------------------------------------my_auto_index" << std::endl;
+				file.open("/tmp/auto_index.html",std::fstream::in | std::fstream::app);
 				file << "<html>\n";
 				file << "<head>\n";
 				file << "<title>Index of /</title>\n";
@@ -178,6 +187,13 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 				file << "<hr style=\"width:70%\">\n";
 				file << "</center>\n";
 				// loop through the folder and get the names;
+				ve = getFilesInDirectory(s);
+				while(++i < (int)ve.size())
+				{
+					file << "<div><a>";
+					file << ve[i];
+					file << "</a></div>\n";
+				}
 				file << "</body>\n";
 				file << "/<html>";
 			}
@@ -209,7 +225,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	std::string	str_uri;
 
 	File_type(req, servconf);
-	std::cout << RED << "status code----------------" << this->_status_code << std::endl;
+	// std::cout << RED << "myautoindex----------------" << this->_my_auto_index << std::endl;
 	if(!isCGI(req, servconf))
 	{
 		std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
@@ -223,7 +239,10 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
 		this->_get_file_success_open = true;
 
-		str_uri = CompletePath(req, servconf);
+		if(this->_my_auto_index == false)
+			str_uri = CompletePath(req, servconf);
+		else
+			str_uri = "/tmp/auto_index.html";
 		std::cout << GREEN << "str uri is here " << str_uri << RESET << std::endl;
 
 		// first line in header----------------
@@ -256,9 +275,8 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		myfile << "Myserver\r\n";
 
 		//Content Type------------------
-		File_type(req, servconf);
 		myfile << "Content-Type: ";
-		if(this->_status_code == 200)
+		if(this->_status_code == 200 && this->_my_auto_index == false)
 			content_type = Content_type();
 		else
 			content_type = "text/html";
@@ -276,25 +294,18 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		// if it's a file i need to open it and fill the body with it's content
 
 		body_file.open(str_uri); // has to be changed
-		if(IsFile(str_uri))
+		if(body_file)
 		{
-			if(body_file)
+			while(!body_file.eof())
 			{
-				while(!body_file.eof())
-				{
-					std::getline(body_file, fill);
-					myfile << fill;
-					myfile << "\n\n";
-				}
+				std::getline(body_file, fill);
+				myfile << fill;
+				myfile << "\n\n";
 			}
-			else
-				this->_get_file_success_open = false;
 		}
 		else
-		{
-			// i have to check on the file and autoindex and list all the files
-			// i donno how to do it yet
-		}
+			this->_get_file_success_open = false;
+
 		//end of method and close file
 		myfile.close();
 	}
@@ -419,4 +430,7 @@ void            			Response::Return_string(request &req, serverConfig *servconf,
 
 Response::~Response()
 {
+	if(this->_my_auto_index == true)
+		remove("/tmp/auto_index.html");
+	std::cout << RED << "Destructor called here" << RESET << std::endl;
 }
