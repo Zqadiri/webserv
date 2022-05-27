@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 13:30:31 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/21 15:29:48 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/27 16:48:32 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,12 @@
 #define __CGI_HPP__
 
 #include "../../includes/webserv.hpp"
+#include "../../Response/Response.hpp"
 #include "../Request/request.hpp"
 #include "../config.hpp"
 #include "../utils/utils.hpp"
+
+class Response;
 
 class CGI
 {
@@ -28,7 +31,7 @@ class CGI
 		~CGI(void);
 		CGI	&operator=(CGI const &src);
 		CGI( request &request,  serverConfig &server);
-		std::string		executeCgi(const std::string&, size_t);
+		std::string		executeCgi(const std::string&, size_t, Response&);
 };
 
 #endif

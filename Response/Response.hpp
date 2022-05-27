@@ -35,7 +35,7 @@ class Response
         std::vector<std::string>    getFilesInDirectory(std::string);
         // std::fstream    get_file_stream(){return this->_file;};
 
-    private:
+    public: //!!!!!
         // std::fstream    _file;
         std::string     _response_string;
         int             _status_code;

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/23 15:31:32 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/27 14:56:41 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int server::sen(int &socket, request& req)
 		buf += myline;
 		buf += "\r\n";
 	}
-	// std::cout << GREEN << ">" << buf  << "<" << RESET << std::endl;
+	std::cout << GREEN << ">" << buf  << "<" << RESET << std::endl;
 	ret = send(socket, buf.c_str(), buf.size(), 0);
 	if (ret == -1)
 		return (-1);

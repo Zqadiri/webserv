@@ -26,14 +26,17 @@
 
 
 
-int main()
+int main(int argc, char *argv[], char* env[])
 {
-    std::time_t start = std::time(NULL);
-    sleep(10);
-    std::time_t end = std::time(NULL);
-    
+    pid_t fd;
 
-    std::cout << "time passed: " << end - start << std::endl;
-
+    fd = fork();
+    if (fd == 0){
+      execle("./php-cgi", "./www/big_hello.php", NULL, env);
+	  	perror(" ->");
+    }
+    else{
+	  	waitpid(-1, NULL, 0);
+    }
     return (0);
 }

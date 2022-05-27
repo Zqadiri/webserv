@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:05:42 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/14 13:45:45 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/27 17:29:42 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "./src/servers.hpp"
 #include "./src/Request/request.hpp"
 #include <set>
+
+ 
 int ft_main(int argc, char *argv[])
 {
 	if (argc == 2)
@@ -24,8 +26,7 @@ int ft_main(int argc, char *argv[])
 			serv.setup();
 			serv.run();
 		}
-		catch(const std::exception& e)
-		{
+		catch(const std::exception& e){
 			std::cerr << RED << e.what() << '\n';
 		}
 	}
@@ -34,9 +35,10 @@ int ft_main(int argc, char *argv[])
 	return EXIT_SUCCESS;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[], char **env)
 {
 	ft_main(argc, argv);
+	env_g = env;
 	// system("leaks webserv");
 	return 1;
 }

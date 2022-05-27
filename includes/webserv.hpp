@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/23 16:24:43 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/27 17:29:48 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ typedef	std::vector<std::string>	configFile;
 
 extern const char* keys[];
 extern const char* locationKeys[];
+
+static char **env_g;
 
 typedef struct s_listen{
 	unsigned int	host;

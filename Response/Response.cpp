@@ -124,7 +124,6 @@ std::vector<std::string>	Response::getFilesInDirectory(std::string path)
 
 void            			Response::File_type(request &req, serverConfig *serverConfig)
 {
-
 	std::string str;
 	std::string str2;
 	std::string	s;
@@ -141,7 +140,7 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 	{
 		s += serverConfig->_root;
 		s += serverConfig->_index;
-		std::cout << GREEN << "This is the path :-----------------------" << s << RESET << std::endl;
+		// std::cout << GREEN << "This is the path :-----------------------" << s << RESET << std::endl;
 		if(serverConfig->_autoindex == false)
 		{
 			if(IsFile(s) == 2)
@@ -152,7 +151,7 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 			else if(IsFile(s) == 1)
 			{
 				str = serverConfig->_index;
-				std::cout << "str is here -----------------------------" << str << std::endl;
+				// std::cout << "str is here -----------------------------" << str << std::endl;
 				index = str.find_first_of(".");
 				str2 = str.substr(index+1, str.length());
 				this->_check_extension_mine = str2;
@@ -192,14 +191,12 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 				while(++i < (int)ve.size())
 				{
 					s2 = s + ve[i];
-					std::cout << YELLOW << "here are the files names------- " << s2 << std::endl;
 					file << "<div style=\"margin:10px\"><a href=";
 					file << "\"";
 					file << s2;
 					file << "\">";
 					file << ve[i];
 					file << "</a></div>\n";
-
 				}
 				// file << "</center>\n";
 				file << "</body>\n";
@@ -251,7 +248,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 			str_uri = CompletePath(req, servconf);
 		else
 			str_uri = "/tmp/auto_index.html";
-		std::cout << GREEN << "str uri is here " << str_uri << RESET << std::endl;
+		// std::cout << GREEN << "str uri is here " << str_uri << RESET << std::endl;
 
 		// first line in header----------------
 		myfile << "HTTP/1.1 ";
@@ -320,7 +317,14 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	else
 	{
 		std::cout << GREEN << "> CGI <" <<  RESET << std::endl;
-		cgi_handler.executeCgi(req.getRequestURI(), fd);
+		//! Wrong script path
+		std::string 	ret;
+		std::fstream    myfile;
+
+		myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
+		ret = cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
+		std::cout << "ret > " << ret << std::endl;
+		myfile << ret;
 	}
 }
 
