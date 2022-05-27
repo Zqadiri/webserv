@@ -172,28 +172,36 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 				int							i;
 				std::fstream				file;
 				std::vector<std::string>	ve;
+				std::string					s2;
 
 				i = -1;
 				this->_my_auto_index = true;
+				s2 = "";
 				// std::cout << "-----------------------------------------------------my_auto_index" << std::endl;
 				file.open("/tmp/auto_index.html",std::fstream::in | std::fstream::app);
 				file << "<html>\n";
 				file << "<head>\n";
 				file << "<title>Index of /</title>\n";
 				file << "</head>\n";
-				file << "<body>\n";
-				file << "<center>\n";
+				file << "<body style=\"margin:20px\">\n";
+				// file << "<center>\n";
 				file << "<h1>Index of/</h1>\n";
-				file << "<hr style=\"width:70%\">\n";
-				file << "</center>\n";
+				file << "<hr style=\"width:100%\">\n";
 				// loop through the folder and get the names;
 				ve = getFilesInDirectory(s);
 				while(++i < (int)ve.size())
 				{
-					file << "<div><a>";
+					s2 = s + ve[i];
+					std::cout << YELLOW << "here are the files names------- " << s2 << std::endl;
+					file << "<div style=\"margin:10px\"><a href=";
+					file << "\"";
+					file << s2;
+					file << "\">";
 					file << ve[i];
 					file << "</a></div>\n";
+
 				}
+				// file << "</center>\n";
 				file << "</body>\n";
 				file << "/<html>";
 			}
@@ -387,14 +395,12 @@ void						Response::DELETE(request &req, serverConfig *servconf)
 	{
 		//On success, zero is returned. On error, -1 is returned, and errno is set appropriately.
 		if (remove(req.getPath().c_str()) == 0)
-			_status_code = 204; // 204 (No content)
+			this->_status_code = 204; // 204 (No content)
 		else
-			_status_code = 403; //403 Forbidden
+			this->_status_code = 403; //403 Forbidden
 	}
 	else
-		_status_code = 404; // 404 Not Found
-	if (_status_code == 403 || _status_code == 404)
-		puts("need body ");
+		this->_status_code = 404; // 404 Not Found
 	// add response headers data
 	std::fstream	myfile;
 	myfile.open(_file_change_delete, std::fstream::in | std::fstream::app);

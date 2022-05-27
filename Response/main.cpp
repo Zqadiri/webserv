@@ -91,7 +91,7 @@ int main()
     // str = time_func();
     // i = File_lenght("./response_errors_pages/400.html");
     i = -1;
-    ve = getFilesInDirectory("../src/");
+    ve = getFilesInDirectory("../");
     while(++i < ve.size())
         std::cout << ve[i] << std::endl;
     // std::cout << DELETE("./response_errors_pages/") << std::endl;
