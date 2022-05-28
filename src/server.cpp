@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/27 14:56:41 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/28 20:51:18 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,19 +89,20 @@ int server::sen(int &socket, request& req)
 	std::fstream 	_res;
 	Response		response(socket);
 	std::cout << "trying send to " << socket << "\n";
-	int				ret;
+	int				ret = 1;
 	response.Return_string(req, _config, socket);
 	_res.open(response.getfileChange().c_str(), std::fstream::in);
-	while (_res)
-	{
+	while (_res){
 		std::getline (_res, myline);
 		buf += myline;
 		buf += "\r\n";
 	}
-	std::cout << GREEN << ">" << buf  << "<" << RESET << std::endl;
+	std::cout << YELLOW << ">" << buf << "<" << RESET << std::endl;
 	ret = send(socket, buf.c_str(), buf.size(), 0);
-	if (ret == -1)
+	if (ret == -1){
+		std::cout << "send() failed !!!!" << std::endl;
 		return (-1);
+	}
 	return (0);
 }
 
@@ -125,7 +126,7 @@ int server::rec(int &socket, request& req)
 	buff[ret] = '\0';
 	std::string str(buff, ret);
 	int ret_parse = req.parseRquest(str, req, socket);
-	std::cout << YELLOW <<  buff << RESET << std::endl;
+	// std::cout << YELLOW <<  buff << RESET << std::endl;
 	// std::cout << "{ret} " <<  ret_parse << std::endl;
 	if (ret_parse < -1){ //! return -1 if the content length header is absent
 		std::cout << "BAD REQUEST" << std::endl;
@@ -225,10 +226,10 @@ int server::add_socket(fd_set &cp_fset,fd_set &fset, int &max_fd)
 	return (1);
 }
 
-bool server::is_sockets_empty(void) const
-{
+bool server::is_sockets_empty(void) const{
 	return (_sockets.empty());
 }
+
 void 	server::check_timeout(fd_set& fdset, const std::time_t& current_time)
 {
 	std::list<std::pair<int, request> >::iterator socket = _sockets.begin();

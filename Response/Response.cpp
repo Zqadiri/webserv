@@ -143,6 +143,7 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 		// std::cout << GREEN << "This is the path :-----------------------" << s << RESET << std::endl;
 		if(serverConfig->_autoindex == false)
 		{
+			
 			if(IsFile(s) == 2)
 			{
 				this->_status_code = 403;
@@ -151,7 +152,7 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 			else if(IsFile(s) == 1)
 			{
 				str = serverConfig->_index;
-				// std::cout << "str is here -----------------------------" << str << std::endl;
+				
 				index = str.find_first_of(".");
 				str2 = str.substr(index+1, str.length());
 				this->_check_extension_mine = str2;
@@ -166,6 +167,7 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 		}
 		else
 		{
+			
 			if(IsFile(s) == 2)
 			{
 				int							i;
@@ -225,30 +227,27 @@ std::string     			Response::getfileChange(){
 
 void            			Response::GET(int fd, request &req, serverConfig *servconf)
 {
-	(void )fd;
-	CGI			cgi_handler(req, *servconf);
 	std::string	str_uri;
+	std::fstream    myfile;
 
 	File_type(req, servconf);
-	// std::cout << RED << "myautoindex----------------" << this->_my_auto_index << std::endl;
+	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
+	this->_get_file_success_open = true;
 	if(!isCGI(req, servconf))
 	{
 		std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
-		std::fstream    myfile;
 		std::string     content_type;
 		int             length(0);
 		std::fstream    body_file; //waiting for the path
 		std::string     fill;
 		time_t          rawtime;
 
-		myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
-		this->_get_file_success_open = true;
 
 		if(this->_my_auto_index == false)
 			str_uri = CompletePath(req, servconf);
 		else
 			str_uri = "/tmp/auto_index.html";
-		// std::cout << GREEN << "str uri is here " << str_uri << RESET << std::endl;
+		std::cout << GREEN << "str uri is here " << str_uri << RESET << std::endl;
 
 		// first line in header----------------
 		myfile << "HTTP/1.1 ";
@@ -316,27 +315,18 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	}
 	else
 	{
-		std::cout << GREEN << "> CGI <" <<  RESET << std::endl;
-		//! Wrong script path
-		std::string 	ret;
-		std::fstream    myfile;
-
-		myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
-		ret = cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
-		std::cout << "ret > " << ret << std::endl;
-		myfile << ret;
+		CGI				cgi_handler(req, *servconf);
+		cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
 	}
 }
 
 void            			Response::POST()
 {
-	
 }
 
 int							Response::IsFile(const std::string& path)
 {
 	struct stat buf;
-	//int stat(const char *path, struct stat *buf)
 	if (stat(path.c_str(), &buf) == 0 )
 	{
 		if (buf.st_mode & S_IFDIR) // direc
@@ -363,14 +353,17 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	{
 		if(req.getRequestURI() == "/")
 		{
+				std::cout << GREEN << " here " <<RESET << std::endl;
 				str_ret += servconfig->_root;
 				str_ret += servconfig->_index;
 				return str_ret;
 		}
 		else
 		{
+			
 			while(i < ve.size())
 			{
+				std::cout << GREEN <<  req.getRequestURI() <<RESET << std::endl;
 				if(ve[i]._path == req.getRequestURI())
 				{
 					str_ret += ve[i]._root;

@@ -6,24 +6,18 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/27 17:42:54 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/28 20:55:43 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CGI.hpp"
-
 #define GCI_BUFFERSIZE 1024
-
-/*
-	This information is passed through QUERY_STRING header and by using QUERY_STRING
-	environment variable it can be easily accessed in your CGI program. Only 1024 characters can be there in a request string as the GET method has the size limitation. Information
-	can be passed by simply concatenating key-value pairs along with any URL.
-*/
 
 /*--------- Constructors & Destructor --------*/
 
-CGI::CGI( request &request,  serverConfig &config)
+CGI::CGI( request &request,  serverConfig &config): _scriptName("./php-cgi")
 {
+	
 	std::map<std::string, std::string>	_headers = request.getHeaders();
 
 	if (_headers.find("Auth-Scheme") != _headers.end() && _headers["Auth-Scheme"] != "")
@@ -31,14 +25,9 @@ CGI::CGI( request &request,  serverConfig &config)
 
 	this->_env["REDIRECT_STATUS"] = "200";
 	this->_env["GATEWAY_INTERFACE"] = "CGI/1.1";
-	this->_env["SCRIPT_NAME"] = request.getPath();
-	this->_env["SCRIPT_FILENAME"] = "big_hello.php";
-
 	this->_env["REQUEST_METHOD"] = request.getMethod();
 	this->_env["CONTENT_LENGTH"] = to_string(request.getBodyLength());
 	this->_env["CONTENT_TYPE"] = _headers["Content-Type"];
-	this->_env["PATH_INFO"] = request.getPath();
-	this->_env["PATH_TRANSLATED"] = request.getPath();
 	
 	this->_env["REMOTE_ADDR"] = to_string(config.gethostPort().host);
 	this->_env["QUERY_STRING"] = request.getQuery();
@@ -48,7 +37,7 @@ CGI::CGI( request &request,  serverConfig &config)
 	if (_headers.find("Host") != _headers.end())
 		this->_env["SERVER_NAME"] = _headers["Host"];
 	else
-		this->_env["SERVER_NAME"] = this->_env["REMOTE_ADDR"];
+		this->_env["SERVER_NAME"] = "serverName";
 	this->_env["SERVER_PORT"] = to_string(config.gethostPort().port);
 	this->_env["SERVER_PROTOCOL"] = "HTTP/1.1";
 	this->_env["SERVER_SOFTWARE"] = "Weebserv/1.0";
@@ -59,7 +48,7 @@ CGI::CGI(CGI const &src) {
 		this->_env = src._env;
 	}
 }
-
+ 
 CGI::~CGI(void) {
 	return ;
 }
@@ -86,7 +75,6 @@ char **mapToArray(std::map<std::string, std::string>	_env)
 			std::string	line = i->first + "=" + i->second;
 			env[j] = new char[line.size() + 1];
 			env[j] = strcpy(env[j], line.c_str());
-			std::cout << YELLOW <<  env[j]  << RESET << std::endl;
 			j++;
 		}
 		env[j] = NULL;
@@ -97,21 +85,46 @@ char **mapToArray(std::map<std::string, std::string>	_env)
 	return env;
 }
 
+std::string	CGI::getTheCompletePath(const std::string& scriptPath)
+{
+	std::string ret;
+
+	ret = ".";
+	ret.append(scriptPath);
+	return ret;
+}
+
+void		deleteArray(char **env){
+	for (size_t i = 0; env[i]; i++)
+		delete[] env[i];
+	delete[] env;
+}
+
 std::string	CGI::executeCgi(const std::string& scriptPath, size_t socket_fd, Response &response)
 {
-	(void) scriptPath;
-	std::string 	scriptName = "./php-cgi";
+	FILE			*fileIn = tmpfile();
+	FILE			*fileOut = tmpfile();
 	std::string 	output;
 	pid_t			pid;
 	int				savedIn;
 	int				savedOut;
 	char			**env;
-	FILE			*fileIn = tmpfile();
-	FILE			*fileOut = tmpfile();
 	std::string 	filename = "/tmp/body";
+	filename += to_string(socket_fd);
 	std::fstream	_body;
 
+	char **argv = new char*[3];
+	argv[0] =  new char[_scriptName.size() + 1];
+	argv[0] = strcpy(argv[0], _scriptName.c_str());
+	argv[1] =  new char[_filePath.size() + 1];
+	argv[1] = strcpy(argv[1], _filePath.c_str());
+	argv[2] = NULL;
+
+	_filePath = getTheCompletePath(scriptPath);
+	this->_env["PATH_INFO"] = _filePath;
+	this->_env["PATH_TRANSLATED"] = _filePath;
 	env = mapToArray(this->_env);
+	
 	savedIn = dup(STDIN_FILENO);
 	savedOut = dup(STDOUT_FILENO);
 
@@ -119,7 +132,6 @@ std::string	CGI::executeCgi(const std::string& scriptPath, size_t socket_fd, Res
 	long	fdIn = fileno(fileIn);
 	long	fdOut = fileno(fileOut);
 
-	filename += to_string(socket_fd);
 	_body.open(filename, std::fstream::in);
 	if(!_body) {
 		std::cerr << "Error" << std::endl;
@@ -132,7 +144,6 @@ std::string	CGI::executeCgi(const std::string& scriptPath, size_t socket_fd, Res
 		write(fdIn,myline.c_str(), myline.length());
 	}
 
-	//system call that is used to change the location of the read/write pointer of a file descriptor
 	pid = fork();
 	if (pid == -1){
 		std::cerr << "Fork Error"<< std::endl;
@@ -140,15 +151,14 @@ std::string	CGI::executeCgi(const std::string& scriptPath, size_t socket_fd, Res
 	}
 	else if (pid == 0)
 	{
-		std::cout << GREEN << "Script : " << scriptName << "  fd : " << socket_fd << RESET << std::endl;
+		std::cout << GREEN << "_filePath : " << _filePath << "  _scriptName : " << _scriptName << RESET << std::endl;
 		dup2(fdIn, STDIN_FILENO);
 		dup2(fdOut, STDOUT_FILENO);
-		execle(scriptName.c_str(), "./www/big_hello.php", NULL, env_g);
+		execve(_scriptName.c_str(), argv, env);
 		response._status_code = 500;
 	}
 	else
 	{
-		// get the output from the file to a string
 		char	buffer[GCI_BUFFERSIZE] = {0};
 		int		ret = 1;
 
@@ -159,17 +169,43 @@ std::string	CGI::executeCgi(const std::string& scriptPath, size_t socket_fd, Res
 			memset(buffer, 0, GCI_BUFFERSIZE);
 			ret = read(fdOut, buffer, GCI_BUFFERSIZE - 1);
 			output += buffer;
-			std::cout << GREEN << "output : " << output << RESET << std::endl;
 		}
 		dup2(savedIn, STDIN_FILENO);
 		dup2(savedOut, STDOUT_FILENO);
 	}
+	// std::cout << GREEN << "output : " << output << RESET << std::endl;
 	close(fdIn);
 	close(fdOut);
 	fclose(fileIn);
 	fclose(fileOut);
 	close(savedIn);
 	close(savedOut);
-	//!delete the array
- 	return output;
+	deleteArray(env);
+ 	return addHeader(output, response);
+}
+
+std::string		CGI::addHeader(std::string output, Response &response)
+{
+	std::fstream	_response;
+	time_t			rawtime;
+	int				length(0);
+
+	// std::cout << YELLOW << output.substr(end_headers, output.length()) << RESET << std::endl;
+	_response.open(response.getfileChange().c_str(), std::fstream::in | std::fstream::app);
+	_response << "200 OK\r\n";
+	// time(&rawtime);
+	// _response << "Date: ";
+	// _response << std::string(ctime(&rawtime));
+
+	// _response << "Server: ";
+	// _response << "Myserver\r\n";
+
+	// _response << "Content-Length: ";
+	// _response << "12000"; //! fix this
+	// _response << "\r\n";
+
+	_response << output;
+	_response << "\r\n";
+	_response.close();
+	return output;
 }

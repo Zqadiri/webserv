@@ -6,7 +6,7 @@
 #    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/05/27 11:36:21 by zqadiri          ###   ########.fr        #
+#    Updated: 2022/05/28 16:48:41 by zqadiri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ CC			= c++
 
 FLAGS		=  -std=c++98
 
-WWW			= -Wall -Wextra -Werror
+# WWW			= -Wall -Wextra -Werror
 
 all:		$(NAME)
 

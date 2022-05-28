@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 13:30:31 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/27 16:48:32 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/28 16:47:51 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ class CGI
 {
 	private:
 		std::map<std::string, std::string>	_env;
+		std::string							_filePath;
+		std::string							_scriptName;
 
 	public:
 		CGI(CGI const &);
@@ -32,6 +34,8 @@ class CGI
 		CGI	&operator=(CGI const &src);
 		CGI( request &request,  serverConfig &server);
 		std::string		executeCgi(const std::string&, size_t, Response&);
+		std::string		getTheCompletePath(const std::string&);
+		std::string		addHeader(std::string, Response &);
 };
 
 #endif
