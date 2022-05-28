@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/28 20:55:43 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/28 22:02:57 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 
 CGI::CGI( request &request,  serverConfig &config): _scriptName("./php-cgi")
 {
-	
 	std::map<std::string, std::string>	_headers = request.getHeaders();
 
 	if (_headers.find("Auth-Scheme") != _headers.end() && _headers["Auth-Scheme"] != "")
@@ -190,22 +189,33 @@ std::string		CGI::addHeader(std::string output, Response &response)
 	time_t			rawtime;
 	int				length(0);
 
-	// std::cout << YELLOW << output.substr(end_headers, output.length()) << RESET << std::endl;
 	_response.open(response.getfileChange().c_str(), std::fstream::in | std::fstream::app);
-	_response << "200 OK\r\n";
-	// time(&rawtime);
-	// _response << "Date: ";
-	// _response << std::string(ctime(&rawtime));
+	_response << "HTTP/1.1 200 OK\r\n";
 
-	// _response << "Server: ";
-	// _response << "Myserver\r\n";
+	time(&rawtime);
+	_response << "Date: ";
+	_response << std::string(ctime(&rawtime));
+
+	_response << "Server: ";
+	_response << "Myserver\r\n";
 
 	// _response << "Content-Length: ";
-	// _response << "12000"; //! fix this
+	// _response << "12000";
 	// _response << "\r\n";
 
-	_response << output;
+	_response << "Content-Type: ";
+	_response << "text/html; charset=UTF-8"; //! fix this
 	_response << "\r\n";
+	size_t end_headers = output.find_first_of("\n");
+	int start = output.find("Content-type", 0);
+	if (start != -1){
+		int end = output.find("\n", start);
+		output  = output.erase(start, end - start + 1);
+		std::cout << output;
+	}
+	_response << output.substr(end_headers, output.length());
+	
+	_response << "\r\n\r\n";
 	_response.close();
 	return output;
 }
