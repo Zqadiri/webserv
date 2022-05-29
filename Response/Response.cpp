@@ -68,7 +68,7 @@ void            			Response::Methods_exec(request &req, int fd, serverConfig *se
         if(str == "GET")
             return GET(fd, req, servconf);
         else if(str == "POST")
-            return POST();
+            return POST(fd, req, servconf);
         else if(str == "DELETE")
             return DELETE(req, servconf);
     }
@@ -94,8 +94,7 @@ int             			Response::File_lenght(request &req, serverConfig* servconf, s
 		ret = sb.st_size;
 	else
 		ret = -1;
-	
-	std::cout << GREEN << ret << RESET << std::endl;
+
 	return ret;
 }
 
@@ -265,16 +264,16 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 				myfile << "404 Not Found\r\n";
 		}
 
-		// Current Date-----------------
+		// Current Date -----------------
 		time(&rawtime);
 		myfile << "Date: ";
 		myfile << std::string(ctime(&rawtime));
 
-		//Server------------------------
+		//Server ------------------------
 		myfile << "Server: ";
 		myfile << "Myserver\r\n";
 
-		//Content Type------------------
+		//Content Type ------------------
 		myfile << "Content-Type: ";
 		if(this->_status_code == 200 && this->_my_auto_index == false)
 			content_type = Content_type();
@@ -283,28 +282,30 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		myfile << content_type;
 		myfile << "\r\n"; //blanate d zineb
 
-		//Body length----------------------
-		myfile << "Content-Length: ";
-		length = File_lenght(req, servconf, str_uri);
-		myfile << to_string(length);
-		myfile << "\n\n";
-
-		//Body part start
+		//Body part start --------------
 		// i need to take the path and see if it's a file or directory, if it's a directory i need to search for the default file
 		// if it's a file i need to open it and fill the body with it's content
 
+	std::string buf;
 		body_file.open(str_uri); // has to be changed
-		if(body_file)
-		{
+		if (body_file){
 			while(!body_file.eof())
 			{
 				std::getline(body_file, fill);
-				myfile << fill;
-				myfile << "\n\n";
+				std::cout << fill << std::endl;
+				buf += fill;
+				length += fill.length();
 			}
 		}
 		else
 			this->_get_file_success_open = false;
+		//Body length----------------------
+		myfile << "Content-Length: ";
+		myfile << length;
+		myfile << "\n\n";
+
+		myfile << buf;
+		myfile << "\n\n";
 
 		//end of method and close file
 		myfile.close();
@@ -316,8 +317,43 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	}
 }
 
-void            			Response::POST(){
+//!!!!!!!!!!!!!!!!!!!!!----------- POST ------------------------------------
+
+//https://reqbin.com/Article/HttpPost
+
+void						Response::POST(int fd, request &req, serverConfig *servconf)
+{
+	// std::cout << "--------------- Post ---------------" << std::endl;
+	// std::fstream 	_body; //request body in which you define the data of the entity to be created
+	// std::string		_path = "." + req.getRequestURI();
+	// std::string		buf, myline;
+	// std::fstream	res;
+
+	// _body.open("/tmp/body" + to_string(fd), std::fstream::in);
+	// std::cout << "req body : " << "/tmp/body" + to_string(fd) << std::endl;
+	// std::cout << "path : " << _path + "result.txt" << std::endl;
+	// if (isCGI(req, servconf))
+	// {
+	// 	std::cout << "--------------- cgi ---------------" << std::endl;
+	// 	CGI				cgi_handler(req, *servconf);
+	// 	cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
+	// 	return;
+	// }
+	// else
+	// {
+	// 	std::cout << "--------------- no cgi ---------------" << std::endl;
+	// 	this->_status_code = 200;
+	// 	while (_body){
+	// 		std::getline (_body, myline);
+	// 		buf += myline;
+	// 		buf += "\r\n";
+	// 	}
+	// 	_body.close();
+	// 	writeResponse(buf);
+	// }
 }
+
+//!!!!!!!!!!!!!!!!!!!!!-----------------------------------------------
 
 std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 {
@@ -327,18 +363,17 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 
 	i = 0;
 	ve = servconfig->getLocations();
-	str_ret = "";
+	str_ret = "." + req.getRequestURI(); // ! i change it old value was : ""
 	if(this->_status_code == 200)
 	{
 		if(req.getRequestURI() == "/")
 		{
-				str_ret += servconfig->_root;
-				str_ret += servconfig->_index;
-				return str_ret;
+			str_ret += servconfig->_root;
+			str_ret += servconfig->_index;
+			return str_ret;
 		}
 		else
 		{
-			
 			while(i < ve.size())
 			{
 				std::cout << GREEN <<  req.getRequestURI() <<RESET << std::endl;
@@ -390,7 +425,7 @@ std::string			Response::getErrorPage(int	status)
 	return ConvertHtml(filename);
 }
 
-void				Response::writeResponse(void)
+void				Response::writeResponse(std::string boby)
 {
 	std::cout << GREEN << _status_code << RESET << std::endl;
 	std::fstream	myfile;
@@ -404,12 +439,18 @@ void				Response::writeResponse(void)
 	}
 	else if (this->_status_code == 403)
 		myfile << FORBIDDEN;
+	else if (this->_status_code == 200){
+		is_error = 0;
+		myfile << OK;
+	}
 	else if (this->_status_code == 404)
 		myfile << NOT_FOUND;
-	myfile << "\r\n\r\n"; // end headers
+	myfile << "\r\n"; // end headers
 	if (is_error){
 		myfile << getErrorPage(_status_code);
 	}
+	else
+		myfile << boby;
 	myfile.close();
 }
 
@@ -484,7 +525,7 @@ void				Response::DELETE(request &req, serverConfig *servconf)
 	}
 	else
 		this->_status_code = 404; // 404 Not Found
-	writeResponse();
+	writeResponse("");
 }
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!---------------------------------------------------

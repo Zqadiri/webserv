@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/23 15:47:19 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/29 18:51:48 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,6 @@ int					request::ParseHeaders(std::string buff,  request& req)
 	if (_headers["Authorization"].compare(""))
 		parseAuthorization(req);
 	if (!_method.compare("GET") || !_method.compare("DELETE")){
-		std::cout << "----------------- in ------------------" << std::endl;
 		_status = COMPLETE;
 		return 1;
 	}
@@ -144,10 +143,8 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 		this->_tmp += buff;
 		parseChunkedRequest(filename);
 	}
-	if (_status == COMPLETE){
-
+	if (_status == COMPLETE)
 		return 0;
-	}
 	return 1;
 }
 
@@ -163,15 +160,17 @@ int request::parseUnchunkedRequest(std::string filename)
 	else
 		InternalServerError();
 	_tmp.clear();
-	if (_headers["Content-Length"].compare("") && _bodyLength >= stoi(_headers["Content-Length"]))
+	if (_headers["Content-Length"].compare("") && _bodyLength >= stoi(_headers["Content-Length"])){
+		_body << "\n";
+		_body.close();
 		_status = COMPLETE;
+	}
 	return 0;
 }
 
 int request::parseChunkedRequest(std::string filename)
 {
 	size_t end;
-	
 	std::fstream _body;
 
 	while ((end = _tmp.find("\r\n")) != std::string::npos)
@@ -186,6 +185,8 @@ int request::parseChunkedRequest(std::string filename)
 		else if (_chunkStatus == CHUNK)
 		{
 			if (_chunkSize == 0){
+				_body << "\n";
+				_body.close();
 				_status = COMPLETE;
 				return 1;
 			}

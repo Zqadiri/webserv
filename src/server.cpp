@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/29 14:45:25 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/29 17:34:36 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ int server::rec(int &socket, request& req)
 	buff[ret] = '\0';
 	std::string str(buff, ret);
 	int ret_parse = req.parseRquest(str, req, socket);
-	// std::cout << YELLOW <<  buff << RESET << std::endl;
+	std::cout << YELLOW <<  buff << RESET << std::endl;
 	// std::cout << "{ret} " <<  ret_parse << std::endl;
 	if (ret_parse < -1){ //! return -1 if the content length header is absent
 		std::cout << "BAD REQUEST" << std::endl;

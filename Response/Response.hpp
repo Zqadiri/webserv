@@ -26,7 +26,6 @@ class Response
         void                        File_type(request &req, serverConfig*);
         bool                        isCGI(request &req, serverConfig *servconf);
         void                        GET(int fd, request &req, serverConfig*);
-        void                        POST();
         std::string                 getfileChange();
         std::string                 CompletePath(request &req, serverConfig*);
         std::vector<std::string>    getFilesInDirectory(std::string);
@@ -34,9 +33,13 @@ class Response
         //!---------------- DELETE Functions --------------------------
         int                         IsFile(const std::string& path);
         int				            removeDir(std::string);
-        void                        writeResponse(void);
+        void                        writeResponse(std::string);
         std::string			        getErrorPage(int	status);
         void                        DELETE(request &req, serverConfig*);
+
+        //!---------------- POST Functions --------------------------
+        void                        POST(int, request &req, serverConfig*);
+
 
     public: //!!!!! private
         std::string     _response_string;
