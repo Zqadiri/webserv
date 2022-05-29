@@ -8,7 +8,6 @@
 
 class Response
 {
-
     public:
         //canonical form
         Response(int);
@@ -28,16 +27,18 @@ class Response
         bool                        isCGI(request &req, serverConfig *servconf);
         void                        GET(int fd, request &req, serverConfig*);
         void                        POST();
-        void                        DELETE(request &req, serverConfig*);
         std::string                 getfileChange();
         std::string                 CompletePath(request &req, serverConfig*);
-        int                         IsFile(const std::string& path);
         std::vector<std::string>    getFilesInDirectory(std::string);
-        int				            removeDir(std::string);
-        // std::fstream    get_file_stream(){return this->_file;};
 
-    public: //!!!!!
-        // std::fstream    _file;
+        //!---------------- DELETE Functions --------------------------
+        int                         IsFile(const std::string& path);
+        int				            removeDir(std::string);
+        void                        writeResponse(void);
+        std::string			        getErrorPage(int	status);
+        void                        DELETE(request &req, serverConfig*);
+
+    public: //!!!!! private
         std::string     _response_string;
         int             _status_code;
         std::string     _pages_to_string;
@@ -47,7 +48,6 @@ class Response
         std::string     _check_extension_mine;
         bool            _get_file_success_open;
         bool            _my_auto_index;
-        // request     request();
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/29 11:01:22 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/29 14:41:09 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,7 +187,6 @@ std::string		CGI::addHeader(std::string output, Response &response)
 {
 	std::fstream	_response;
 	time_t			rawtime;
-	int				length(0);
 
 	_response.open(response.getfileChange().c_str(), std::fstream::in | std::fstream::app);
 	_response << "HTTP/1.1 200 OK\r\n";
@@ -199,12 +198,8 @@ std::string		CGI::addHeader(std::string output, Response &response)
 	_response << "Server: ";
 	_response << "Myserver\r\n";
 
-	// _response << "Content-Length: ";
-	// _response << "12000";
-	// _response << "\r\n";
-
 	_response << "Content-Type: ";
-	_response << "text/html; charset=UTF-8"; //! fix this
+	_response << "text/html; charset=UTF-8";
 	_response << "\r\n";
 	size_t end_headers = output.find_first_of("\n");
 	int start = output.find("Content-type", 0);
@@ -214,7 +209,6 @@ std::string		CGI::addHeader(std::string output, Response &response)
 		std::cout << output;
 	}
 	_response << output.substr(end_headers, output.length());
-	
 	_response << "\r\n\r\n";
 	_response.close();
 	return output;

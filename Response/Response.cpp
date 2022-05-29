@@ -37,15 +37,13 @@ std::string     			Response::Request_statuscode_checked(request &req, serverConf
 	this->_status_code = req.getRetCode();
 	if(this->_status_code != 200)
 	{
-		// 400 505 500 checked in request and 405 413 checked in here
 		if(this->_status_code == 400)
 			_pages_to_string = ConvertHtml("./response_errors_pages/400.html");
 		else if(this-> _status_code == 505)
 			_pages_to_string = ConvertHtml("./response_errors_pages/505.html");
 		else if(this->_status_code == 500)
 			_pages_to_string = ConvertHtml("./response_errors_pages/500.html");
-		else if(req.getMethod() != "GET" || req.getMethod() != "POST" || req.getMethod() != "DELETE")
-		{
+		else if(req.getMethod() != "GET" || req.getMethod() != "POST" || req.getMethod() != "DELETE"){
 			this->_status_code = 405;
 			_pages_to_string = ConvertHtml("./response_errors_pages/405.html");
 		}
@@ -86,7 +84,6 @@ std::string     			Response::Content_type()
 int             			Response::File_lenght(request &req, serverConfig* servconf, std::string str)
 {
 	// we gonna calculate the length of our file (body lenght)
-	// (void)req;
 	int             ret = 0;
 	struct          stat sb;
 	// std::string		str;
@@ -167,7 +164,6 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 		}
 		else
 		{
-			
 			if(IsFile(s) == 2)
 			{
 				int							i;
@@ -320,8 +316,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	}
 }
 
-void            			Response::POST()
-{
+void            			Response::POST(){
 }
 
 std::string					Response::CompletePath(request &req, serverConfig *servconfig)
@@ -337,7 +332,6 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	{
 		if(req.getRequestURI() == "/")
 		{
-				std::cout << GREEN << " here " <<RESET << std::endl;
 				str_ret += servconfig->_root;
 				str_ret += servconfig->_index;
 				return str_ret;
@@ -367,96 +361,6 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	return str_ret;
 }
 
-// ! ressource : https://reqbin.com/Article/HttpDelete#:~:text=The%20HTTP%20DELETE%20method%20is,servers%20to%20reject%20the%20request.
-
-int					Response::IsFile(const std::string& path)
-{
-	struct stat buf;
-	if (stat(path.c_str(), &buf) == 0 )
-	{
-		if (buf.st_mode & S_IFDIR) // direc
-			return 2;
-		else if (buf.st_mode & S_IFREG) // regular file
-			return 1;
-		else
-			return 0;
-	}
-	else
-		return 0;
-}
-
-/*
- TODO:The DELETE method 
- requests that the origin server delete the resource identified by the Request-URI
-*/
-int flag= 0;
-int				Response::removeDir(std::string path)
-{
-	DIR *d;
-	struct dirent *dir;
-	d = opendir(path.c_str());
-	if (d) 
-	{
-		while ((dir = readdir(d)) != NULL)
-		{
-			if (!strcmp(dir->d_name, ".") ||  !strcmp(dir->d_name, ".."))
-				continue;
-			std::string fname = path + "/" + dir->d_name;
-			int flag = IsFile(fname.c_str());
-			if (flag == 1)
-			{
-				if (remove(fname.c_str()) == 0)
-					this->_status_code = 204; // 204 (No content)
-				else
-				{
-					this->_status_code = 403; //403 Forbidden
-					return 403;
-				}
-			}
-			else if (flag == 2)
-			{
-				this->_status_code =  removeDir(fname);
-			}
-			else
-				return 403;
-		}
-    	closedir(d);
-		
-		if (rmdir(path.c_str()) == 0)
-			return (204);
-		else
-			return (403);
-  	}
-	return (403);
-}
-
-void				Response::DELETE(request &req, serverConfig *servconf)
-{
-	(void)servconf;
-	std::string f = "." + req.getPath();
-	size_t isFile = IsFile(f);
-	if (isFile == 1)
-	{
-		if (remove(f.c_str()) == 0)
-			this->_status_code = 204; // 204 (No content)
-		else
-			this->_status_code = 403; //403 Forbidden
-	}
-	else if (isFile == 2){
-		this->_status_code = removeDir(f);
-	}
-	else
-		this->_status_code = 404; // 404 Not Found
-	// add response headers data
-	std::fstream	myfile;
-	myfile.open(_file_change_delete, std::fstream::in | std::fstream::app);
-	myfile << "HTTP/1.1 204 No Content\r\n";
-	myfile << "Server: ";
-	myfile << "Myserver\r\n";
-}
-
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!---------------------------------------------------
-
 std::string     			Response::ConvertHtml(std::string path)
 {
 	// convert Html errors pages to a string
@@ -475,7 +379,117 @@ std::string     			Response::ConvertHtml(std::string path)
 	return (ret);
 }
 
-void            			Response::Return_string(request &req, serverConfig *servconf, int fd)
+//!!!!!!!!!!!!!!!!!!!!!------------------------------------------------------
+
+std::string			Response::getErrorPage(int	status)
+{
+	std::string	filename;
+	filename += "./Response/response_errors_pages/";
+	filename += to_string(status);
+	filename += ".html";
+	return ConvertHtml(filename);
+}
+
+void				Response::writeResponse(void)
+{
+	std::cout << GREEN << _status_code << RESET << std::endl;
+	std::fstream	myfile;
+	time_t			rawtime;
+	bool			is_error = 1;
+
+	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
+	if (this->_status_code == 204){
+		is_error = 0;
+		myfile << NO_CONTENT;
+	}
+	else if (this->_status_code == 403)
+		myfile << FORBIDDEN;
+	else if (this->_status_code == 404)
+		myfile << NOT_FOUND;
+	myfile << "\r\n\r\n"; // end headers
+	if (is_error){
+		myfile << getErrorPage(_status_code);
+	}
+	myfile.close();
+}
+
+int					Response::IsFile(const std::string& path)
+{
+	struct stat buf;
+	if (stat(path.c_str(), &buf) == 0 ){
+		if (buf.st_mode & S_IFDIR) // direc
+			return 2;
+		else if (buf.st_mode & S_IFREG) // regular file
+			return 1;
+		else
+			return 0;
+	}
+	else
+		return 0;
+}
+
+/*
+ TODO:The DELETE method
+ requests that the origin server delete the resource identified by the Request-URI
+*/
+
+int				Response::removeDir(std::string path)
+{
+	DIR *d;
+	struct dirent *dir;
+	d = opendir(path.c_str());
+	if (d) 
+	{
+		while ((dir = readdir(d)) != NULL)
+		{
+			if (!strcmp(dir->d_name, ".") ||  !strcmp(dir->d_name, ".."))
+				continue;
+			std::string fname = path + "/" + dir->d_name;
+			int flag = IsFile(fname.c_str());
+			if (flag == 1)
+			{
+				if (remove(fname.c_str()) == 0)
+					this->_status_code = 204; // 204 (No content)
+				else
+					return 403;
+			}
+			else if (flag == 2)
+				this->_status_code =  removeDir(fname);
+			else
+				return 403;
+		}
+		closedir(d);
+		if (rmdir(path.c_str()) == 0)
+			return (204);
+		else
+			return (403);
+  	}
+	return (403);
+}
+
+void				Response::DELETE(request &req, serverConfig *servconf)
+{
+	(void)servconf;
+	std::string f = "." + req.getPath();
+	size_t isFile = IsFile(f);
+	if (isFile == 1)
+	{
+		if (remove(f.c_str()) == 0)
+			this->_status_code = 204;
+		else
+			this->_status_code = 403; //403 Forbidden
+	}
+	else if (isFile == 2){
+		this->_status_code = removeDir(f);
+	}
+	else
+		this->_status_code = 404; // 404 Not Found
+	writeResponse();
+}
+
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!---------------------------------------------------
+
+void            Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	// std::cout << servconf->_root << std::endl;
 	Request_statuscode_checked(req, servconf);
