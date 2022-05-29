@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/28 22:02:57 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/29 11:01:22 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ char **mapToArray(std::map<std::string, std::string>	_env)
 		{
 			std::string	line = i->first + "=" + i->second;
 			env[j] = new char[line.size() + 1];
-			env[j] = strcpy(env[j], line.c_str());
+			env[j] = strcpy(env[j], line.c_str()); //!!!!!!
 			j++;
 		}
 		env[j] = NULL;

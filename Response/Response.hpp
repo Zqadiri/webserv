@@ -33,6 +33,7 @@ class Response
         std::string                 CompletePath(request &req, serverConfig*);
         int                         IsFile(const std::string& path);
         std::vector<std::string>    getFilesInDirectory(std::string);
+        int				            removeDir(std::string);
         // std::fstream    get_file_stream(){return this->_file;};
 
     public: //!!!!!
