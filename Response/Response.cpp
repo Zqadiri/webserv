@@ -16,7 +16,6 @@ Response::Response(int socket)
 	//response file delete method
 	this->_file_change_delete = "/tmp/response_file_delete_";
 	this->_file_change_delete += to_string(socket);
-
 	this->_my_auto_index = false;
 	myfile.open(_file_change_get, std::fstream::in | std::fstream::out | std::fstream::trunc);
 	myfile.close();
@@ -27,8 +26,7 @@ Response &Response::operator=(const Response &rhs){
 	return (*this);
 }
 
-Response::Response(Response &cp)
-{
+Response::Response(Response &cp){
 	this->_status_code = cp._status_code;
 }
 
@@ -129,7 +127,7 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 	s = "";
 	str = req.getRequestURI();
 	index = str.find_first_of(".");
-	str2 = str.substr(index+1, str.length());
+	str2 = str.substr(index + 1, str.length());
 	this->_check_extension_mine = str2;
 	type = MimeTypes::getType(str2.c_str());
 	if(type == NULL)
@@ -292,7 +290,6 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 			while(!body_file.eof())
 			{
 				std::getline(body_file, fill);
-				std::cout << fill << std::endl;
 				buf += fill;
 				length += fill.length();
 			}
@@ -320,37 +317,11 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 //!!!!!!!!!!!!!!!!!!!!!----------- POST ------------------------------------
 
 //https://reqbin.com/Article/HttpPost
-
 void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
-	// std::cout << "--------------- Post ---------------" << std::endl;
-	// std::fstream 	_body; //request body in which you define the data of the entity to be created
-	// std::string		_path = "." + req.getRequestURI();
-	// std::string		buf, myline;
-	// std::fstream	res;
-
-	// _body.open("/tmp/body" + to_string(fd), std::fstream::in);
-	// std::cout << "req body : " << "/tmp/body" + to_string(fd) << std::endl;
-	// std::cout << "path : " << _path + "result.txt" << std::endl;
-	// if (isCGI(req, servconf))
-	// {
-	// 	std::cout << "--------------- cgi ---------------" << std::endl;
-	// 	CGI				cgi_handler(req, *servconf);
-	// 	cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
-	// 	return;
-	// }
-	// else
-	// {
-	// 	std::cout << "--------------- no cgi ---------------" << std::endl;
-	// 	this->_status_code = 200;
-	// 	while (_body){
-	// 		std::getline (_body, myline);
-	// 		buf += myline;
-	// 		buf += "\r\n";
-	// 	}
-	// 	_body.close();
-	// 	writeResponse(buf);
-	// }
+	std::cout << "--------------- cgi --------------- >> " << std::endl;
+	CGI				cgi_handler(req, *servconf);
+	cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
 }
 
 //!!!!!!!!!!!!!!!!!!!!!-----------------------------------------------
@@ -364,6 +335,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	i = 0;
 	ve = servconfig->getLocations();
 	str_ret = "." + req.getRequestURI(); // ! i change it old value was : ""
+
 	if(this->_status_code == 200)
 	{
 		if(req.getRequestURI() == "/")

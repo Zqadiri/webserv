@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/22 18:42:00 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/29 21:57:44 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,8 @@ void				request::getQueryString(){
 	size_t		i =  this->_path.find_first_of('?');
 
 	if (i != std::string::npos){
-		this->_queryString = removeSpace(this->_path.substr( i, std::string::npos));
+		int j = i + 1;
+		this->_queryString = removeSpace(this->_path.substr( j, std::string::npos));
 		this->_requestURI = this->_path.substr(0, i);
 	}
 	else
