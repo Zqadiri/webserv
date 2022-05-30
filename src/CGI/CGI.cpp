@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/30 14:21:57 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/30 14:50:11 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,11 @@ CGI::CGI(request &request, serverConfig &config) : _scriptName("./php-cgi")
 	this->_env["REDIRECT_STATUS"] = "200";
 	this->_env["GATEWAY_INTERFACE"] = "CGI/1.1";
 	this->_env["REQUEST_METHOD"] = request.getMethod();
-	// std::cout << "[" <<  request.getMethod() << "]\n";
 	this->_env["CONTENT_LENGTH"] =  std::to_string(request.getBodyLength());
 	this->_env["CONTENT_TYPE"] = _headers["Content-Type"];
 	this->_env["REMOTE_ADDR"] = to_string(config.gethostPort().host);
 	this->_env["QUERY_STRING"] = request.getQuery();
-	// this->_env["QUERY_STRING"] = "firstname=name&lastname=qadiri&submit=Submit";
-	// std::cout << "query get >> " <<  request.getQuery() << std::endl;
 	this->_env["REQUEST_URI"] = request.getPath() + request.getQuery();
-	// this->_env["REQUEST_URI"] = request.getPath();
 	this->_env["REMOTE_IDENT"] = _headers["Authorization"];
 	this->_env["REMOTE_USER"] = _headers["Authorization"];
 	if (_headers.find("Host") != _headers.end())
@@ -72,7 +68,7 @@ char **mapToArray(std::map<std::string, std::string> _env)
 		{
 			std::string line = i->first + "=" + i->second;
 			env[j] = new char[line.size() + 1];
-			env[j] = strcpy(env[j], line.c_str()); //!!! 
+			env[j] = strcpy(env[j], line.c_str());
 			j++;
 		}
 		env[j] = NULL;
@@ -142,7 +138,6 @@ std::string CGI::executeCgi(const std::string &scriptPath, size_t socket_fd, Res
 	while (_body)
 	{
 		std::getline(_body, myline);
-		std::cout << GREEN << "post query : " << myline << RESET << std::endl;
 		int write_ = write(fdIn, myline.c_str(), myline.length());
 		std::cout << _scriptName.c_str() << std::endl;
 	}	
@@ -176,7 +171,6 @@ std::string CGI::executeCgi(const std::string &scriptPath, size_t socket_fd, Res
 		dup2(savedIn, STDIN_FILENO);
 		dup2(savedOut, STDOUT_FILENO);
 	}
-	// std::cout << GREEN << "output : " << output << RESET << std::endl;
 	close(fdIn);
 	close(fdOut);
 	fclose(fileIn);
