@@ -6,7 +6,7 @@
 <body style="text-align: center;">
 <?php
 echo date('h:i:s') . "<br>";
-sleep(2);
+sleep(5);
 echo date('h:i:s');
 ?>
 </body>

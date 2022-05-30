@@ -1,24 +1,48 @@
+<!DOCTYPE html>
 <html>
+ <link rel="stylesheet" href="style.css">
+<div class="container">
 
-<head>
+    <div class="row">
+        <h3>USING GET METHOD :</h3>
+    </div>
 
-    <title>cgi tester</title>
-</head>
-
-<body>
     <form action="get-method.php" method="get">
-        <h3>GET</h3>
-        <input type="text" name="firstname" placeholder="First Name" />
-        <input type="text" name="lastname" placeholder="Last Name" />
-        <input type="submit" name="submit" /> </form>
-
-    <form action="post-method.php" method="post">
-        <h3>POST</h3>
-        <input type="text" name="firstname" placeholder="First Name" />
-        <input type="text" name="lastname" placeholder="Last Name" />
+      <div class="row">
+        <div class="col-75">
+            <input type="text" name="firstname" placeholder="First Name" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-75">
+            <input type="text" name="lastname" placeholder="Last Name" />
+        </div>
+      </div>
+      <div class="row">
         <input type="submit" name="submit" />
+      </div>
     </form>
+</div>
 
-</body>
 
+<div class="container">
+    <div class="row">
+        <h3>USING POST METHOD :</h3>
+    </div>
+    <form action="post-method.php" method="post">
+      <div class="row">
+        <div class="col-75">
+          <input type="text" name="firstname" placeholder="First Name" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-75">
+            <input type="text" name="lastname" placeholder="Last Name" />
+        </div>
+      </div>
+      <div class="row">
+        <input type="submit" name="submit" />
+      </div>
+    </form>
+  </div>
 </html>

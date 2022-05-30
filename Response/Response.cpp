@@ -134,7 +134,6 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 	{
 		s += serverConfig->_root;
 		s += serverConfig->_index; //!!!!!!!!!!
-		std::cout << GREEN << "This is the path :-----------------------" << s << RESET << std::endl;
 		if(serverConfig->_autoindex == false)
 		{
 			if(IsFile(s) == 2)
@@ -170,7 +169,6 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 				i = -1;
 				this->_my_auto_index = true;
 				s2 = "";
-				// std::cout << "-----------------------------------------------------my_auto_index" << std::endl;
 				file.open("/tmp/auto_index.html",std::fstream::in | std::fstream::app);
 				file << "<html>\n";
 				file << "<head>\n";
@@ -223,12 +221,10 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	std::fstream    myfile;
 
 	File_type(req, servconf);
-	std::cout << _status_code << std::endl;
 	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
 	this->_get_file_success_open = true;
 	if(!isCGI(req, servconf))
 	{
-		std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
 		std::string     content_type;
 		int             length(0);
 		std::fstream    body_file; //waiting for the path
@@ -239,7 +235,6 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 			str_uri = CompletePath(req, servconf);
 		else
 			str_uri = "/tmp/auto_index.html";
-		std::cout << GREEN << "str uri is here " << str_uri << RESET << std::endl;
 
 		// first line in header----------------
 		myfile << "HTTP/1.1 ";
@@ -316,17 +311,14 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	}
 }
 
-//!!!!!!!!!!!!!!!!!!!!!----------- POST ------------------------------------
+//!------------------------------------ POST ------------------------------------
 
-//https://reqbin.com/Article/HttpPost
 void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
 	std::cout << "--------------- cgi --------------- >> " << std::endl;
 	CGI				cgi_handler(req, *servconf);
 	cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
 }
-
-//!!!!!!!!!!!!!!!!!!!!!-----------------------------------------------
 
 std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 {
@@ -388,8 +380,6 @@ std::string     			Response::ConvertHtml(std::string path)
 	return (ret);
 }
 
-//!!!!!!!!!!!!!!!!!!!!!------------------------------------------------------
-
 std::string			Response::getErrorPage(int	status)
 {
 	std::string	filename;
@@ -401,9 +391,7 @@ std::string			Response::getErrorPage(int	status)
 
 void				Response::writeResponse(std::string boby)
 {
-	std::cout << GREEN << _status_code << RESET << std::endl;
 	std::fstream	myfile;
-	time_t			rawtime;
 	bool			is_error = 1;
 
 	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
@@ -482,6 +470,8 @@ int				Response::removeDir(std::string path)
 	return (403);
 }
 
+//!------------------------------------ DELETE ------------------------------------
+
 void				Response::DELETE(request &req, serverConfig *servconf)
 {
 	(void)servconf;
@@ -502,11 +492,8 @@ void				Response::DELETE(request &req, serverConfig *servconf)
 	writeResponse("");
 }
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!---------------------------------------------------
-
 void            Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
-	// std::cout << servconf->_root << std::endl;
 	Request_statuscode_checked(req, servconf);
 	Methods_exec(req, fd, servconf);
 }
@@ -515,5 +502,4 @@ Response::~Response()
 {
 	if(this->_my_auto_index == true)
 		remove("/tmp/auto_index.html");
-	std::cout << RED << "Destructor called here" << RESET << std::endl;
 }

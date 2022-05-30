@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/30 14:50:11 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/30 15:39:41 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,21 +135,17 @@ std::string CGI::executeCgi(const std::string &scriptPath, size_t socket_fd, Res
 		response._status_code = 500;
 		exit(1);
 	}
-	while (_body)
-	{
+	while (_body && !_env["REQUEST_METHOD"].compare("POST")){
 		std::getline(_body, myline);
-		int write_ = write(fdIn, myline.c_str(), myline.length());
-		std::cout << _scriptName.c_str() << std::endl;
+		write(fdIn, myline.c_str(), myline.length());
 	}	
 	lseek(fdIn, 0, SEEK_SET);
 	pid = fork();
-	if (pid == -1)
-	{
+	if (pid == -1){
 		std::cerr << "Fork Error" << std::endl;
-		return ("");
+		response._status_code = 500;
 	}
-	else if (pid == 0)
-	{
+	else if (pid == 0){
 		dup2(fdIn, STDIN_FILENO);
 		dup2(fdOut, STDOUT_FILENO);
 		execve(_scriptName.c_str(), argv, env);
@@ -201,11 +197,13 @@ std::string CGI::addHeader(std::string output, Response &response)
 	_response << "\r\n";
 	size_t end_headers = output.find_first_of("\n");
 	int start = output.find("Content-type", 0);
-	if (start != -1)
-	{
+	if (start != -1){
 		int end = output.find("\n", start);
 		output = output.erase(start, end - start + 1);
 	}
+	_response << "Content-Length: ";
+	_response << output.substr(end_headers, output.length()).length();
+	_response << "\r\n";
 	_response << output.substr(end_headers, output.length());
 	_response << "\r\n\r\n";
 	_response.close();
