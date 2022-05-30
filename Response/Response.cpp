@@ -133,11 +133,10 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 	if(type == NULL)
 	{
 		s += serverConfig->_root;
-		s += serverConfig->_index;
-		// std::cout << GREEN << "This is the path :-----------------------" << s << RESET << std::endl;
+		s += serverConfig->_index; //!!!!!!!!!!
+		std::cout << GREEN << "This is the path :-----------------------" << s << RESET << std::endl;
 		if(serverConfig->_autoindex == false)
 		{
-			
 			if(IsFile(s) == 2)
 			{
 				this->_status_code = 403;
@@ -224,6 +223,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	std::fstream    myfile;
 
 	File_type(req, servconf);
+	std::cout << _status_code << std::endl;
 	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
 	this->_get_file_success_open = true;
 	if(!isCGI(req, servconf))
@@ -234,7 +234,6 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		std::fstream    body_file; //waiting for the path
 		std::string     fill;
 		time_t          rawtime;
-
 
 		if(this->_my_auto_index == false)
 			str_uri = CompletePath(req, servconf);
@@ -260,6 +259,8 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 				myfile << "413 Payload Too Large\r\n";
 			else if(this->_status_code == 404)
 				myfile << "404 Not Found\r\n";
+				else if(this->_status_code == 403)
+				myfile << "403 Forbidden\r\n";
 		}
 
 		// Current Date -----------------
@@ -299,10 +300,11 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		//Body length----------------------
 		myfile << "Content-Length: ";
 		myfile << length;
-		myfile << "\n\n";
+		myfile << "\r\n\r\n";
 
 		myfile << buf;
-		myfile << "\n\n";
+		myfile << "\n";
+		
 
 		//end of method and close file
 		myfile.close();
@@ -335,7 +337,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	i = 0;
 	ve = servconfig->getLocations();
 	str_ret = "." + req.getRequestURI(); // ! i change it old value was : ""
-
+	std::cout << _status_code << std::endl;
 	if(this->_status_code == 200)
 	{
 		if(req.getRequestURI() == "/")
@@ -348,7 +350,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 		{
 			while(i < ve.size())
 			{
-				std::cout << GREEN <<  req.getRequestURI() <<RESET << std::endl;
+				// std::cout << GREEN <<  req.getRequestURI() <<RESET << std::endl;
 				if(ve[i]._path == req.getRequestURI())
 				{
 					str_ret += ve[i]._root;
