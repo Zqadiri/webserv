@@ -1,4 +1,4 @@
-<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<!-- <script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <link rel="stylesheet" href="style.css">
 <div class="file-upload">
   <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button>
@@ -15,4 +15,27 @@
       <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded Image</span></button>
     </div>
   </div>
-</div>
+</div> -->
+
+
+<html>
+
+<head>
+    <title>Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8" />
+</head>
+
+<body>
+    <form action="newfile" method="post" enctype="multipart/form-data">
+
+        <div>
+            <label for="file">Sélectionner le fichier à envoyer</label>
+            <input type="file" id="file" name="new_file" multiple>
+        </div>
+        <div>
+            <button>Envoyer</button>
+        </div>
+    </form>
+</body>
+
+</html>

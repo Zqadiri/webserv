@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/30 15:39:41 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/30 20:41:31 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,10 +135,11 @@ std::string CGI::executeCgi(const std::string &scriptPath, size_t socket_fd, Res
 		response._status_code = 500;
 		exit(1);
 	}
+	std::string	line ="{\"compilerOptions\": {\"module\": \"commonjs\"}}";
 	while (_body && !_env["REQUEST_METHOD"].compare("POST")){
 		std::getline(_body, myline);
 		write(fdIn, myline.c_str(), myline.length());
-	}	
+	}
 	lseek(fdIn, 0, SEEK_SET);
 	pid = fork();
 	if (pid == -1){
@@ -164,6 +165,7 @@ std::string CGI::executeCgi(const std::string &scriptPath, size_t socket_fd, Res
 			ret = read(fdOut, buffer, GCI_BUFFERSIZE - 1);
 			output += buffer;
 		}
+		std::cout << GREEN << output << RESET << std::endl;
 		dup2(savedIn, STDIN_FILENO);
 		dup2(savedOut, STDOUT_FILENO);
 	}
@@ -177,12 +179,13 @@ std::string CGI::executeCgi(const std::string &scriptPath, size_t socket_fd, Res
 	return addHeader(output, response);
 }
 
-std::string CGI::addHeader(std::string output, Response &response)
+std::string CGI::addHeader(std::string output, Response &response) //! error handling
 {
 	std::fstream _response;
 	time_t rawtime;
 
 	_response.open(response.getfileChange().c_str(), std::fstream::in | std::fstream::app);
+	
 	_response << "HTTP/1.1 200 OK\r\n";
 
 	time(&rawtime);

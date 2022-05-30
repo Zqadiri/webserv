@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/29 18:51:48 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/30 21:35:06 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,10 +98,67 @@ int					request::ParseHeaders(std::string buff,  request& req)
 	return 1;
 }
 
-int			request::InternalServerError(){
+int					request::InternalServerError(){
 	std::cerr << YELLOW << "InternalServerError" << RESET << std::endl;
 	_retCode = 500;
 	return -1;	
+}
+
+// void		getFilename(void)
+// {
+// 	time_t t;
+// 	std::string filePath;
+// 	t = time(NULL);
+// 	file_path = location._root + location._upload + "/" + std::to_string(t);
+// 	return filePath;
+// }
+
+
+int		request::parseLine(std::string line)
+{
+	std::string key, value;
+
+	if (line.compare("\r\n"))
+	{
+		std::cout << YELLOW << line << RESET << std::endl;
+		if (line.find("Content-Disposition") != std::string::npos || 
+				line.find("Content-Type") != std::string::npos)
+		{
+			key = removeSpace(getKey(line.c_str()));
+			value = removeSpace(getValue(line.c_str(), key.size()));
+			if (line.find("Content-Disposition") != std::string::npos)
+				_headers["Content-Disposition"] = value;
+			if (line.find("Content-Type") != std::string::npos)
+				_headers["Content-Type"] = value;
+		}
+	}
+	
+	return 1;
+}
+
+void				request::checkForUpload(int fd)
+{
+	if (_headers["Content-Type"].find("boundary") == std::string::npos)
+		return ;
+	std::string 	line;
+	std::fstream	_body;
+	std::string filename = "/tmp/body";
+	filename += to_string(fd);
+
+	_body.open(filename, std::fstream::in);
+	if (_headers["Content-Type"].find("boundary") != std::string::npos)
+	{
+		std::cout << YELLOW << "----------------upload-------------" << RESET << std::endl;
+		while (_body){
+			std::getline(_body, line);
+			if (parseLine(line)){
+				std::cout << line << std::endl;
+			}
+		}
+		_body.close();
+	}
+	std::string mv = "mv " + filename + " " + "./www/upload/newfile";
+	system(mv.c_str());
 }
 
 int					request::parseRquest(std::string buff,  request& req, int socket_fd){
@@ -143,8 +200,10 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd){
 		this->_tmp += buff;
 		parseChunkedRequest(filename);
 	}
-	if (_status == COMPLETE)
+	if (_status == COMPLETE){
+		checkForUpload(socket_fd);
 		return 0;
+	}
 	return 1;
 }
 

@@ -225,6 +225,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	this->_get_file_success_open = true;
 	if(!isCGI(req, servconf))
 	{
+		std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
 		std::string     content_type;
 		int             length(0);
 		std::fstream    body_file; //waiting for the path
@@ -309,15 +310,6 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		CGI				cgi_handler(req, *servconf);
 		cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
 	}
-}
-
-//!------------------------------------ POST ------------------------------------
-
-void						Response::POST(int fd, request &req, serverConfig *servconf)
-{
-	std::cout << "--------------- cgi --------------- >> " << std::endl;
-	CGI				cgi_handler(req, *servconf);
-	cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
 }
 
 std::string					Response::CompletePath(request &req, serverConfig *servconfig)
@@ -492,7 +484,16 @@ void				Response::DELETE(request &req, serverConfig *servconf)
 	writeResponse("");
 }
 
-void            Response::Return_string(request &req, serverConfig *servconf, int fd)
+//!------------------------------------ POST ------------------------------------
+
+void		Response::POST(int fd, request &req, serverConfig *servconf)
+{
+	CGI				cgi_handler(req, *servconf);
+	cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
+}
+
+
+void				Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	Request_statuscode_checked(req, servconf);
 	Methods_exec(req, fd, servconf);

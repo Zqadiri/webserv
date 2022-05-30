@@ -40,7 +40,6 @@ class Response
         //!---------------- POST Functions --------------------------
         void                        POST(int, request &req, serverConfig*);
 
-
     public: //!!!!! private
         std::string     _response_string;
         int             _status_code;
@@ -51,6 +50,10 @@ class Response
         std::string     _check_extension_mine;
         bool            _get_file_success_open;
         bool            _my_auto_index;
+
+        std::string     _contentDisposition;
+        std::string     _contentType;
+        std::string     _boundary;
 };
 
 #endif

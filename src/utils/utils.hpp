@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 14:50:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 12:03:01 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/30 17:43:47 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,5 +17,6 @@
 
 std::string			removeSpace(std::string init);
 std::string         to_string(size_t n);
+std::string			getNextLine(const std::string &buff, size_t &cursor);
 
 #endif 

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 14:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/21 12:01:09 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/30 17:43:37 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,4 +26,22 @@ std::string	to_string(size_t n)
 	std::stringstream tmp;
 	tmp << n;
 	return tmp.str();
+}
+
+std::string			getNextLine(const std::string &buff, size_t &cursor)
+{
+	std::string		ret;
+	size_t			i;
+
+	if (cursor == std::string::npos)
+		return "";
+	i = buff.find_first_of('\n', cursor);
+	ret = buff.substr(cursor, i - cursor);
+	if (ret[ret.size() - 1] == '\r'){
+		ret.resize(ret.size() - 1);
+	}
+	if (i != std::string::npos)
+		i++;
+	cursor = i;
+	return ret;
 }

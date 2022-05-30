@@ -1,0 +1,30 @@
+	if (!location.upload_store.empty()){
+		std::string ext;
+		std::string file_name;
+		std::string file_path;
+
+		ext = _request.getContentType();
+		if (index == -1){
+			time_t t;
+			t = time(NULL);
+			file_path = location.root + location.upload_store + "/" + std::to_string(t);
+		}
+		else{
+			name_to_save = _request.getRequestTarget().substr(index + location.path.size(), _request.getRequestTarget().size());
+			file_path = location.root + location.upload_store  + name_to_save;
+		}
+		std::string mv = "mv " + _request.getBody() + " " + file_path; //? move the file from tmp and save it in the upload directory in the server
+		int ret = system(mv.c_str());
+		time_t rawtime;
+		time(&rawtime);
+		if (ret != -1)
+			_response += "HTTP/1.1 201 created\r\n"; 
+		else
+			_response += "HTTP/1.1 409 Conflict\r\n";
+		_response += "Date: " + std::string(ctime(&rawtime));
+		_response += "Server: webserver";
+		_response += "\r\nContent-Length: 0";
+		_response +=  "\r\nConnection: close";
+		_response +=  "\r\nAccept-Ranges: bytes\r\n\r\n";
+		create_file();
+	}
