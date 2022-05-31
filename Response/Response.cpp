@@ -10,6 +10,7 @@ Response::Response(int socket)
 	this->_response_string = "";
 	this->_get_file_success_open = true;
 	this->_file_extension = "";
+	this->_s = "";
 	//response file get method
 	this->_file_change_get = "/tmp/response_file_get_";
 	this->_file_change_get += to_string(socket);
@@ -116,6 +117,42 @@ std::vector<std::string>	Response::getFilesInDirectory(std::string path)
 	return files;
 }
 
+void						Response::AutoIndexExec(std::string s)
+{
+	int							i;
+	std::fstream				file;
+	std::vector<std::string>	ve;
+	std::string					s2;
+
+	i = -1;
+	this->_my_auto_index = true;
+	s2 = "";
+	file.open("/tmp/auto_index.html",std::fstream::in | std::fstream::app);
+	file << "<html>\n";
+	file << "<head>\n";
+	file << "<title>Index of /</title>\n";
+	file << "</head>\n";
+	file << "<body style=\"margin:20px\">\n";
+	// file << "<center>\n";
+	file << "<h1>Index of/</h1>\n";
+	file << "<hr style=\"width:100%\">\n";
+	// loop through the folder and get the names;
+	ve = getFilesInDirectory(s);
+	while(++i < (int)ve.size())
+	{
+		s2 = s + ve[i];
+		file << "<div style=\"margin:10px\"><a href=";
+		file << "\"";
+		file << ve[i];
+		file << "\">";
+		file << ve[i];
+		file << "</a></div>\n";
+	}
+	// file << "</center>\n";
+	file << "</body>\n";
+	file << "/<html>";
+}
+
 void            			Response::File_type(request &req, serverConfig *serverConfig)
 {
 	std::string str;
@@ -161,38 +198,7 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 		{
 			if(IsFile(s) == 2)
 			{
-				int							i;
-				std::fstream				file;
-				std::vector<std::string>	ve;
-				std::string					s2;
-
-				i = -1;
-				this->_my_auto_index = true;
-				s2 = "";
-				file.open("/tmp/auto_index.html",std::fstream::in | std::fstream::app);
-				file << "<html>\n";
-				file << "<head>\n";
-				file << "<title>Index of /</title>\n";
-				file << "</head>\n";
-				file << "<body style=\"margin:20px\">\n";
-				// file << "<center>\n";
-				file << "<h1>Index of/</h1>\n";
-				file << "<hr style=\"width:100%\">\n";
-				// loop through the folder and get the names;
-				ve = getFilesInDirectory(s);
-				while(++i < (int)ve.size())
-				{
-					s2 = s + ve[i];
-					file << "<div style=\"margin:10px\"><a href=";
-					file << "\"";
-					file << s2;
-					file << "\">";
-					file << ve[i];
-					file << "</a></div>\n";
-				}
-				// file << "</center>\n";
-				file << "</body>\n";
-				file << "/<html>";
+				AutoIndexExec(s);
 			}
 		}
 	}
@@ -215,138 +221,93 @@ std::string     			Response::getfileChange(){
     return _file_change_get;
 }
 
-void            			Response::GET(int fd, request &req, serverConfig *servconf)
-{
-	std::string	str_uri;
-	std::fstream    myfile;
-
-	File_type(req, servconf);
-	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
-	this->_get_file_success_open = true;
-	if(!isCGI(req, servconf))
-	{
-		std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
-		std::string     content_type;
-		int             length(0);
-		std::fstream    body_file; //waiting for the path
-		std::string     fill;
-		time_t          rawtime;
-
-		if(this->_my_auto_index == false)
-			str_uri = CompletePath(req, servconf);
-		else
-			str_uri = "/tmp/auto_index.html";
-
-		// first line in header----------------
-		myfile << "HTTP/1.1 ";
-		if(this->_status_code == 200)
-			myfile << "200 OK\r\n";
-		else
-		{
-			if(this->_status_code == 400)
-				myfile << "400 Bad Request\r\n";
-			else if(this->_status_code == 505)
-				myfile << "505 Http Version Not Supported\r\n";
-			else if(this->_status_code == 500)
-				myfile << "500 Internal Server Error\r\n";
-			else if(this->_status_code == 405)
-				myfile << "405 Not Allowed\r\n";
-			else if(this->_status_code == 413)
-				myfile << "413 Payload Too Large\r\n";
-			else if(this->_status_code == 404)
-				myfile << "404 Not Found\r\n";
-				else if(this->_status_code == 403)
-				myfile << "403 Forbidden\r\n";
-		}
-
-		// Current Date -----------------
-		time(&rawtime);
-		myfile << "Date: ";
-		myfile << std::string(ctime(&rawtime));
-
-		//Server ------------------------
-		myfile << "Server: ";
-		myfile << "Myserver\r\n";
-
-		//Content Type ------------------
-		myfile << "Content-Type: ";
-		if(this->_status_code == 200 && this->_my_auto_index == false)
-			content_type = Content_type();
-		else
-			content_type = "text/html";
-		myfile << content_type;
-		myfile << "\r\n"; //blanate d zineb
-
-		//Body part start --------------
-		// i need to take the path and see if it's a file or directory, if it's a directory i need to search for the default file
-		// if it's a file i need to open it and fill the body with it's content
-
-	std::string buf;
-		body_file.open(str_uri); // has to be changed
-		if (body_file){
-			while(!body_file.eof())
-			{
-				std::getline(body_file, fill);
-				buf += fill;
-				length += fill.length();
-			}
-		}
-		else
-			this->_get_file_success_open = false;
-		//Body length----------------------
-		myfile << "Content-Length: ";
-		myfile << length;
-		myfile << "\r\n\r\n";
-
-		myfile << buf;
-		myfile << "\n";
-		
-
-		//end of method and close file
-		myfile.close();
-	}
-	else
-	{
-		CGI				cgi_handler(req, *servconf);
-		cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
-	}
-}
-
 std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 {
-	size_t					i;
 	std::string				str_ret;
 	std::vector<_location>	ve;
+	std::string				str_req_uri;
+	int						i;
+	bool					check;
 
-	i = 0;
+	str_req_uri = req.getRequestURI();
+	std::cout << GREEN << "this is str req---------------------- " << str_req_uri << RESET << std::endl;
 	ve = servconfig->getLocations();
-	str_ret = "." + req.getRequestURI(); // ! i change it old value was : ""
-	std::cout << _status_code << std::endl;
-	if(this->_status_code == 200)
+	str_ret = "";
+	i = 0;
+	if(IsFile(servconfig->_root + str_req_uri) == 2)
 	{
-		if(req.getRequestURI() == "/")
-		{
-			str_ret += servconfig->_root;
-			str_ret += servconfig->_index;
-			return str_ret;
-		}
-		else
-		{
-			while(i < ve.size())
+		std::cout << RED << "im a folder here-------------" << RESET << std::endl;
+		i = -1;
+		check = false;
+		// puts("----------------------------------2");
+		while (++i < (int)ve.size())
+		{ 
+			if(ve[i]._path == str_req_uri)
 			{
-				// std::cout << GREEN <<  req.getRequestURI() <<RESET << std::endl;
-				if(ve[i]._path == req.getRequestURI())
-				{
-					str_ret += ve[i]._root;
-					str_ret += ve[i]._path;
-					return str_ret;
-				}
-				i++;
+				check = true;
+				str_ret += servconfig->_root;
+				str_ret += "index.html"; // i should put here ve[i]._index
+			}
+		}
+		if(check == false)
+		{
+			if(servconfig->_autoindex == false && servconfig->_index == "")
+			{
+				this->_status_code = 403;
+				str_ret += "./Response/response_errors_pages/";
+				str_ret += to_string(this->_status_code);
+				str_ret += ".html";
+			}
+			else if(servconfig->_index != "")
+			{
+				str_ret += servconfig->_root;
+				str_ret += servconfig->_index;
+			}
+			else
+			{
+				puts("enter auto index--------------------");
+				this->_my_auto_index = true;
+				this->_s += servconfig->_root;
+				this->_s += str_req_uri;
+				AutoIndexExec(this->_s);
+				str_ret = "/tmp/auto_index.html";
+			}
+		}
+	}
+	else if(IsFile(servconfig->_root + str_req_uri) == 1)
+	{
+		i = -1;
+		check = false;
+		// puts("----------------------------------1");
+		while (++i < (int)ve.size())
+		{
+			if(ve[i]._index == str_req_uri)
+			{
+				check = true;
+				str_ret += servconfig->_root;
+				str_ret += ve[i]._index;
+			}
+		}
+		if(check == false)
+		{
+			if(servconfig->_autoindex == false && servconfig->_index == "")
+			{
+				this->_status_code = 403;
+				str_ret += "./Response/response_errors_pages/";
+				str_ret += to_string(this->_status_code);
+				str_ret += ".html";
+			}
+			else
+			{
+				str_ret += servconfig->_root;
+				str_ret += str_req_uri;
 			}
 		}
 	}
 	else
 	{
+		puts("----------------------------------0");
+		this->_status_code = 404;
 		str_ret += "./Response/response_errors_pages/";
 		str_ret += to_string(this->_status_code);
 		str_ret += ".html";
@@ -372,7 +333,7 @@ std::string     			Response::ConvertHtml(std::string path)
 	return (ret);
 }
 
-std::string			Response::getErrorPage(int	status)
+std::string					Response::getErrorPage(int	status)
 {
 	std::string	filename;
 	filename += "./Response/response_errors_pages/";
@@ -381,7 +342,7 @@ std::string			Response::getErrorPage(int	status)
 	return ConvertHtml(filename);
 }
 
-void				Response::writeResponse(std::string boby)
+void						Response::writeResponse(std::string boby)
 {
 	std::fstream	myfile;
 	bool			is_error = 1;
@@ -408,7 +369,7 @@ void				Response::writeResponse(std::string boby)
 	myfile.close();
 }
 
-int					Response::IsFile(const std::string& path)
+int							Response::IsFile(const std::string& path)
 {
 	struct stat buf;
 	if (stat(path.c_str(), &buf) == 0 ){
@@ -428,7 +389,7 @@ int					Response::IsFile(const std::string& path)
  requests that the origin server delete the resource identified by the Request-URI
 */
 
-int				Response::removeDir(std::string path)
+int							Response::removeDir(std::string path)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -462,9 +423,121 @@ int				Response::removeDir(std::string path)
 	return (403);
 }
 
+//!------------------------------------ GET ------------------------------------
+
+void            			Response::GET(int fd, request &req, serverConfig *servconf)
+{
+	std::string		str_uri;
+	std::fstream    myfile;
+
+	// File_type(req, servconf);
+	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
+	this->_get_file_success_open = true;
+	if(!isCGI(req, servconf))
+	{
+		std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
+		std::string     content_type;
+		int             length(0);
+		std::fstream    body_file; //waiting for the path
+		std::string     fill;
+		time_t          rawtime;
+
+		// if(this->_my_auto_index == false)
+			str_uri = CompletePath(req, servconf);
+		// else
+		// 	str_uri = "/tmp/auto_index.html";
+		// std::cout << GREEN << "this is str ret here---------------------- " << str_uri << RESET << std::endl;
+
+		// first line in header----------------
+		myfile << "HTTP/1.1 ";
+		if(this->_status_code == 200)
+			myfile << "200 OK\r\n";
+		else
+		{
+			if(this->_status_code == 400)
+				myfile << "400 Bad Request\r\n";
+			else if(this->_status_code == 505)
+				myfile << "505 Http Version Not Supported\r\n";
+			else if(this->_status_code == 500)
+				myfile << "500 Internal Server Error\r\n";
+			else if(this->_status_code == 405)
+				myfile << "405 Not Allowed\r\n";
+			else if(this->_status_code == 413)
+				myfile << "413 Payload Too Large\r\n";
+			else if(this->_status_code == 404)
+				myfile << "404 Not Found\r\n";
+			else if(this->_status_code == 403)
+				myfile << "403 Forbidden\r\n";
+		}
+
+		// Current Date -----------------
+		time(&rawtime);
+		myfile << "Date: ";
+		myfile << std::string(ctime(&rawtime));
+
+		//Server ------------------------
+		myfile << "Server: ";
+		myfile << "Myserver\r\n";
+
+		//Content Type ------------------
+		myfile << "Content-Type: ";
+		if(this->_status_code == 200 && this->_my_auto_index == false)
+			content_type = Content_type();
+		else
+			content_type = "text/html";
+		myfile << content_type;
+		myfile << "\r\n"; //blanate d zineb
+
+		//Body part start --------------
+		// i need to take the path and see if it's a file or directory, if it's a directory i need to search for the default file
+		// if it's a file i need to open it and fill the body with it's content
+
+		std::string buf;
+		body_file.open(str_uri); // has to be changed
+		if (body_file)
+		{
+			while(!body_file.eof())
+			{
+				std::getline(body_file, fill);
+				buf += fill;
+				length += fill.length();
+			}
+			body_file.close();
+		}
+		else
+		{
+			body_file.open("./Response/response_errors_pages/404.html");
+			while(!body_file.eof())
+			{
+				std::getline(body_file, fill);
+				buf += fill;
+				length += fill.length();
+			}
+			body_file.close();
+		}
+		//Body length----------------------
+		myfile << "Content-Length: ";
+		myfile << length;
+		myfile << "\r\n\r\n";
+
+		myfile << buf;
+		myfile << "\n";
+		
+
+		//end of method and close file
+		myfile.close();
+	}
+	else
+	{
+		CGI				cgi_handler(req, *servconf);
+
+		cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
+	}
+}
+
 //!------------------------------------ DELETE ------------------------------------
 
-void				Response::DELETE(request &req, serverConfig *servconf)
+void						Response::DELETE(request &req, serverConfig *servconf)
 {
 	(void)servconf;
 	std::string f = "." + req.getPath();
@@ -486,18 +559,19 @@ void				Response::DELETE(request &req, serverConfig *servconf)
 
 //!------------------------------------ POST ------------------------------------
 
-void		Response::POST(int fd, request &req, serverConfig *servconf)
+void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
 	CGI				cgi_handler(req, *servconf);
 	cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
 }
 
 
-void				Response::Return_string(request &req, serverConfig *servconf, int fd)
+void						Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	Request_statuscode_checked(req, servconf);
 	Methods_exec(req, fd, servconf);
 }
+
 
 Response::~Response()
 {
