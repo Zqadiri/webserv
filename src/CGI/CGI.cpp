@@ -80,15 +80,6 @@ char **mapToArray(std::map<std::string, std::string> _env)
 	return env;
 }
 
-std::string CGI::getTheCompletePath(const std::string &scriptPath)
-{ 
-	std::string ret;
-
-	ret = ".";
-	ret.append(scriptPath);
-	return ret;
-}
-
 void deleteArray(char **env)
 {
 	for (size_t i = 0; env[i]; i++)
@@ -96,7 +87,7 @@ void deleteArray(char **env)
 	delete[] env;
 }
 
-std::string CGI::executeCgi(const std::string &scriptPath, size_t socket_fd, Response &response)
+std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Response &response)
 {
 	FILE *fileIn = tmpfile();
 	FILE *fileOut = tmpfile();
@@ -117,7 +108,6 @@ std::string CGI::executeCgi(const std::string &scriptPath, size_t socket_fd, Res
 	argv[1] = strcpy(argv[1], _filePath.c_str());
 	argv[2] = NULL;
 
-	_filePath = getTheCompletePath(scriptPath);
 	this->_env["PATH_INFO"] = _filePath;
 	this->_env["PATH_TRANSLATED"] = _filePath;
 	env = mapToArray(this->_env);
@@ -129,13 +119,13 @@ std::string CGI::executeCgi(const std::string &scriptPath, size_t socket_fd, Res
 	long fdIn = fileno(fileIn);
 	long fdOut = fileno(fileOut);
 
+	std::cout << "scriptPath : " << _filePath << std::endl;
 	_body.open(filename, std::fstream::in);
 	if (!_body){
 		std::cerr << "Error" << std::endl;
 		response._status_code = 500;
 	}
-	std::string	line ="{\"compilerOptions\": {\"module\": \"commonjs\"}}";
-	while (_body && !_env["REQUEST_METHOD"].compare("POST")){
+	while (_body){
 		std::getline(_body, myline);
 		write(fdIn, myline.c_str(), myline.length());
 	}

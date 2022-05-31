@@ -144,6 +144,8 @@ void						Response::AutoIndexExec(std::string s)
 		file << "<div style=\"margin:10px\"><a href=";
 		file << "\"";
 		file << ve[i];
+		if (IsFile(s + ve[i]) == 2)
+			file << "/";
 		file << "\">";
 		file << ve[i];
 		file << "</a></div>\n";
@@ -163,47 +165,13 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 
 	s = "";
 	str = req.getRequestURI();
+	// std::cout << YELLOW << "path is here----------" << str << RESET << std::endl;
 	index = str.find_first_of(".");
 	str2 = str.substr(index + 1, str.length());
 	this->_check_extension_mine = str2;
 	type = MimeTypes::getType(str2.c_str());
-	if(type == NULL)
-	{
-		s += serverConfig->_root;
-		s += serverConfig->_index; //!!!!!!!!!!
-		if(serverConfig->_autoindex == false)
-		{
-			if(IsFile(s) == 2)
-			{
-				this->_status_code = 403;
-				this->_pages_to_string = ConvertHtml("./response_errors_pages/403.html");
-			}
-			else if(IsFile(s) == 1)
-			{
-				str = serverConfig->_index;
-				
-				index = str.find_first_of(".");
-				str2 = str.substr(index+1, str.length());
-				this->_check_extension_mine = str2;
-				type = MimeTypes::getType(str2.c_str());
-				this->_file_extension = std::string(type);
-			}
-			else
-			{
-				this->_status_code = 404;
-				this->_pages_to_string = ConvertHtml("./response_errors_pages/404.html");
-			}
-		}
-		else
-		{
-			if(IsFile(s) == 2)
-			{
-				AutoIndexExec(s);
-			}
-		}
-	}
-	else
-		this->_file_extension = std::string(type);
+	if(type != NULL)
+		this->_file_extension = type;
 }
 
 bool            			Response::isCGI(request &req, serverConfig *servconf)
@@ -229,11 +197,15 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	int						i;
 	bool					check;
 
-	str_req_uri = "." + req.getRequestURI(); //!!!
+	str_req_uri = req.getRequestURI(); //!!!
 	ve = servconfig->getLocations();
 	str_ret = "";
 	i = 0;
-	if(IsFile(servconfig->_root + str_req_uri) == 2)
+	// std::cout << YELLOW << "this is the s string here before---------- " << this->_s << RESET << std::endl;
+	this->_s += servconfig->_root;
+	this->_s += str_req_uri;
+	// std::cout << YELLOW << "this is the s string here after----------- " << this->_s << RESET << std::endl; 
+	if(IsFile(this->_s) == 2)
 	{
 		std::cout << RED << "im a folder here-------------" << RESET << std::endl;
 		i = -1;
@@ -245,7 +217,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			{
 				check = true;
 				str_ret += servconfig->_root;
-				str_ret += "index.html"; // i should put here ve[i]._index
+				str_ret += ve[i]._index; // i should put here ve[i]._index
 			}
 		}
 		if(check == false)
@@ -266,8 +238,6 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			{
 				puts("enter auto index--------------------");
 				this->_my_auto_index = true;
-				this->_s += servconfig->_root;
-				this->_s += str_req_uri;
 				AutoIndexExec(this->_s);
 				str_ret = "/tmp/auto_index.html";
 			}
@@ -310,7 +280,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 		str_ret += to_string(this->_status_code);
 		str_ret += ".html";
 	}
-	std::cout << GREEN << "this is str req---------------------- " << str_req_uri << RESET << std::endl;
+	// std::cout << GREEN << "this is str req---------------------- " << str_req_uri << RESET << std::endl;
 	return str_ret;
 }
 
@@ -429,20 +399,20 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	std::string		str_uri;
 	std::fstream    myfile;
 
-	// File_type(req, servconf);
+	File_type(req, servconf);
 	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
 	this->_get_file_success_open = true;
+	std::string     content_type;
+	int             length(0);
+	std::fstream    body_file; //waiting for the path
+	std::string     fill;
+	time_t          rawtime;
+
+	// if(this->_my_auto_index == false)
+	str_uri = CompletePath(req, servconf);
 	if(!isCGI(req, servconf))
 	{
 		std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
-		std::string     content_type;
-		int             length(0);
-		std::fstream    body_file; //waiting for the path
-		std::string     fill;
-		time_t          rawtime;
-
-		// if(this->_my_auto_index == false)
-		str_uri = CompletePath(req, servconf);
 		// else
 		// 	str_uri = "/tmp/auto_index.html";
 		// std::cout << GREEN << "this is str ret here---------------------- " << str_uri << RESET << std::endl;
@@ -484,6 +454,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 			content_type = Content_type();
 		else
 			content_type = "text/html";
+		std::cout << RED << "content type here ---------" << Content_type() << RESET << std::endl;
 		myfile << content_type;
 		myfile << "\r\n"; //blanate d zineb
 
@@ -527,8 +498,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	else
 	{
 		CGI				cgi_handler(req, *servconf);
-
-		cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
+		cgi_handler.executeCgi(str_uri, fd, *this);
 	}
 }
 
@@ -559,7 +529,10 @@ void						Response::DELETE(request &req, serverConfig *servconf)
 void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
 	CGI				cgi_handler(req, *servconf);
-	cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
+	std::string		complete_path;
+
+	complete_path = CompletePath(req, servconf);
+	cgi_handler.executeCgi(complete_path, fd, *this);
 	// std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
 	// system(mv.c_str());
 }

@@ -97,7 +97,7 @@ int server::sen(int &socket, request& req)
 		buf += myline;
 		buf += "\n";
 	}
-	std::cout << YELLOW << ">" << buf << "<" << RESET << std::endl;
+	// std::cout << YELLOW << ">" << buf << "<" << RESET << std::endl;
 	ret = send(socket, buf.c_str(), buf.size(), 0);
 	if (ret == -1){
 		std::cout << "send() failed !!!!" << std::endl;
