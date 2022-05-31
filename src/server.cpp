@@ -82,29 +82,29 @@ int server::get_fd(void) const{
 	return (_fd);
 }
 
-int server::sen(int &socket, request& req)
-{
-	std::string		buf;
-	std::string		myline;
-	std::fstream 	_res;
-	Response		response(socket);
-	std::cout << "trying send to " << socket << "\n";
-	int				ret = 1;
-	response.Return_string(req, _config, socket);
-	_res.open(response.getfileChange().c_str(), std::fstream::in);
-	while (_res){
-		std::getline (_res, myline);
-		buf += myline;
-		buf += "\n";
-	}
-	// std::cout << YELLOW << ">" << buf << "<" << RESET << std::endl;
-	ret = send(socket, buf.c_str(), buf.size(), 0);
-	if (ret == -1){
-		std::cout << "send() failed !!!!" << std::endl;
-		return (-1);
-	}
-	return (0);
-}
+// int server::sen(int &socket, request& req)
+// {
+// 	std::string		buf;
+// 	std::string		myline;
+// 	std::fstream 	_res;
+// 	Response		response(socket);
+// 	std::cout << "trying send to " << socket << "\n";
+// 	int				ret = 1;
+// 	response.Return_string(req, _config, socket);
+// 	_res.open(response.getfileChange().c_str(), std::fstream::in);
+// 	while (_res){
+// 		std::getline (_res, myline);
+// 		buf += myline;
+// 		buf += "\n";
+// 	}
+// 	// std::cout << YELLOW << ">" << buf << "<" << RESET << std::endl;
+// 	ret = send(socket, buf.c_str(), buf.size(), 0);
+// 	if (ret == -1){
+// 		std::cout << "send() failed !!!!" << std::endl;
+// 		return (-1);
+// 	}
+// 	return (0);
+// }
 
 int server::rec(int &socket, request& req)
 {
@@ -250,93 +250,101 @@ std::list<std::pair<int, request> >		server::getRequest(void){
 	return this->_sockets;
 }
 
-// int server::sen(int &socket, request& req)
-// {
-// 	char			buff[BUFFER_SIZE];
-// 	std::string		myline;
-// 	Response		response(socket);
-// 	int size = 0;
-// 	int				ret = 0;
-// 	bool over = false;
-// 	int digits = 0;
-// 	std::cout << "trying send to " << socket << "\n";
+void string_to_char(std::string str, char *s)
+{
+	for (size_t i = 0; i < str.size(); ++i)
+	{
+		s[i] = str[i];
+	}
+	s[str.size()] = '\0';
+}
+int server::sen(int &socket, request& req)
+{
+	char			buff[BUFFER_SIZE];
+	std::string		myline;
+	Response		response(socket);
+	int size = 0;
+	int				ret = 0;
+	bool over = false;
+	int digits = 0;
+	std::cout << "trying send to " << socket << "\n";
 	
-// 	response.Return_string(req, _config, socket);
-// 	if (response.size_body > 0)
-// 	{
-// 		if (!response._res.is_open())
-// 			response._res.open(response.body_path, std::fstream::in);
-// 		if(!response._res.is_open()){
-// 			std::cout << "open() failed !!!!" << std::endl;
-// 			return (-1);
-// 		}
-// 		if (!response.chunked)
-// 		{
-// 			string_to_char(response.header, buff);
-// 			size = response.header.size();
-// 			size += response._res.readsome(buff + size, response.size_body);
-// 			response._res.close();
-// 			over = true;
-// 		}
-// 		else
-// 		{
-// 			if (!response.header.empty())
-// 			{
-// 				string_to_char(response.header, buff);
-// 				size = response.header.size();
-// 				response.header.clear();
-// 			}
-// 			{
-// 				std::string d;
-// 				d += response.size_body;
-// 				digits = d.size();
-// 			}
-// 			if (response.size_body > BUFFER_SIZE - (size + 8))
-// 			{
-// 				std::string d;
-// 				d += BUFFER_SIZE - (size + 8);
-// 				digits = d.size();
-// 				string_to_char(d, buff + size);
-// 				size += digits;
-// 				buff[size++] = '\r';
-// 				buff[size++] = '\n';
-// 				size += response._res.readsome(buff + size, BUFFER_SIZE - (size + digits + 2));
-// 				response.size_body -= BUFFER_SIZE - (size + digits + 2);
-// 				buff[size++] = '\r';
-// 				buff[size++] = '\n';
-// 			}
-// 			else
-// 			{
-// 				std::string d;
-// 				d += response.size_body;
-// 				digits = d.size();
-// 				string_to_char(d, buff + size);
-// 				size += digits;
-// 				buff[size++] = '\r';
-// 				buff[size++] = '\n';
-// 				size += response._res.readsome(buff + size, response.size_body);
-// 				if (response.size_body > 0)
-// 					response.size_body = 0;
-// 				else
-// 					over = true;
-// 				buff[size++] = '\r';
-// 				buff[size++] = '\n';
-// 			}
-// 		}
-// 	}
-// 	else
-// 	{
-// 		string_to_char(response.header, buff);
-// 		size = response.header.size();
-// 	}
+	response.Return_string(req, _config, socket);
+	if (response.body_length > 0)
+	{
+		if (!response._res.is_open())
+			response._res.open(response.str_uri, std::fstream::in);
+		if(!response._res.is_open()){
+			std::cout << "open() failed !!!!" << std::endl;
+			return (-1);
+		}
+		if (!response.chunked)
+		{
+			string_to_char(response.header, buff);
+			size = response.header.size();
+			size += response._res.readsome(buff + size, response.body_length);
+			response._res.close();
+			over = true;
+		}
+		else
+		{
+			if (!response.header.empty())
+			{
+				string_to_char(response.header, buff);
+				size = response.header.size();
+				response.header.clear();
+			}
+			{
+				std::string d;
+				d += response.body_length;
+				digits = d.size();
+			}
+			if (response.body_length > BUFFER_SIZE - (size + 8))
+			{
+				std::string d;
+				d += BUFFER_SIZE - (size + 8);
+				digits = d.size();
+				string_to_char(d, buff + size);
+				size += digits;
+				buff[size++] = '\r';
+				buff[size++] = '\n';
+				size += response._res.readsome(buff + size, BUFFER_SIZE - (size + digits + 2));
+				response.body_length -= BUFFER_SIZE - (size + digits + 2);
+				buff[size++] = '\r';
+				buff[size++] = '\n';
+			}
+			else
+			{
+				std::string d;
+				d += response.body_length;
+				digits = d.size();
+				string_to_char(d, buff + size);
+				size += digits;
+				buff[size++] = '\r';
+				buff[size++] = '\n';
+				size += response._res.readsome(buff + size, response.body_length);
+				if (response.body_length > 0)
+					response.body_length = 0;
+				else
+					over = true;
+				buff[size++] = '\r';
+				buff[size++] = '\n';
+			}
+		}
+	}
+	else
+	{
+		string_to_char(response.header, buff);
+		size = response.header.size();
+	}
 	
-// 	std::cout << YELLOW << ">" << buff << "<" << RESET << std::endl;
-// 	ret = send(socket, buff, size, 0);
-// 	if (ret == -1){
-// 		std::cout << "send() failed !!!!" << std::endl;
-// 		return (-1);
-// 	}
-// 	if (over)
-// 		return (0);
-// 	return (ret);
-// }
+	std::cout << YELLOW << ">" << buff << "<" << RESET << std::endl;
+	ret = send(socket, buff, size, 0);
+	if (ret == -1){
+		std::cout << "send() failed !!!!" << std::endl;
+		return (-1);
+	}
+	if (over)
+		return (0);
+	return (ret);
+}

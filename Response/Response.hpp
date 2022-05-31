@@ -30,6 +30,7 @@ class Response
         std::string                 CompletePath(request &req, serverConfig*);
         std::vector<std::string>    getFilesInDirectory(std::string);
         void                        AutoIndexExec(std::string);
+        std::string                 new_header_str(request &req, serverConfig *servconf);
         //!---------------- DELETE Functions --------------------------
         int                         IsFile(const std::string& path);
         int				            removeDir(std::string);
@@ -55,6 +56,12 @@ class Response
         std::string     _contentDisposition;
         std::string     _contentType;
         std::string     _boundary;
+        std::string     header;
+        std::string		str_uri;
+        int           body_length;
+        bool            chunked;
+        std::fstream    _res;
+        
 };
 
 #endif

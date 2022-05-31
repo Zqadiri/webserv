@@ -93,7 +93,7 @@ int             			Response::File_lenght(request &req, serverConfig* servconf, s
 		ret = sb.st_size;
 	else
 		ret = -1;
-
+	std::cout << "****** " << ret << std::endl;
 	return ret;
 }
 
@@ -358,6 +358,144 @@ int							Response::IsFile(const std::string& path)
 		return 0;
 }
 
+// std::string					Response::new_header_str(request &req, serverConfig *servconf)
+// {
+// 	std::string 	str_ret;
+// 	time_t          rawtime;
+// 	std::string     content_type;
+
+
+// 	str_ret = "";
+// 	str_ret += "HTTP/1.1 ";
+// 	if(this->_status_code == 200)
+// 		str_ret +=  "200 OK\r\n";
+// 	else
+// 	{
+// 		if(this->_status_code == 400)
+// 			str_ret +=  "400 Bad Request\r\n";
+// 		else if(this->_status_code == 505)
+// 			str_ret +=  "505 Http Version Not Supported\r\n";
+// 		else if(this->_status_code == 500)
+// 			str_ret +=  "500 Internal Server Error\r\n";
+// 		else if(this->_status_code == 405)
+// 			str_ret +=  "405 Not Allowed\r\n";
+// 		else if(this->_status_code == 413)
+// 			str_ret +=  "413 Payload Too Large\r\n";
+// 		else if(this->_status_code == 404)
+// 			str_ret +=  "404 Not Found\r\n";
+// 		else if(this->_status_code == 403)
+// 			str_ret +=  "403 Forbidden\r\n";
+// 	}
+
+// 	time(&rawtime);
+// 	str_ret += "Date: ";
+// 	str_ret += std::string(ctime(&rawtime));
+
+// 	str_ret += "Server: ";
+// 	str_ret += "Myserver\r\n";
+
+// 	str_ret +=  "Content-Type: ";
+// 	if(this->_status_code == 200 && this->_my_auto_index == false)
+// 		content_type = Content_type();
+// 	else
+// 		content_type = "text/html";
+// 	std::cout << RED << "content type here ---------" << Content_type() << RESET << std::endl;
+// 	str_ret +=  content_type;
+// 	str_ret +=  "\r\n"; //blanate d zineb
+
+// 	body_length = File_lenght(req, servconf, str_uri);
+
+// 	std::cout << "*************" << std::endl;
+// 	if(body_length + str_ret.size() > BUFFER_SIZE)
+// 	{
+// 		str_ret += "Transfer-Encoding: chuncked";
+// 		chunked = true;
+// 	}
+// 	else
+// 	{
+// 		std::cout << "in" << std::endl;
+// 		str_ret += "Content-Length: ";
+// 		std::cout << body_length << std::endl;
+
+// 		std::cout << to_string(body_length) << std::endl;
+// 		str_ret += to_string(body_length);
+// 		chunked = false;
+// 	}
+// 	std::cout << "out" << std::endl;
+// 	str_ret += "\r\n\r\n";
+// 	return str_ret;
+// }
+
+
+void            			Response::GET(int fd, request &req, serverConfig *servconf)
+{
+	File_type(req, servconf);
+	std::string     content_type;
+	time_t          rawtime;
+
+	// if(this->_my_auto_index == false)
+	str_uri = CompletePath(req, servconf);
+	if(!isCGI(req, servconf))
+	{
+		header += "HTTP/1.1 ";
+		if(this->_status_code == 200)
+			header +=  "200 OK\r\n";
+		else
+		{
+			if(this->_status_code == 400)
+				header +=  "400 Bad Request\r\n";
+			else if(this->_status_code == 505)
+				header +=  "505 Http Version Not Supported\r\n";
+			else if(this->_status_code == 500)
+				header +=  "500 Internal Server Error\r\n";
+			else if(this->_status_code == 405)
+				header +=  "405 Not Allowed\r\n";
+			else if(this->_status_code == 413)
+				header +=  "413 Payload Too Large\r\n";
+			else if(this->_status_code == 404)
+				header +=  "404 Not Found\r\n";
+			else if(this->_status_code == 403)
+				header +=  "403 Forbidden\r\n";
+		}
+
+		time(&rawtime);
+		header += "Date: ";
+		header += std::string(ctime(&rawtime));
+
+		header += "Server: ";
+		header += "Myserver\r\n";
+
+		header +=  "Content-Type: ";
+		if(this->_status_code == 200 && this->_my_auto_index == false)
+			content_type = Content_type();
+		else
+			content_type = "text/html";
+		std::cout << RED << "content type here ---------" << Content_type() << RESET << std::endl;
+		header +=  content_type;
+		header +=  "\r\n"; //blanate d zineb
+
+		body_length = File_lenght(req, servconf, str_uri);
+
+		if(body_length + header.size() > BUFFER_SIZE)
+		{
+			header += "Transfer-Encoding: chuncked";
+			chunked = true;
+			
+		}
+		else
+		{
+			header += "Content-Length: ";
+			header += to_string(body_length);
+			chunked = false;
+		}
+		header += "\r\n\r\n";
+	}
+	else
+	{
+		CGI				cgi_handler(req, *servconf);
+		cgi_handler.executeCgi(str_uri, fd, *this);
+	}
+}
 /*
  TODO:The DELETE method
  requests that the origin server delete the resource identified by the Request-URI
@@ -399,113 +537,31 @@ int							Response::removeDir(std::string path)
 
 //!------------------------------------ GET ------------------------------------
 
-void            			Response::GET(int fd, request &req, serverConfig *servconf)
-{
-	std::string		str_uri;
-	std::fstream    myfile;
+// void            			Response::GET(int fd, request &req, serverConfig *servconf)
+// {
+// 	std::fstream    myfile;
 
-	File_type(req, servconf);
-	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
-	this->_get_file_success_open = true;
-	std::string     content_type;
-	int             length(0);
-	std::fstream    body_file; //waiting for the path
-	std::string     fill;
-	time_t          rawtime;
+// 	File_type(req, servconf);
+// 	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
+// 	this->_get_file_success_open = true;
+// 	std::string     content_type;
+// 	int             length(0);
+// 	std::fstream    body_file; //waiting for the path
+// 	std::string     fill;
+// 	time_t          rawtime;
 
-	// if(this->_my_auto_index == false)
-	str_uri = CompletePath(req, servconf);
-	if(!isCGI(req, servconf))
-	{
-		std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
-		// else
-		// 	str_uri = "/tmp/auto_index.html";
-		// std::cout << GREEN << "this is str ret here---------------------- " << str_uri << RESET << std::endl;
-
-		// first line in header----------------
-		myfile << "HTTP/1.1 ";
-		if(this->_status_code == 200)
-			myfile << "200 OK\r\n";
-		else
-		{
-			if(this->_status_code == 400)
-				myfile << "400 Bad Request\r\n";
-			else if(this->_status_code == 505)
-				myfile << "505 Http Version Not Supported\r\n";
-			else if(this->_status_code == 500)
-				myfile << "500 Internal Server Error\r\n";
-			else if(this->_status_code == 405)
-				myfile << "405 Not Allowed\r\n";
-			else if(this->_status_code == 413)
-				myfile << "413 Payload Too Large\r\n";
-			else if(this->_status_code == 404)
-				myfile << "404 Not Found\r\n";
-			else if(this->_status_code == 403)
-				myfile << "403 Forbidden\r\n";
-		}
-
-		// Current Date -----------------
-		time(&rawtime);
-		myfile << "Date: ";
-		myfile << std::string(ctime(&rawtime));
-
-		//Server ------------------------
-		myfile << "Server: ";
-		myfile << "Myserver\r\n";
-
-		//Content Type ------------------
-		myfile << "Content-Type: ";
-		if(this->_status_code == 200 && this->_my_auto_index == false)
-			content_type = Content_type();
-		else
-			content_type = "text/html";
-		std::cout << RED << "content type here ---------" << Content_type() << RESET << std::endl;
-		myfile << content_type;
-		myfile << "\r\n"; //blanate d zineb
-
-		//Body part start --------------
-		// i need to take the path and see if it's a file or directory, if it's a directory i need to search for the default file
-		// if it's a file i need to open it and fill the body with it's content
-
-		std::string buf;
-		body_file.open(str_uri); // has to be changed
-		if (body_file)
-		{
-			while(!body_file.eof())
-			{
-				std::getline(body_file, fill);
-				buf += fill;
-				length += fill.length();
-			}
-			body_file.close();
-		}
-		else
-		{
-			body_file.open("./Response/response_errors_pages/404.html");
-			while(!body_file.eof())
-			{
-				std::getline(body_file, fill);
-				buf += fill;
-				length += fill.length();
-			}
-			body_file.close();
-		}
-		
-		myfile << "Content-Length: ";
-		myfile << length;
-		myfile << "\r\n\r\n";
-
-		myfile << buf;
-		myfile << "\n";
-		//end of method and close file
-		myfile.close();
-	}
-	else
-	{
-		CGI				cgi_handler(req, *servconf);
-		cgi_handler.executeCgi(str_uri, fd, *this);
-	}
-}
+// 	// if(this->_my_auto_index == false)
+// 	str_uri = CompletePath(req, servconf);
+// 	if(!isCGI(req, servconf))
+// 	{
+// 		header = new_header_str(req, servconf);
+// 	}
+// 	else
+// 	{
+// 		CGI				cgi_handler(req, *servconf);
+// 		cgi_handler.executeCgi(str_uri, fd, *this);
+// 	}
+// }
 
 //!------------------------------------ DELETE ------------------------------------
 
