@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 11:13:58 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 22:56:07 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,10 @@ std::vector<std::string>		request::init_methods()
 	methods.push_back("TRACE");	
 	return methods;
 }
-
+	
 /*------ Constructors ------*/
 
-request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _host(""), _current_time(std::time(NULL)){
+request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _host(""), _current_time(std::time(NULL)), _response(socket_fd){
 	
 	std::fstream body;
 	std::string filename = "/tmp/body";
@@ -85,6 +85,7 @@ int											request::getBodyLength() const{ return	_bodyLength; }
 void										request::setCode(int code){
 	this->_retCode = code;
 }
+Response									&request::getResponse() { return _response; }
 
 /*------ Member Functions ------*/
 

@@ -6,7 +6,7 @@
 /*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/19 18:47:07 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/05/31 22:49:38 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ class server
 		int		get_fd(void) const;
 		
 		int 	rec(int&, request&);
-		int		sen(int&, request&);
+		int		sen(int&, request&, Response&);
 		void 	handle_sockets(fd_set&, fd_set&,fd_set&, fd_set&);
 		int 	add_socket(fd_set&,fd_set&, int&);
 		int		setup(void);
