@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/31 11:30:27 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 21:21:55 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,4 +250,93 @@ std::list<std::pair<int, request> >		server::getRequest(void){
 	return this->_sockets;
 }
 
-
+// int server::sen(int &socket, request& req)
+// {
+// 	char			buff[BUFFER_SIZE];
+// 	std::string		myline;
+// 	Response		response(socket);
+// 	int size = 0;
+// 	int				ret = 0;
+// 	bool over = false;
+// 	int digits = 0;
+// 	std::cout << "trying send to " << socket << "\n";
+	
+// 	response.Return_string(req, _config, socket);
+// 	if (response.size_body > 0)
+// 	{
+// 		if (!response._res.is_open())
+// 			response._res.open(response.body_path, std::fstream::in);
+// 		if(!response._res.is_open()){
+// 			std::cout << "open() failed !!!!" << std::endl;
+// 			return (-1);
+// 		}
+// 		if (!response.chunked)
+// 		{
+// 			string_to_char(response.header, buff);
+// 			size = response.header.size();
+// 			size += response._res.readsome(buff + size, response.size_body);
+// 			response._res.close();
+// 			over = true;
+// 		}
+// 		else
+// 		{
+// 			if (!response.header.empty())
+// 			{
+// 				string_to_char(response.header, buff);
+// 				size = response.header.size();
+// 				response.header.clear();
+// 			}
+// 			{
+// 				std::string d;
+// 				d += response.size_body;
+// 				digits = d.size();
+// 			}
+// 			if (response.size_body > BUFFER_SIZE - (size + 8))
+// 			{
+// 				std::string d;
+// 				d += BUFFER_SIZE - (size + 8);
+// 				digits = d.size();
+// 				string_to_char(d, buff + size);
+// 				size += digits;
+// 				buff[size++] = '\r';
+// 				buff[size++] = '\n';
+// 				size += response._res.readsome(buff + size, BUFFER_SIZE - (size + digits + 2));
+// 				response.size_body -= BUFFER_SIZE - (size + digits + 2);
+// 				buff[size++] = '\r';
+// 				buff[size++] = '\n';
+// 			}
+// 			else
+// 			{
+// 				std::string d;
+// 				d += response.size_body;
+// 				digits = d.size();
+// 				string_to_char(d, buff + size);
+// 				size += digits;
+// 				buff[size++] = '\r';
+// 				buff[size++] = '\n';
+// 				size += response._res.readsome(buff + size, response.size_body);
+// 				if (response.size_body > 0)
+// 					response.size_body = 0;
+// 				else
+// 					over = true;
+// 				buff[size++] = '\r';
+// 				buff[size++] = '\n';
+// 			}
+// 		}
+// 	}
+// 	else
+// 	{
+// 		string_to_char(response.header, buff);
+// 		size = response.header.size();
+// 	}
+	
+// 	std::cout << YELLOW << ">" << buff << "<" << RESET << std::endl;
+// 	ret = send(socket, buff, size, 0);
+// 	if (ret == -1){
+// 		std::cout << "send() failed !!!!" << std::endl;
+// 		return (-1);
+// 	}
+// 	if (over)
+// 		return (0);
+// 	return (ret);
+// }

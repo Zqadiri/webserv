@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 11:15:01 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 12:38:21 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ class request
 		void									getQueryString();
 		int										checkMethod();
 
+		std::string								_uploadFileName;
 	private:
-
 		int										_chunkSize;
 		ParseStatus 							_status;
 		chunkStatus								_chunkStatus;
@@ -87,7 +87,6 @@ class request
 		std::string								_tmp;
 		int										_bodyLength;
 		std::time_t 							_current_time;
-		std::string								_uploadFileName;
 		std::string								_contentTypeUpload;
 
 		//! print function 

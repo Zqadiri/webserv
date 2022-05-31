@@ -67,7 +67,7 @@ void            			Response::Methods_exec(request &req, int fd, serverConfig *se
         if(str == "GET")
             return GET(fd, req, servconf);
         else if(str == "POST")
-            return POST(fd, req, servconf);
+            return POST(fd, req, servconf,  "./www/upload/newFile");
         else if(str == "DELETE")
             return DELETE(req, servconf);
     }
@@ -323,6 +323,11 @@ void						Response::writeResponse(std::string boby)
 	}
 	else if (this->_status_code == 403)
 		myfile << FORBIDDEN;
+	else if (this->_status_code == 201){
+		is_error = 0;
+		myfile << CREATED;
+		myfile << "Content-Length: 0\r\n";
+	}
 	else if (this->_status_code == 200){
 		is_error = 0;
 		myfile << OK;
@@ -526,7 +531,7 @@ void						Response::DELETE(request &req, serverConfig *servconf)
 
 //!------------------------------------ POST ------------------------------------
 
-void						Response::POST(int fd, request &req, serverConfig *servconf)
+void						Response::POST(int fd, request &req, serverConfig *servconf, std::string filePath)
 {
 	CGI				cgi_handler(req, *servconf);
 	std::string		complete_path;
@@ -537,13 +542,11 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	// system(mv.c_str());
 }
 
-
 void						Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	Request_statuscode_checked(req, servconf);
 	Methods_exec(req, fd, servconf);
 }
-
 
 Response::~Response()
 {

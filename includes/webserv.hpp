@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/29 14:48:17 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 14:01:55 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,13 @@
 # define RESET "\033[0m"
 
 #define TIMEOUT 20
-#define BUFFER_SIZE	1024
+#define BUFFER_SIZE	2048
 
 #define OK "HTTP/1.1 200 OK\r\n"
 #define NO_CONTENT "HTTP/1.1 204 No Content\r\n"
 #define FORBIDDEN	"HTTP/1.1 403 Forbidden\r\n"
 #define NOT_FOUND "HTTP/1.1 404 Not Found\r\n"
+#define	CREATED	"HTTP/1.1 201 Created\r\n"
 
 typedef	std::vector<std::string>	configFile;
 

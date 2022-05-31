@@ -38,7 +38,7 @@ class Response
         void                        DELETE(request &req, serverConfig*);
 
         //!---------------- POST Functions --------------------------
-        void                        POST(int, request &req, serverConfig*);
+        void                        POST(int, request &req, serverConfig*, std::string);
 
     public: //!!!!! private
         std::string     _response_string;
