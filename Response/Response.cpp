@@ -18,6 +18,10 @@ Response::Response(int socket)
 	this->_file_change_delete = "/tmp/response_file_delete_";
 	this->_file_change_delete += to_string(socket);
 	this->_my_auto_index = false;
+	this->header = "";
+	this->body_length = 0;
+	this->chunked = false;
+	this->str_uri = "";
 	myfile.open(_file_change_get, std::fstream::in | std::fstream::out | std::fstream::trunc);
 	myfile.close();
 }
