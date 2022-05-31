@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 10:32:54 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 11:25:07 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,15 +104,15 @@ int					request::InternalServerError(){
 	return -1;	
 }
 
-// void		getFilename(void)
-// {
-// 	time_t t;
-// 	std::string filePath;
-// 	t = time(NULL);
-// 	file_path = location._root + location._upload + "/" + std::to_string(t);
-// 	return filePath;
-// }
-
+std::string				getFilename(std::string buffer)
+{
+	std::cout << buffer << std::endl;
+	std::string	delim ("filename=");
+	size_t end = buffer.find(delim);
+	if (end != std::string::npos)
+		return buffer.substr(end + delim.length() + 1, buffer.length() - 1);
+	return "error";
+}
 
 int		request::parseLine(std::string line)
 {
@@ -120,25 +120,21 @@ int		request::parseLine(std::string line)
 
 	if (line.compare("\r\n"))
 	{
-		std::cout << YELLOW << line << RESET << std::endl;
 		if (line.find("Content-Disposition") != std::string::npos || 
 				line.find("Content-Type") != std::string::npos)
 		{
 			key = removeSpace(getKey(line.c_str()));
 			value = removeSpace(getValue(line.c_str(), key.size()));
-			if (line.find("Content-Disposition") != std::string::npos)
+			if (line.find("Content-Disposition") != std::string::npos){
 				_headers["Content-Disposition"] = value;
+				_uploadFileName = getFilename(_headers["Content-Disposition"]);
+			}
 			if (line.find("Content-Type") != std::string::npos)
-				_headers["Content-Type"] = value;
+				_contentTypeUpload = value;
+			return 0;
 		}
 	}
-	
 	return 1;
-}
-
-void				getFilename()
-{
-	
 }
 
 void				request::checkForUpload(int fd)
@@ -150,21 +146,25 @@ void				request::checkForUpload(int fd)
 	std::string filename = "/tmp/body";
 	filename += to_string(fd);
 
+	std::fstream	newBody;
 	_body.open(filename, std::fstream::in);
+	newBody.open("temp", std::fstream::in | std::fstream::app);
 	if (_headers["Content-Type"].find("boundary") != std::string::npos)
 	{
-		std::cout << YELLOW << "----------------upload-------------" << RESET << std::endl;
 		while (_body){
 			std::getline(_body, line);
 			if (parseLine(line)){
-				std::cout << line << std::endl;
+				newBody << line;
 			}
 		}
 		_body.close();
+		newBody.close();
 	}
-	std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
-	system(mv.c_str());
-	_uploadFileName = getFilename();
+	std::cout << "_uploadFileName : " << _uploadFileName << " Content-Type : " <<
+	_contentTypeUpload << " Content-Disposition : "<<  _headers["Content-Disposition"]
+	<< std::endl;
+	// std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
+	// system(mv.c_str());
 }
 
 int					request::parseRquest(std::string buff,  request& req, int socket_fd)

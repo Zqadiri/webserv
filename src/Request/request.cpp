@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/30 17:43:20 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 11:13:58 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _h
 	this->_headers["Transfer-Encoding"] = "";
 	this->_headers["User-Agent"] = "";
 	this->_headers["Www-Authenticate"] = "";
-
+	this->_headers["User-Agent"] = "";
+	this->_headers["Content-Disposition"] = "";
 	body.open (filename, std::fstream::in | std::fstream::out | std::fstream::trunc);
 }
 
@@ -110,7 +111,6 @@ int					request::checkMethod()
 	for (size_t i = 0; i < this->possibleMethods.size(); i++)
 		if (this->possibleMethods[i] == this->_method)
 			return this->_retCode;
-	std::cerr << YELLOW << "Invalid Method" << RESET << std::endl;
 	this->_retCode = 400;
 	return 0;
 }

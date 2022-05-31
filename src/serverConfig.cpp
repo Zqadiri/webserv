@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/25 13:02:50 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 12:18:13 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,11 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 		if (!con[index].compare("root")){ 
 			index++;
 			l._root = con[index];
+			index++;
+		}
+		else if (!con[index].compare("index")){ 
+			index++;
+			l._index = con[index];
 			index++;
 		}
 		else if (!con[index].compare("alias")){

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/30 20:41:31 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 10:56:46 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,6 @@ std::string CGI::executeCgi(const std::string &scriptPath, size_t socket_fd, Res
 	if (!_body){
 		std::cerr << "Error" << std::endl;
 		response._status_code = 500;
-		exit(1);
 	}
 	std::string	line ="{\"compilerOptions\": {\"module\": \"commonjs\"}}";
 	while (_body && !_env["REQUEST_METHOD"].compare("POST")){

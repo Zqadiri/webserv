@@ -229,8 +229,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	int						i;
 	bool					check;
 
-	str_req_uri = req.getRequestURI();
-	std::cout << GREEN << "this is str req---------------------- " << str_req_uri << RESET << std::endl;
+	str_req_uri = "." + req.getRequestURI(); //!!!
 	ve = servconfig->getLocations();
 	str_ret = "";
 	i = 0;
@@ -306,12 +305,12 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	}
 	else
 	{
-		puts("----------------------------------0");
 		this->_status_code = 404;
 		str_ret += "./Response/response_errors_pages/";
 		str_ret += to_string(this->_status_code);
 		str_ret += ".html";
 	}
+	std::cout << GREEN << "this is str req---------------------- " << str_req_uri << RESET << std::endl;
 	return str_ret;
 }
 
@@ -443,7 +442,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		time_t          rawtime;
 
 		// if(this->_my_auto_index == false)
-			str_uri = CompletePath(req, servconf);
+		str_uri = CompletePath(req, servconf);
 		// else
 		// 	str_uri = "/tmp/auto_index.html";
 		// std::cout << GREEN << "this is str ret here---------------------- " << str_uri << RESET << std::endl;
@@ -515,15 +514,13 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 			}
 			body_file.close();
 		}
-		//Body length----------------------
+		
 		myfile << "Content-Length: ";
 		myfile << length;
 		myfile << "\r\n\r\n";
 
 		myfile << buf;
 		myfile << "\n";
-		
-
 		//end of method and close file
 		myfile.close();
 	}
@@ -563,6 +560,8 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
 	CGI				cgi_handler(req, *servconf);
 	cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
+	// std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
+	// system(mv.c_str());
 }
 
 

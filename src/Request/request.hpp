@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/30 21:17:17 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 11:15:01 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ class request
 		void										setCode(int);
 
 		void									checkForUpload(int);
-		int									parseLine(std::string line);
+		int										parseLine(std::string line);
 		void									parseAuthorization(request&);
 		void									Host(const std::string &, request&);
 		int										getFirstLine(const std::string &, request&);
@@ -84,9 +84,11 @@ class request
 		int										_port;
 		std::map<std::string, std::string>		_headers;
 		int										_retCode; 
-		std::string								_tmp; 
+		std::string								_tmp;
 		int										_bodyLength;
 		std::time_t 							_current_time;
+		std::string								_uploadFileName;
+		std::string								_contentTypeUpload;
 
 		//! print function 
 		void	print_req(request &);
