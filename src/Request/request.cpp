@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 22:56:07 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/06/01 00:11:16 by tenshi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ std::vector<std::string>		request::init_methods()
 	
 /*------ Constructors ------*/
 
-request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _host(""), _current_time(std::time(NULL)), _response(socket_fd){
+request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _host(""), _current_time(std::time(NULL)){
 	
 	std::fstream body;
 	std::string filename = "/tmp/body";
@@ -80,12 +80,11 @@ const std::string							&request::getHost() const { return _host; }
 const int									&request::getPort() const { return _port; }
 const std::map<std::string, std::string>	&request::getHeaders() const { return  _headers;}
 int											request::getRetCode() const { return _retCode; }
-const std::time_t							&request::getTime() const { return _current_time; }
+const time_t							&request::getTime() const { return _current_time; }
 int											request::getBodyLength() const{ return	_bodyLength; }
 void										request::setCode(int code){
 	this->_retCode = code;
 }
-Response									&request::getResponse() { return _response; }
 
 /*------ Member Functions ------*/
 

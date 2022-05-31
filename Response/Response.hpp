@@ -34,7 +34,7 @@ class Response
         //!---------------- DELETE Functions --------------------------
         int                         IsFile(const std::string& path);
         int				            removeDir(std::string);
-        void                        writeResponse(std::string);
+        void                        writeResponse(request &, serverConfig *,std::string);
         std::string			        getErrorPage(int	status);
         void                        DELETE(request &req, serverConfig*);
 

@@ -311,36 +311,44 @@ std::string					Response::getErrorPage(int	status)
 	return ConvertHtml(filename);
 }
 
-void						Response::writeResponse(std::string boby)
+void						Response::writeResponse(request &req, serverConfig *servconf,std::string boby)
 {
-	std::fstream	myfile;
+	// std::fstream	myfile;
 	bool			is_error = 1;
 
-	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
+	// myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
 	if (this->_status_code == 204){
 		is_error = 0;
-		myfile << NO_CONTENT;
+		header += NO_CONTENT;
 	}
 	else if (this->_status_code == 403)
-		myfile << FORBIDDEN;
+		header += FORBIDDEN;
 	else if (this->_status_code == 201){
 		is_error = 0;
-		myfile << CREATED;
-		myfile << "Content-Length: 0\r\n";
+		header += CREATED;
+		header += "Content-Length: 0\r\n";
+		body_length = 0;
 	}
 	else if (this->_status_code == 200){
 		is_error = 0;
-		myfile << OK;
+		header += OK;
 	}
 	else if (this->_status_code == 404)
-		myfile << NOT_FOUND;
-	myfile << "\r\n"; // end headers
+		header += NOT_FOUND;
+	 // end headers
 	if (is_error){
-		myfile << getErrorPage(_status_code);
+		// header += getErrorPage(_status_code);
+		str_uri = "./Response/response_errors_pages/";
+		str_uri += to_string(_status_code);
+		str_uri += ".html";
+		body_length = File_lenght(req, servconf, str_uri);
+		header += "Content-Length: ";
+		header += to_string(body_length);
+		header += "\r\n";
 	}
-	else
-		myfile << boby;
-	myfile.close();
+	header += "\r\n";
+	// else
+	// 	header += boby;
 }
 
 int							Response::IsFile(const std::string& path)
@@ -357,75 +365,6 @@ int							Response::IsFile(const std::string& path)
 	else
 		return 0;
 }
-
-// std::string					Response::new_header_str(request &req, serverConfig *servconf)
-// {
-// 	std::string 	str_ret;
-// 	time_t          rawtime;
-// 	std::string     content_type;
-
-
-// 	str_ret = "";
-// 	str_ret += "HTTP/1.1 ";
-// 	if(this->_status_code == 200)
-// 		str_ret +=  "200 OK\r\n";
-// 	else
-// 	{
-// 		if(this->_status_code == 400)
-// 			str_ret +=  "400 Bad Request\r\n";
-// 		else if(this->_status_code == 505)
-// 			str_ret +=  "505 Http Version Not Supported\r\n";
-// 		else if(this->_status_code == 500)
-// 			str_ret +=  "500 Internal Server Error\r\n";
-// 		else if(this->_status_code == 405)
-// 			str_ret +=  "405 Not Allowed\r\n";
-// 		else if(this->_status_code == 413)
-// 			str_ret +=  "413 Payload Too Large\r\n";
-// 		else if(this->_status_code == 404)
-// 			str_ret +=  "404 Not Found\r\n";
-// 		else if(this->_status_code == 403)
-// 			str_ret +=  "403 Forbidden\r\n";
-// 	}
-
-// 	time(&rawtime);
-// 	str_ret += "Date: ";
-// 	str_ret += std::string(ctime(&rawtime));
-
-// 	str_ret += "Server: ";
-// 	str_ret += "Myserver\r\n";
-
-// 	str_ret +=  "Content-Type: ";
-// 	if(this->_status_code == 200 && this->_my_auto_index == false)
-// 		content_type = Content_type();
-// 	else
-// 		content_type = "text/html";
-// 	std::cout << RED << "content type here ---------" << Content_type() << RESET << std::endl;
-// 	str_ret +=  content_type;
-// 	str_ret +=  "\r\n"; //blanate d zineb
-
-// 	body_length = File_lenght(req, servconf, str_uri);
-
-// 	std::cout << "*************" << std::endl;
-// 	if(body_length + str_ret.size() > BUFFER_SIZE)
-// 	{
-// 		str_ret += "Transfer-Encoding: chuncked";
-// 		chunked = true;
-// 	}
-// 	else
-// 	{
-// 		std::cout << "in" << std::endl;
-// 		str_ret += "Content-Length: ";
-// 		std::cout << body_length << std::endl;
-
-// 		std::cout << to_string(body_length) << std::endl;
-// 		str_ret += to_string(body_length);
-// 		chunked = false;
-// 	}
-// 	std::cout << "out" << std::endl;
-// 	str_ret += "\r\n\r\n";
-// 	return str_ret;
-// }
-
 
 void            			Response::GET(int fd, request &req, serverConfig *servconf)
 {

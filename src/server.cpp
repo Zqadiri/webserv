@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/31 22:52:39 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/06/01 00:13:55 by tenshi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,14 +119,16 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 		if (FD_ISSET(socket->first, &cp_wset))
 		{
 			
-			int ret = sen(socket->first, socket->second, socket->second.get_response());
+			int ret = sen(socket->first, socket->second, _responses[socket->first]);
 			if (ret == -1)
 			{
 				std::cout << "send() failed" << std::endl;
 				FD_CLR(socket->first, &wset);
 				FD_CLR(socket->first, &fset);
+				
 				close(socket->first);
 				socket =_sockets.erase(socket);
+				_responses.erase(socket->first);
 				// break ;
 			}
 			else if (ret == 0)
@@ -144,6 +146,7 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 					++socket;
 					std::cout << "keep socket alive" << std::endl;
 				}
+				_responses.erase(socket->first);
 			}
 			else
 				++socket;
@@ -169,6 +172,7 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 				std::cout << "recv() success" << std::endl;
 				FD_CLR(socket->first, &fset);
 				FD_SET(socket->first, &wset);
+				_responses[socket->first] = Response(socket->first);
 				++socket;
 			}
 			else
@@ -238,7 +242,6 @@ int server::sen(int &socket, request& req, Response &response)
 {
 	char			buff[BUFFER_SIZE];
 	std::string		myline;
-	// Response		response(socket);
 	int size = 0;
 	int				ret = 0;
 	bool over = false;

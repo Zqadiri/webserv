@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 22:54:05 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/06/01 00:12:36 by tenshi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ class request
 	
 	public:
 		request(int);
-		request(const request&);
 		~request();
 
 		enum ParseStatus {
@@ -52,7 +51,6 @@ class request
 		const int									&getPort() const; // request port
 		const std::map<std::string, std::string>	&getHeaders() const; // headers 
 		const std::time_t  							&getTime() const;
-		Response &getResponse();
 		int											getRetCode() const; // status code
 		int											getBodyLength() const;
 		int											InternalServerError();
@@ -91,7 +89,6 @@ class request
 		std::time_t 							_current_time;
 		std::string								_contentTypeUpload;
 		
-		Response								_response;
 		//! print function 
 		void	print_req(request &);
 };

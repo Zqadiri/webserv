@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/31 22:49:38 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/06/01 00:13:37 by tenshi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
 #include "../includes/webserv.hpp"
 #include "config.hpp"
 #include "./Request/request.hpp"
+#include "../Response/Response.hpp"
 
 class	servers;
 class 	request;
-
 class server
 {
 	private:
@@ -27,6 +27,7 @@ class server
 
 		int						_fd;
 		std::list<std::pair<int, request> >	_sockets;
+		std::map<int, Response> _responses;
 		std::vector<request*>	_requests;
 		serverConfig* _config;
 
