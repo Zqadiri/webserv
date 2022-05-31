@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/30 21:35:06 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 10:32:54 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,11 @@ int		request::parseLine(std::string line)
 	return 1;
 }
 
+void				getFilename()
+{
+	
+}
+
 void				request::checkForUpload(int fd)
 {
 	if (_headers["Content-Type"].find("boundary") == std::string::npos)
@@ -157,11 +162,13 @@ void				request::checkForUpload(int fd)
 		}
 		_body.close();
 	}
-	std::string mv = "mv " + filename + " " + "./www/upload/newfile";
+	std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
 	system(mv.c_str());
+	_uploadFileName = getFilename();
 }
 
-int					request::parseRquest(std::string buff,  request& req, int socket_fd){
+int					request::parseRquest(std::string buff,  request& req, int socket_fd)
+{
 	std::fstream _body;
 	std::string delim("\r\n\r\n");
 	std::string filename = "/tmp/body";
