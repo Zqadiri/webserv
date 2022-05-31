@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 11:25:07 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 12:33:24 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,8 @@ int		request::parseLine(std::string line)
 			return 0;
 		}
 	}
+	if (line.find("------") != std::string::npos) ///! switch to boundary
+		return 0;
 	return 1;
 }
 
@@ -148,13 +150,14 @@ void				request::checkForUpload(int fd)
 
 	std::fstream	newBody;
 	_body.open(filename, std::fstream::in);
-	newBody.open("temp", std::fstream::in | std::fstream::app);
+	newBody.open("/tmp/temp", std::fstream::in | std::fstream::app);
 	if (_headers["Content-Type"].find("boundary") != std::string::npos)
 	{
 		while (_body){
 			std::getline(_body, line);
 			if (parseLine(line)){
 				newBody << line;
+				newBody << "\n";
 			}
 		}
 		_body.close();

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 12:18:13 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/05/31 15:02:01 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,19 @@ bool							serverConfig::getAutoIndex(void) const { return this->_autoindex; }
 
 /*---- Member Functions ----*/
 
+void		checkForValue(std::string value)
+{
+	if (notAValue(value))
+	{
+		std::cerr << RED << "every key should be followed by value!" << RESET << std::endl;
+		exit (EXIT_FAILURE);
+	}
+}
+
 unsigned int	serverConfig::serverName(serverConfig &serv, configFile con, unsigned int &index)
 {
 	index++;
+	checkForValue(con[index]);
 	while (!notAValue(con[index])){
 		serv._server_name.push_back(con[index]);
 		index++;
@@ -197,6 +207,7 @@ uint32_t convert( const std::string& ipv4Str ){
 
 unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
+	checkForValue(con[index]);
 	if (_hostPort.host != 0 && _hostPort.port != -1)
 		throw std::runtime_error("two Listen directives");
 	_hostPort.host = inet_addr("192.168.0.1");
@@ -212,7 +223,8 @@ unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned i
 		}
 	}
 	catch (std::exception &r){
-		std::cout << "Bad Port" << std::endl;
+		std::cout << RED << "Bad Port" << RESET << std::endl;
+		exit(EXIT_FAILURE);
 	}
 	return index++;
 }
@@ -220,18 +232,21 @@ unsigned int	serverConfig::listen(serverConfig &serv, configFile con, unsigned i
 
 unsigned int	serverConfig::root(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
+	checkForValue(con[index]);
 	serv._root = con[index];
 	return index;
 }
 
 unsigned int	serverConfig::index(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
+	checkForValue(con[index]);
 	serv._index = con[index];
 	return index;
 }
 
 unsigned int	serverConfig::limitBodySize(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
+	checkForValue(con[index]);
 	try {
 		serv._limitBodySize = stoi(con[index]);
 	}
@@ -243,6 +258,7 @@ unsigned int	serverConfig::limitBodySize(serverConfig &serv, configFile con, uns
 
 unsigned int	serverConfig::errorPages(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
+	checkForValue(con[index]);
 	while (!notAValue(con[index])){
 		serv._error_pages.push_back(con[index]);
 		index++;
@@ -253,6 +269,7 @@ unsigned int	serverConfig::errorPages(serverConfig &serv, configFile con, unsign
 
 unsigned int	serverConfig::allowMethods(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
+	checkForValue(con[index]);
 	while (!notAValue(con[index])){
 		serv._allow_methods.push_back(con[index]);
 		index++;
