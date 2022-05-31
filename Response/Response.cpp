@@ -521,7 +521,7 @@ void						Response::DELETE(request &req, serverConfig *servconf)
 	}
 	else
 		this->_status_code = 404; // 404 Not Found
-	writeResponse("");
+	writeResponse(req,servconf,"");
 }
 
 //!------------------------------------ POST ------------------------------------
