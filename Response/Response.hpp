@@ -29,7 +29,7 @@ class Response
         std::string                 getfileChange();
         std::string                 CompletePath(request &req, serverConfig*);
         std::vector<std::string>    getFilesInDirectory(std::string);
-
+        void                        AutoIndexExec(std::string);
         //!---------------- DELETE Functions --------------------------
         int                         IsFile(const std::string& path);
         int				            removeDir(std::string);
@@ -50,6 +50,7 @@ class Response
         std::string     _check_extension_mine;
         bool            _get_file_success_open;
         bool            _my_auto_index;
+        std::string     _s;
 
         std::string     _contentDisposition;
         std::string     _contentType;

@@ -13,7 +13,7 @@ webserv
 # Precompiled Headers
 *.gch
 *.pch
-
+.DS_Store 
 # Compiled Dynamic libraries
 *.so
 *.dylib
