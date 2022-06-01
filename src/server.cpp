@@ -220,7 +220,7 @@ bool server::is_sockets_empty(void) const{
 	return (_sockets.empty());
 }
 
-void 	server::check_timeout(fd_set& fdset, const std::time_t& current_time)
+void 	server::check_timeout(fd_set& fdset, const std::time_t& current_time, fd_set &write)
 {
 	std::list<std::pair<int, request> >::iterator socket = _sockets.begin();
 	while (socket != _sockets.end())
@@ -229,6 +229,7 @@ void 	server::check_timeout(fd_set& fdset, const std::time_t& current_time)
 		{
 			std::cout << "timeout" << std::endl;
 			FD_CLR(socket->first, &fdset);
+			FD_CLR(socket->first, &write);
 			close(socket->first);
 			_responses.erase(socket->first);
 			socket = _sockets.erase(socket);
@@ -259,7 +260,7 @@ int server::sen(int &socket, request& req, Response &response)
 	int				ret = 0;
 	bool over = false;
 	std::cout << "trying send to " << socket << "\n";
-	
+	req.reset_timer();
 	if (response._handled == false)
 		response.Return_string(req, _config, socket);
 	std::cout << RED << "body lenght = "  << response.body_length << RESET << std::endl;

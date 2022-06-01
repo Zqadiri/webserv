@@ -177,7 +177,7 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 	std::string filename = "/tmp/body";
 	size_t bodyCursor = buff.find(delim);
 
-	_current_time = std::time(NULL);
+	reset_timer();
 	filename += to_string(socket_fd);
 	if (bodyCursor == std::string::npos && _status == START_LINE)
 		req._tmp += buff;

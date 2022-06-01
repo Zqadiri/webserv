@@ -21,6 +21,7 @@ int ft_main(int argc, char *argv[])
 	{
 		Servers  serv;
 		try{
+			signal(SIGPIPE, SIG_IGN);
 			serv.conf(argv);
 			serv.setup();
 			serv.run();

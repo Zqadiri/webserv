@@ -85,6 +85,9 @@ int											request::getBodyLength() const{ return	_bodyLength; }
 void										request::setCode(int code){
 	this->_retCode = code;
 }
+void request::reset_timer(){
+	_current_time = std::time(NULL);
+}
 
 /*------ Member Functions ------*/
 
