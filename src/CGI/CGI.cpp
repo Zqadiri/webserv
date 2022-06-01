@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 20:24:14 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/06/01 22:18:48 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,7 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 		dup2(savedIn, STDIN_FILENO);
 		dup2(savedOut, STDOUT_FILENO);
 	}
+	// std::cout << GREEN <<  " == ? " << output << RESET << std::endl;
 	close(fdIn);
 	close(fdOut);
 	fclose(fileIn);
@@ -192,11 +193,5 @@ std::string CGI::addHeader(std::string output, Response &response) //! error han
 		int end = output.find("\n", start);
 		output = output.erase(start, end - start + 1);
 	}
-	response.header += "\r\n";
-	response.header += "Content-Length: ";
-	response.header += output.substr(end_headers, output.length()).length();
-	// response.header += "\r\n";
-	// response.header += output.substr(end_headers, output.length());
-	response.header += "\r\n\r\n";
-	return output;
+	return output.substr(end_headers, output.length());
 }

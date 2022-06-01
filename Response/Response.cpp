@@ -423,9 +423,8 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	str_uri = CompletePath(req, servconf);
 	if(!isCGI(req, servconf))
 	{
-		header += "HTTP/1.1 ";
 		if(this->_status_code == 200)
-			header +=  "200 OK\r\n";
+			header += OK;
 		else
 		{
 			if(this->_status_code == 400)
@@ -468,8 +467,19 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	}
 	else
 	{
+		std::fstream  	myfile;
 		CGI				cgi_handler(req, *servconf);
-		cgi_handler.executeCgi(str_uri, fd, *this);
+
+		str_uri = _file_change_get;
+		std::cout << "this is str uri " << str_uri << std::endl;
+		myfile.open(str_uri, std::fstream::in | std::fstream::out);
+		myfile << cgi_handler.executeCgi(str_uri, fd, *this);
+
+		body_length = File_lenght(str_uri);
+		header += "Content-Length: ";
+		header += to_string(body_length);
+		header += "\r\n\r\n";
+		std::cout << header << std::endl;
 	}
 }
 /*
