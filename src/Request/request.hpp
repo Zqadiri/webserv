@@ -55,6 +55,7 @@ class request
 		int											getBodyLength() const;
 		int											InternalServerError();
 		void										setCode(int);
+		void 										reset_timer();
 
 		void									checkForUpload(int);
 		int										parseLine(std::string line);

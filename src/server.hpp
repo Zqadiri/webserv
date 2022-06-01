@@ -50,7 +50,7 @@ class server
 		int		acc(void);
 		bool 	is_sockets_empty(void) const;
 		void	print_rec(void);
-		void 	check_timeout(fd_set&, const std::time_t&);
+		void 	check_timeout(fd_set&, const std::time_t&, fd_set&);
 
 		//! mine
 		std::list<std::pair<int, request> >		getRequest(void);

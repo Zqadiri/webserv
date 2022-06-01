@@ -423,9 +423,8 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	str_uri = CompletePath(req, servconf);
 	if(!isCGI(req, servconf))
 	{
-		header += "HTTP/1.1 ";
 		if(this->_status_code == 200)
-			header +=  "200 OK\r\n";
+			header += OK;
 		else
 		{
 			if(this->_status_code == 400)

@@ -90,7 +90,7 @@ void		Servers::run(void){
 			std::time_t current = std::time(NULL);
 			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
 			{
-				serv->check_timeout(_fd_set, current);
+				serv->check_timeout(_fd_set, current, write_set);
 			}
 			timeout.tv_sec  = 1;
 			timeout.tv_usec = 0;
