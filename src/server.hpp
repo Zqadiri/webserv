@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 10:42:32 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/01 12:01:35 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 #include "../Response/Response.hpp"
 
 class	servers;
+class	Response;
 class 	request;
-class 	Response;
 
 class server
 {

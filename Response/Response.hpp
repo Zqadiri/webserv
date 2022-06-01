@@ -6,6 +6,8 @@
 #include "../src/CGI/CGI.hpp"
 #include "dirent.h"
 
+class request;
+
 class Response
 {
     public:
