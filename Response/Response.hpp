@@ -35,6 +35,7 @@ class Response
         void                        AutoIndexExec(std::string);
         std::string                 new_header_str(request &req, serverConfig *servconf);
         //!---------------- DELETE Functions --------------------------
+        void						getStatusString();
         int                         IsFile(const std::string& path);
         int				            removeDir(std::string);
         void                        writeResponse(request &, serverConfig *,std::string);

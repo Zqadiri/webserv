@@ -247,16 +247,13 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	ve = servconfig->getLocations();
 	str_ret = "";
 	i = 0;
-	// std::cout << YELLOW << "this is the s string here before---------- " << this->_s << RESET << std::endl;
 	this->_s += servconfig->_root;
 	this->_s += str_req_uri;
-	// std::cout << YELLOW << "this is the s string here after----------- " << this->_s << RESET << std::endl; 
 	if(IsFile(this->_s) == 2)
 	{
 		std::cout << RED << "im a folder here-------------" << RESET << std::endl;
 		i = -1;
 		check = false;
-		// puts("----------------------------------2");
 		while (++i < (int)ve.size()	)
 		{ 
 			if(ve[i]._path == str_req_uri)
@@ -307,7 +304,6 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	{
 		i = -1;
 		check = false;
-		puts("----------------------------------1");
 		while (++i < (int)ve.size())
 		{
 			if(ve[i]._index == str_req_uri)
@@ -345,7 +341,6 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	}
 	else
 	{
-		puts("---------------------------------0");
 		this->_status_code = 404;
 		str_ret += "./Response/response_errors_pages/";
 		str_ret += to_string(this->_status_code);
@@ -437,6 +432,30 @@ int							Response::IsFile(const std::string& path)
 		return 0;
 }
 
+void						Response::getStatusString()
+{
+	if(this->_status_code == 200)
+		header += OK;
+	else if(this->_status_code == 400)
+		header +=	BAD_REQUEST;
+	else if(this->_status_code == 505)
+		header +=	HTTP_version_not_supported;
+	else if(this->_status_code == 500)
+		header +=	INTERNAL_SERVER_ERROR;
+	else if(this->_status_code == 405)
+		header += 	METHOD_NOT_ALLOWED;
+	else if(this->_status_code == 301)
+		header +=	MOVED_PERMANENTLY;
+	else if(this->_status_code == 413)
+		header += 	PAYLOAD_TOO_LARGE;
+	else if(this->_status_code == 404)
+		header +=	NOT_FOUND;
+	else if(this->_status_code == 403)
+		header += 	FORBIDDEN;
+}
+
+//!------------------------------------ GET ------------------------------------
+
 void            			Response::GET(int fd, request &req, serverConfig *servconf)
 {
 	File_type(req, servconf);
@@ -444,9 +463,8 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	time_t          rawtime;
 	std::fstream	myfile;
 
-	// if(this->_my_auto_index == false)
 	str_uri = CompletePath(req, servconf);
-	std::cout << GREEN << "str uri is here--------" << str_uri << RESET << std::endl;
+	// std::cout << GREEN << "str uri is here--------" << str_uri << RESET << std::endl;
 	myfile.open(str_uri);
 	if(!myfile.is_open())
 	{
@@ -458,28 +476,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	}
 	if(!isCGI(req, servconf))
 	{
-		if(this->_status_code == 200)
-			header += OK;
-		else
-		{
-			if(this->_status_code == 400)
-				header += BAD_REQUEST;
-			else if(this->_status_code == 505)
-				header +=  "505 Http Version Not Supported\r\n";
-			else if(this->_status_code == 500)
-				header +=  INTERNAL_SERVER_ERROR;
-			else if(this->_status_code == 405)
-				header +=  METHOD_NOT_ALLOWED;
-			else if(this->_status_code == 301)
-				header += MOVED_PERMANENTLY;
-			else if(this->_status_code == 413)
-				header +=  PAYLOAD_TOO_LARGE;
-			else if(this->_status_code == 404)
-				header += NOT_FOUND;
-			else if(this->_status_code == 403)
-				header +=  FORBIDDEN;
-		}
-
+		getStatusString();
 		time(&rawtime);
 		header += "Date: ";
 		header += std::string(ctime(&rawtime));
@@ -492,7 +489,6 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 			content_type = Content_type();
 		else
 			content_type = "text/html";
-		// std::cout << GREEN << "content type here ---------" << Content_type() << RESET << std::endl;
 		header +=  content_type;
 		header +=  "\r\n";
 		body_length = File_lenght(str_uri);
@@ -503,11 +499,10 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	else
 	{
 		CGI				cgi_handler(req, *servconf);
-
 		cgi_handler.executeCgi(str_uri, fd, *this);
-		
 	}
 }
+
 /*
  TODO:The DELETE method
  requests that the origin server delete the resource identified by the Request-URI
@@ -547,33 +542,6 @@ int							Response::removeDir(std::string path)
 	return (403);
 }
 
-//!------------------------------------ GET ------------------------------------
-
-// void            			Response::GET(int fd, request &req, serverConfig *servconf)
-// {
-// 	std::fstream    myfile;
-
-// 	File_type(req, servconf);
-// 	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
-// 	this->_get_file_success_open = true;
-// 	std::string     content_type;
-// 	int             length(0);
-// 	std::fstream    body_file; //waiting for the path
-// 	std::string     fill;
-// 	time_t          rawtime;
-
-// 	// if(this->_my_auto_index == false)
-// 	str_uri = CompletePath(req, servconf);
-// 	if(!isCGI(req, servconf))
-// 	{
-// 		header = new_header_str(req, servconf);
-// 	}
-// 	else
-// 	{
-// 		CGI				cgi_handler(req, *servconf);
-// 		cgi_handler.executeCgi(str_uri, fd, *this);
-// 	}
-// }
 
 //!------------------------------------ DELETE ------------------------------------
 
@@ -603,9 +571,20 @@ void						Response::POST(int fd, request &req, serverConfig *servconf, std::stri
 {
 	CGI				cgi_handler(req, *servconf);
 	std::string		complete_path;
+	std::fstream	myfile;
 
 	complete_path = CompletePath(req, servconf);
-	cgi_handler.executeCgi(complete_path, fd, *this);
+	myfile.open(complete_path);
+	if(!myfile.is_open())
+	{
+		str_uri.clear();
+		this->_status_code = 404;
+		str_uri += "./Response/response_errors_pages/";
+		str_uri += to_string(this->_status_code);
+		str_uri += ".html";
+	}
+	else
+		cgi_handler.executeCgi(complete_path, fd, *this);
 	// std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
 	// system(mv.c_str());
 }
