@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
+#    By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/06/01 11:04:22 by zqadiri          ###   ########.fr        #
+#    Updated: 2022/06/01 14:18:26 by nwakour          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,7 @@ OBJS		= $(SRCS:.cpp=.o)
 
 CC			= c++
 
-FLAGS		=  -std=c++98
+FLAGS		=  -g -std=c++98
 
 # WWW			= -Wall -Wextra -Werror
 
@@ -46,6 +46,5 @@ fclean:		clean
 			@ rm -f $(NAME)
 
 re:			fclean $(NAME)
-			@ ./webserv conf/config.conf
 
 .PHONY: 	all fclean clean re

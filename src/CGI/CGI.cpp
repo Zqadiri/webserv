@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 11:05:07 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/01 20:24:14 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,39 +165,38 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	close(savedIn);
 	close(savedOut);
 	deleteArray(env);
+	response.str_uri = filename;
+	response.body_length = response.File_lenght(filename);
 	return addHeader(output, response);
 }
 
 std::string CGI::addHeader(std::string output, Response &response) //! error handling
 {
-	std::fstream _response;
 	time_t rawtime;
 
-	_response.open(response.getfileChange().c_str(), std::fstream::in | std::fstream::app);
-	
-	_response << "HTTP/1.1 200 OK\r\n";
+	response.header += "HTTP/1.1 200 OK\r\n";
 
 	time(&rawtime);
-	_response << "Date: ";
-	_response << std::string(ctime(&rawtime));
+	response.header += "Date: ";
+	response.header += std::string(ctime(&rawtime));
+	response.header += "\r\n";
+	response.header += "Server: ";
+	response.header += "Myserver\r\n";
 
-	_response << "Server: ";
-	_response << "Myserver\r\n";
-
-	_response << "Content-Type: ";
-	_response << "text/html; charset=UTF-8";
-	_response << "\r\n";
+	response.header += "Content-Type: ";
+	response.header += "text/html; charset=UTF-8";
+	response.header += "\r\n";
 	size_t end_headers = output.find_first_of("\n");
 	int start = output.find("Content-type", 0);
 	if (start != -1){
 		int end = output.find("\n", start);
 		output = output.erase(start, end - start + 1);
 	}
-	_response << "Content-Length: ";
-	_response << output.substr(end_headers, output.length()).length();
-	_response << "\r\n";
-	_response << output.substr(end_headers, output.length());
-	_response << "\r\n\r\n";
-	_response.close();
+	response.header += "\r\n";
+	response.header += "Content-Length: ";
+	response.header += output.substr(end_headers, output.length()).length();
+	// response.header += "\r\n";
+	// response.header += output.substr(end_headers, output.length());
+	response.header += "\r\n\r\n";
 	return output;
 }

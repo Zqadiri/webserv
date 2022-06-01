@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 13:41:41 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/01 20:39:55 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,19 +137,28 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 				if (socket->second.getContentFromMap("Connection").compare("keep-alive"))
 				{
 					close(socket->first);
+					_responses.erase(socket->first);
 					socket =_sockets.erase(socket);
 					std::cout << "close socket" << std::endl;
 				}
 				else
 				{
-					FD_SET(socket->first, &fset);
+					int sock = socket->first;
+					FD_SET(sock, &fset);
+					// std::cout << GREEN << "keep-alive-delete " << _responses.erase(sock) << RESET << std::endl;
+					_responses.erase(sock);
+					socket =_sockets.erase(socket);
+					socket = _sockets.insert(socket, std::make_pair(sock, request(sock)));
 					++socket;
 					std::cout << "keep socket alive" << std::endl;
 				}
-				_responses.erase(socket->first);
+				
 			}
 			else
+			{
+				std::cout << "not done !!" << std::endl;
 				++socket;
+			}
 		}
 		else
 			++socket;
@@ -172,8 +181,8 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 				std::cout << "recv() success" << std::endl;
 				FD_CLR(socket->first, &fset);
 				FD_SET(socket->first, &wset);
-				Response rc(socket->first);
-				_responses.insert(std::make_pair(socket->first, rc));
+				std::cout << RED << "new response" << RESET << std::endl;
+				_responses.insert(std::make_pair(socket->first, Response(socket->first)));
 				++socket;
 			}
 			else
@@ -221,7 +230,9 @@ void 	server::check_timeout(fd_set& fdset, const std::time_t& current_time)
 			std::cout << "timeout" << std::endl;
 			FD_CLR(socket->first, &fdset);
 			close(socket->first);
+			_responses.erase(socket->first);
 			socket = _sockets.erase(socket);
+			
 		}
 		else
 			++socket;
@@ -242,97 +253,58 @@ void string_to_char(std::string str, char *s)
 int server::sen(int &socket, request& req, Response &response)
 {
 	char			buff[BUFFER_SIZE];
+	bzero(buff, BUFFER_SIZE);
 	std::string		myline;
 	int size = 0;
 	int				ret = 0;
 	bool over = false;
-	int digits = 0;
 	std::cout << "trying send to " << socket << "\n";
 	
-	response.Return_string(req, _config, socket);
-
-	std::cout << response.body_length << std::endl;
-	std::cout << response.chunked << std::endl;
-	std::cout << response.str_uri << std::endl;
-
+	if (response._handled == false)
+		response.Return_string(req, _config, socket);
+	std::cout << RED << "body lenght = "  << response.body_length << RESET << std::endl;
 	if (response.body_length > 0)
 	{
+		std::cout << response.str_uri << std::endl;
 		if (!response._res.is_open())
-			response._res.open(response.str_uri, std::fstream::in);
+		{
+			std::cout << "open()" << std::endl;
+			response._res.open(response.str_uri, std::ifstream::in | std::ifstream::binary);
+		}
 		if(!response._res.is_open()){
 			std::cout << "open() failed !!!!" << std::endl;
 			return (-1);
 		}
-		if (!response.chunked)
+		if (!response.header.empty())
 		{
 			string_to_char(response.header, buff);
 			size = response.header.size();
-			response._res.read(buff + size, response.body_length);
-			size += response.body_length;
-			response._res.close();
+			response.header.clear();
+		}
+		response._res.read(buff + size, (BUFFER_SIZE - size));
+		response.body_length -= response._res.gcount();
+		size +=  response._res.gcount();
+		if (response.body_length == 0)
 			over = true;
-		}
-		else
-		{
-			if (!response.header.empty())
-			{
-				string_to_char(response.header, buff);
-				size = response.header.size();
-				response.header.clear();
-			}
-			{
-				std::string d;
-				d += response.body_length;
-				digits = d.size();
-			}
-			if (response.body_length > BUFFER_SIZE - (size + 8))
-			{
-				std::string d;
-				d += BUFFER_SIZE - (size + 8);
-				digits = d.size();
-				string_to_char(d, buff + size);
-				size += digits;
-				buff[size++] = '\r';
-				buff[size++] = '\n';
-				response._res.read(buff + size, BUFFER_SIZE - (size + digits + 2));
-				response.body_length -= BUFFER_SIZE - (size + digits + 2);
-				buff[size++] = '\r';
-				buff[size++] = '\n';
-			}
-			else
-			{
-				std::string d;
-				d += response.body_length;
-				digits = d.size();
-				string_to_char(d, buff + size);
-				size += digits;
-				buff[size++] = '\r';
-				buff[size++] = '\n';
-				response._res.read(buff + size, response.body_length);
-				if (response.body_length > 0)
-					response.body_length = 0;
-				else
-				{
-					response._res.close();
-					over = true;
-				}
-				buff[size++] = '\r';
-				buff[size++] = '\n';
-			}
-		}
 	}
 	else
 	{
 		string_to_char(response.header, buff);
 		size = response.header.size();
+		over = true;
 	}
 	
 	std::cout << YELLOW << ">" << buff << "<" << RESET << std::endl;
+	
+	std::cout << "*********** "  << socket <<  " "<< size << std::endl;
 	ret = send(socket, buff, size, 0);
+	std::cout << "***********" << std::endl;
+
 	if (ret == -1){
 		std::cout << "send() failed !!!!" << std::endl;
 		return (-1);
 	}
+	std::cout << "send() " << ret << std::endl;
 	if (over)
 		return (0);
 	return (ret);

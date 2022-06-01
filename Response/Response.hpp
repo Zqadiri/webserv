@@ -25,7 +25,7 @@ class Response
         void                        Return_string(request &request, serverConfig*, int fd);
         std::string                 ConvertHtml(std::string path);
         std::string                 Content_type();
-        int                         File_lenght(request &req, serverConfig*, std::string);
+        int                         File_lenght(std::string);
         void                        File_type(request &req, serverConfig*);
         bool                        isCGI(request &req, serverConfig *servconf);
         void                        GET(int fd, request &req, serverConfig*);
@@ -62,8 +62,8 @@ class Response
         std::string     header;
         std::string		str_uri;
         int             body_length;
-        bool            chunked;
-        std::fstream    _res;
+        std::ifstream    _res;
+        bool            _handled;
 };
 
 #endif
