@@ -188,7 +188,7 @@ void						Response::AutoIndexExec(std::string s)
 		s2 = s + ve[i];
 		file << "<div style=\"margin:10px\"><a href=";
 		file << "\"";
-		file << "/";
+		// file << "/";
 		file << ve[i];
 		if (IsFile(s + ve[i]) == 2)
 			file << "/";
