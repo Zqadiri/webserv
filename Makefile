@@ -6,7 +6,7 @@
 #    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/05/31 10:36:08 by zqadiri          ###   ########.fr        #
+#    Updated: 2022/06/01 11:04:22 by zqadiri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,5 +46,6 @@ fclean:		clean
 			@ rm -f $(NAME)
 
 re:			fclean $(NAME)
+			@ ./webserv conf/config.conf
 
 .PHONY: 	all fclean clean re

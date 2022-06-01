@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/05/19 18:47:07 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/06/01 10:42:32 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,11 @@
 #include "../includes/webserv.hpp"
 #include "config.hpp"
 #include "./Request/request.hpp"
+#include "../Response/Response.hpp"
 
 class	servers;
 class 	request;
+class 	Response;
 
 class server
 {
@@ -27,6 +29,7 @@ class server
 
 		int						_fd;
 		std::list<std::pair<int, request> >	_sockets;
+		std::map<int, Response> _responses;
 		std::vector<request*>	_requests;
 		serverConfig* _config;
 
@@ -40,7 +43,7 @@ class server
 		int		get_fd(void) const;
 		
 		int 	rec(int&, request&);
-		int		sen(int&, request&);
+		int		sen(int&, request&, Response&);
 		void 	handle_sockets(fd_set&, fd_set&,fd_set&, fd_set&);
 		int 	add_socket(fd_set&,fd_set&, int&);
 		int		setup(void);

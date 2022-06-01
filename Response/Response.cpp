@@ -2,6 +2,9 @@
 #include "MimeTypes.hpp"
 #include <sys/stat.h>
 
+Response::Response(){
+}
+
 Response::Response(int socket)
 {
 	std::fstream myfile;
@@ -18,6 +21,10 @@ Response::Response(int socket)
 	this->_file_change_delete = "/tmp/response_file_delete_";
 	this->_file_change_delete += to_string(socket);
 	this->_my_auto_index = false;
+	this->header = "";
+	this->body_length = 0;
+	this->chunked = false;
+	this->str_uri = "";
 	myfile.open(_file_change_get, std::fstream::in | std::fstream::out | std::fstream::trunc);
 	myfile.close();
 }
@@ -93,7 +100,7 @@ int             			Response::File_lenght(request &req, serverConfig* servconf, s
 		ret = sb.st_size;
 	else
 		ret = -1;
-
+	std::cout << "****** " << ret << std::endl;
 	return ret;
 }
 
@@ -145,6 +152,8 @@ void						Response::AutoIndexExec(std::string s)
 		file << "\"";
 		file << "/";
 		file << ve[i];
+		if (IsFile(s + ve[i]) == 2)
+			file << "/";
 		file << "\">";
 		file << ve[i];
 		file << "</a></div>\n";
@@ -164,47 +173,13 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 
 	s = "";
 	str = req.getRequestURI();
+	// std::cout << YELLOW << "path is here----------" << str << RESET << std::endl;
 	index = str.find_first_of(".");
 	str2 = str.substr(index + 1, str.length());
 	this->_check_extension_mine = str2;
 	type = MimeTypes::getType(str2.c_str());
-	if(type == NULL)
-	{
-		s += serverConfig->_root;
-		s += serverConfig->_index; //!!!!!!!!!!
-		if(serverConfig->_autoindex == false)
-		{
-			if(IsFile(s) == 2)
-			{
-				this->_status_code = 403;
-				this->_pages_to_string = ConvertHtml("./response_errors_pages/403.html");
-			}
-			else if(IsFile(s) == 1)
-			{
-				str = serverConfig->_index;
-				
-				index = str.find_first_of(".");
-				str2 = str.substr(index+1, str.length());
-				this->_check_extension_mine = str2;
-				type = MimeTypes::getType(str2.c_str());
-				this->_file_extension = std::string(type);
-			}
-			else
-			{
-				this->_status_code = 404;
-				this->_pages_to_string = ConvertHtml("./response_errors_pages/404.html");
-			}
-		}
-		else
-		{
-			if(IsFile(s) == 2)
-			{
-				AutoIndexExec(s);
-			}
-		}
-	}
-	else
-		this->_file_extension = std::string(type);
+	if(type != NULL)
+		this->_file_extension = type;
 }
 
 bool            			Response::isCGI(request &req, serverConfig *servconf)
@@ -230,11 +205,15 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	int						i;
 	bool					check;
 
-	str_req_uri = "." + req.getRequestURI(); //!!!
+	str_req_uri = req.getRequestURI(); //!!!
 	ve = servconfig->getLocations();
 	str_ret = "";
 	i = 0;
-	if(IsFile(servconfig->_root + str_req_uri) == 2)
+	// std::cout << YELLOW << "this is the s string here before---------- " << this->_s << RESET << std::endl;
+	this->_s += servconfig->_root;
+	this->_s += str_req_uri;
+	// std::cout << YELLOW << "this is the s string here after----------- " << this->_s << RESET << std::endl; 
+	if(IsFile(this->_s) == 2)
 	{
 		std::cout << RED << "im a folder here-------------" << RESET << std::endl;
 		i = -1;
@@ -246,7 +225,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			{
 				check = true;
 				str_ret += servconfig->_root;
-				str_ret += "index.html"; // i should put here ve[i]._index
+				str_ret += ve[i]._index; // i should put here ve[i]._index
 			}
 		}
 		if(check == false)
@@ -267,8 +246,6 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			{
 				puts("enter auto index--------------------");
 				this->_my_auto_index = true;
-				this->_s += servconfig->_root;
-				this->_s += str_req_uri;
 				AutoIndexExec(this->_s);
 				str_ret = "/tmp/auto_index.html";
 			}
@@ -311,7 +288,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 		str_ret += to_string(this->_status_code);
 		str_ret += ".html";
 	}
-	std::cout << GREEN << "this is str req---------------------- " << str_req_uri << RESET << std::endl;
+	// std::cout << GREEN << "this is str req---------------------- " << str_req_uri << RESET << std::endl;
 	return str_ret;
 }
 
@@ -342,36 +319,44 @@ std::string					Response::getErrorPage(int	status)
 	return ConvertHtml(filename);
 }
 
-void						Response::writeResponse(std::string boby)
+void						Response::writeResponse(request &req, serverConfig *servconf,std::string boby)
 {
-	std::fstream	myfile;
+	// std::fstream	myfile;
 	bool			is_error = 1;
 
-	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
+	// myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
 	if (this->_status_code == 204){
 		is_error = 0;
-		myfile << NO_CONTENT;
+		header += NO_CONTENT;
 	}
 	else if (this->_status_code == 403)
-		myfile << FORBIDDEN;
+		header += FORBIDDEN;
 	else if (this->_status_code == 201){
 		is_error = 0;
-		myfile << CREATED;
-		myfile << "Content-Length: 0\r\n";
+		header += CREATED;
+		header += "Content-Length: 0\r\n";
+		body_length = 0;
 	}
 	else if (this->_status_code == 200){
 		is_error = 0;
-		myfile << OK;
+		header += OK;
 	}
 	else if (this->_status_code == 404)
-		myfile << NOT_FOUND;
-	myfile << "\r\n"; // end headers
+		header += NOT_FOUND;
+	 // end headers
 	if (is_error){
-		myfile << getErrorPage(_status_code);
+		// header += getErrorPage(_status_code);
+		str_uri = "./Response/response_errors_pages/";
+		str_uri += to_string(_status_code);
+		str_uri += ".html";
+		body_length = File_lenght(req, servconf, str_uri);
+		header += "Content-Length: ";
+		header += to_string(body_length);
+		header += "\r\n";
 	}
-	else
-		myfile << boby;
-	myfile.close();
+	header += "\r\n";
+	// else
+	// 	header += boby;
 }
 
 int							Response::IsFile(const std::string& path)
@@ -389,6 +374,74 @@ int							Response::IsFile(const std::string& path)
 		return 0;
 }
 
+void            			Response::GET(int fd, request &req, serverConfig *servconf)
+{
+	File_type(req, servconf);
+	std::string     content_type;
+	time_t          rawtime;
+
+	// if(this->_my_auto_index == false)
+	str_uri = CompletePath(req, servconf);
+	if(!isCGI(req, servconf))
+	{
+		header += "HTTP/1.1 ";
+		if(this->_status_code == 200)
+			header +=  "200 OK\r\n";
+		else
+		{
+			if(this->_status_code == 400)
+				header +=  "400 Bad Request\r\n";
+			else if(this->_status_code == 505)
+				header +=  "505 Http Version Not Supported\r\n";
+			else if(this->_status_code == 500)
+				header +=  "500 Internal Server Error\r\n";
+			else if(this->_status_code == 405)
+				header +=  "405 Not Allowed\r\n";
+			else if(this->_status_code == 413)
+				header +=  "413 Payload Too Large\r\n";
+			else if(this->_status_code == 404)
+				header +=  "404 Not Found\r\n";
+			else if(this->_status_code == 403)
+				header +=  "403 Forbidden\r\n";
+		}
+
+		time(&rawtime);
+		header += "Date: ";
+		header += std::string(ctime(&rawtime));
+
+		header += "Server: ";
+		header += "Myserver\r\n";
+
+		header +=  "Content-Type: ";
+		if(this->_status_code == 200 && this->_my_auto_index == false)
+			content_type = Content_type();
+		else
+			content_type = "text/html\r\n";
+		std::cout << RED << "content type here ---------" << Content_type() << RESET << std::endl;
+		header +=  content_type;
+		header +=  "\r\n";
+		body_length = File_lenght(req, servconf, str_uri);
+
+		if(body_length + header.size() > BUFFER_SIZE)
+		{
+			header += "Transfer-Encoding: chuncked";
+			chunked = true;
+			
+		}
+		else
+		{
+			header += "Content-Length: ";
+			header += to_string(body_length);
+			chunked = false;
+		}
+		header += "\r\n\r\n";
+	}
+	else
+	{
+		CGI				cgi_handler(req, *servconf);
+		cgi_handler.executeCgi(str_uri, fd, *this);
+	}
+}
 /*
  TODO:The DELETE method
  requests that the origin server delete the resource identified by the Request-URI
@@ -430,113 +483,31 @@ int							Response::removeDir(std::string path)
 
 //!------------------------------------ GET ------------------------------------
 
-void            			Response::GET(int fd, request &req, serverConfig *servconf)
-{
-	std::string		str_uri;
-	std::fstream    myfile;
+// void            			Response::GET(int fd, request &req, serverConfig *servconf)
+// {
+// 	std::fstream    myfile;
 
-	// File_type(req, servconf);
-	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
-	this->_get_file_success_open = true;
-	if(!isCGI(req, servconf))
-	{
-		std::cout << GREEN << "> NON CGI <" <<  RESET << std::endl;
-		std::string     content_type;
-		int             length(0);
-		std::fstream    body_file; //waiting for the path
-		std::string     fill;
-		time_t          rawtime;
+// 	File_type(req, servconf);
+// 	myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
+// 	this->_get_file_success_open = true;
+// 	std::string     content_type;
+// 	int             length(0);
+// 	std::fstream    body_file; //waiting for the path
+// 	std::string     fill;
+// 	time_t          rawtime;
 
-		// if(this->_my_auto_index == false)
-		str_uri = CompletePath(req, servconf);
-		// else
-		// 	str_uri = "/tmp/auto_index.html";
-		// std::cout << GREEN << "this is str ret here---------------------- " << str_uri << RESET << std::endl;
-
-		// first line in header----------------
-		myfile << "HTTP/1.1 ";
-		if(this->_status_code == 200)
-			myfile << "200 OK\r\n";
-		else
-		{
-			if(this->_status_code == 400)
-				myfile << "400 Bad Request\r\n";
-			else if(this->_status_code == 505)
-				myfile << "505 Http Version Not Supported\r\n";
-			else if(this->_status_code == 500)
-				myfile << "500 Internal Server Error\r\n";
-			else if(this->_status_code == 405)
-				myfile << "405 Not Allowed\r\n";
-			else if(this->_status_code == 413)
-				myfile << "413 Payload Too Large\r\n";
-			else if(this->_status_code == 404)
-				myfile << "404 Not Found\r\n";
-			else if(this->_status_code == 403)
-				myfile << "403 Forbidden\r\n";
-		}
-
-		// Current Date -----------------
-		time(&rawtime);
-		myfile << "Date: ";
-		myfile << std::string(ctime(&rawtime));
-
-		//Server ------------------------
-		myfile << "Server: ";
-		myfile << "Myserver\r\n";
-
-		//Content Type ------------------
-		myfile << "Content-Type: ";
-		if(this->_status_code == 200 && this->_my_auto_index == false)
-			content_type = Content_type();
-		else
-			content_type = "text/html";
-		myfile << content_type;
-		myfile << "\r\n"; //blanate d zineb
-
-		//Body part start --------------
-		// i need to take the path and see if it's a file or directory, if it's a directory i need to search for the default file
-		// if it's a file i need to open it and fill the body with it's content
-
-		std::string buf;
-		body_file.open(str_uri); // has to be changed
-		if (body_file)
-		{
-			while(!body_file.eof())
-			{
-				std::getline(body_file, fill);
-				buf += fill;
-				length += fill.length();
-			}
-			body_file.close();
-		}
-		else
-		{
-			body_file.open("./Response/response_errors_pages/404.html");
-			while(!body_file.eof())
-			{
-				std::getline(body_file, fill);
-				buf += fill;
-				length += fill.length();
-			}
-			body_file.close();
-		}
-		
-		myfile << "Content-Length: ";
-		myfile << length;
-		myfile << "\r\n\r\n";
-
-		myfile << buf;
-		myfile << "\n";
-		//end of method and close file
-		myfile.close();
-	}
-	else
-	{
-		CGI				cgi_handler(req, *servconf);
-
-		cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
-	}
-}
+// 	// if(this->_my_auto_index == false)
+// 	str_uri = CompletePath(req, servconf);
+// 	if(!isCGI(req, servconf))
+// 	{
+// 		header = new_header_str(req, servconf);
+// 	}
+// 	else
+// 	{
+// 		CGI				cgi_handler(req, *servconf);
+// 		cgi_handler.executeCgi(str_uri, fd, *this);
+// 	}
+// }
 
 //!------------------------------------ DELETE ------------------------------------
 
@@ -557,30 +528,20 @@ void						Response::DELETE(request &req, serverConfig *servconf)
 	}
 	else
 		this->_status_code = 404; // 404 Not Found
-	writeResponse("");
+	writeResponse(req,servconf,"");
 }
 
 //!------------------------------------ POST ------------------------------------
 
 void						Response::POST(int fd, request &req, serverConfig *servconf, std::string filePath)
 {
-	std::map<std::string, std::string> _head = req.getHeaders();
-	if (_head["Content-Disposition"] != "")
-	{
-		std::string mv = "mv  /tmp/temp "+ filePath;
-		if (system(mv.c_str())){
-			_status_code = 404;
-			std::cerr << "Failed to move file" << std::endl;
-		}
-		else
-			_status_code = 201;
-		writeResponse("");
-	}
-	else
-	{
-		CGI				cgi_handler(req, *servconf);
-		cgi_handler.executeCgi(req.getRequestURI(), fd, *this);
-	}
+	CGI				cgi_handler(req, *servconf);
+	std::string		complete_path;
+
+	complete_path = CompletePath(req, servconf);
+	cgi_handler.executeCgi(complete_path, fd, *this);
+	// std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
+	// system(mv.c_str());
 }
 
 void						Response::Return_string(request &req, serverConfig *servconf, int fd)
