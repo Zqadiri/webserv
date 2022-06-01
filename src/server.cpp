@@ -127,8 +127,8 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 				FD_CLR(socket->first, &fset);
 				
 				close(socket->first);
-				socket =_sockets.erase(socket);
 				_responses.erase(socket->first);
+				socket =_sockets.erase(socket);
 				// break ;
 			}
 			else if (ret == 0)

@@ -135,7 +135,6 @@ int             			Response::File_lenght(std::string str)
 		ret = sb.st_size;
 	else
 		ret = -1;
-	std::cout << "stat ****** " << ret << std::endl;
 	return (ret);
 }
 
@@ -153,6 +152,7 @@ std::vector<std::string>	Response::getFilesInDirectory(std::string path)
     }
 	else 
 	{
+		puts("hmm hmmm why????????????????????");
 		this->_status_code = 404;
 		this->_pages_to_string = ConvertHtml("./response_errors_pages/404.html");
 	}
@@ -212,7 +212,6 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 
 	s = "";
 	str = req.getRequestURI();
-	std::cout << YELLOW << "path is here----------" << str << RESET << std::endl;
 	index = str.find_first_of(".");
 	str2 = str.substr(index + 1, str.length());
 	this->_check_extension_mine = str2;
@@ -258,13 +257,27 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 		i = -1;
 		check = false;
 		// puts("----------------------------------2");
-		while (++i < (int)ve.size())
+		while (++i < (int)ve.size()	)
 		{ 
 			if(ve[i]._path == str_req_uri)
 			{
 				check = true;
-				str_ret += servconfig->_root;
-				str_ret += ve[i]._index; // i should put here ve[i]._index
+				if(ve[i]._root == "")
+					str_ret += servconfig->_root + ve[i]._index;
+				else if((ve[i]._index == "" && ve[i]._autoindex == false))
+				{
+					this->_status_code = 403;
+					str_ret += "./Response/response_errors_pages/";
+					str_ret += to_string(this->_status_code);
+					str_ret += ".html";
+				}
+				else
+					str_ret += ve[i]._root + ve[i]._index;
+				if(ve[i]._autoindex == true && ve[i]._index == "")
+				{
+					AutoIndexExec(str_ret);
+					str_ret = "/tmp/auto_index.html";
+				}
 			}
 		}
 		if(check == false)
@@ -294,14 +307,24 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	{
 		i = -1;
 		check = false;
-		// puts("----------------------------------1");
+		puts("----------------------------------1");
 		while (++i < (int)ve.size())
 		{
 			if(ve[i]._index == str_req_uri)
 			{
 				check = true;
-				str_ret += servconfig->_root;
-				str_ret += ve[i]._index;
+				if(ve[i]._root == "")
+					str_ret += servconfig->_root + ve[i]._index;
+				else if((ve[i]._index == "" && ve[i]._autoindex == false))
+				{
+					// puts("im here------------------------");
+					this->_status_code = 403;
+					str_ret += "./Response/response_errors_pages/";
+					str_ret += to_string(this->_status_code);
+					str_ret += ".html";
+				}
+				else
+					str_ret += ve[i]._root + ve[i]._index;
 			}
 		}
 		if(check == false)
@@ -322,6 +345,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	}
 	else
 	{
+		puts("---------------------------------0");
 		this->_status_code = 404;
 		str_ret += "./Response/response_errors_pages/";
 		str_ret += to_string(this->_status_code);
@@ -418,9 +442,20 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	File_type(req, servconf);
 	std::string     content_type;
 	time_t          rawtime;
+	std::fstream	myfile;
 
 	// if(this->_my_auto_index == false)
 	str_uri = CompletePath(req, servconf);
+	std::cout << GREEN << "str uri is here--------" << str_uri << RESET << std::endl;
+	myfile.open(str_uri);
+	if(!myfile.is_open())
+	{
+		str_uri = "";
+		this->_status_code = 404;
+		str_uri += "./Response/response_errors_pages/";
+		str_uri += to_string(this->_status_code);
+		str_uri += ".html";
+	}
 	if(!isCGI(req, servconf))
 	{
 		if(this->_status_code == 200)
@@ -457,7 +492,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 			content_type = Content_type();
 		else
 			content_type = "text/html";
-		std::cout << GREEN << "content type here ---------" << Content_type() << RESET << std::endl;
+		// std::cout << GREEN << "content type here ---------" << Content_type() << RESET << std::endl;
 		header +=  content_type;
 		header +=  "\r\n";
 		body_length = File_lenght(str_uri);
