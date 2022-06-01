@@ -503,7 +503,9 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	else
 	{
 		CGI				cgi_handler(req, *servconf);
+
 		cgi_handler.executeCgi(str_uri, fd, *this);
+		
 	}
 }
 /*
