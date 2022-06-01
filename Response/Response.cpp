@@ -182,7 +182,10 @@ void						Response::AutoIndexExec(std::string s)
 		file << "/";
 		file << ve[i];
 		if (IsFile(s + ve[i]) == 2)
+		{
+			_status_code = 301;
 			file << "/";
+		}
 		file << "\">";
 		file << ve[i];
 		file << "</a></div>\n";
@@ -419,19 +422,21 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		else
 		{
 			if(this->_status_code == 400)
-				header +=  "400 Bad Request\r\n";
+				header += BAD_REQUEST;
 			else if(this->_status_code == 505)
 				header +=  "505 Http Version Not Supported\r\n";
 			else if(this->_status_code == 500)
-				header +=  "500 Internal Server Error\r\n";
+				header +=  INTERNAL_SERVER_ERROR;
 			else if(this->_status_code == 405)
-				header +=  "405 Not Allowed\r\n";
+				header +=  METHOD_NOT_ALLOWED;
+			else if(this->_status_code == 301)
+				header += MOVED_PERMANENTLY;
 			else if(this->_status_code == 413)
-				header +=  "413 Payload Too Large\r\n";
+				header +=  PAYLOAD_TOO_LARGE;
 			else if(this->_status_code == 404)
-				header +=  "404 Not Found\r\n";
+				header += NOT_FOUND;
 			else if(this->_status_code == 403)
-				header +=  "403 Forbidden\r\n";
+				header +=  FORBIDDEN;
 		}
 
 		time(&rawtime);

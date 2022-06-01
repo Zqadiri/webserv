@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 14:01:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/01 13:34:37 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,11 @@
 #define FORBIDDEN	"HTTP/1.1 403 Forbidden\r\n"
 #define NOT_FOUND "HTTP/1.1 404 Not Found\r\n"
 #define	CREATED	"HTTP/1.1 201 Created\r\n"
+#define MOVED_PERMANENTLY "HTTP/1.1 301 Moved Permanently\r\n"
+#define BAD_REQUEST "HTTP/1.1 400 Bad Request\r\n"
+#define INTERNAL_SERVER_ERROR "HTTP/1.1 500 Internal Server Error\r\n"
+#define METHOD_NOT_ALLOWED "HTTP/1.1 405 Method Not Allowed\r\n"
+#define PAYLOAD_TOO_LARGE "HTTP/1.1 413 Payload Too Large\r\n"
 
 typedef	std::vector<std::string>	configFile;
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 13:06:39 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/06/01 13:41:41 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,6 +250,11 @@ int server::sen(int &socket, request& req, Response &response)
 	std::cout << "trying send to " << socket << "\n";
 	
 	response.Return_string(req, _config, socket);
+
+	std::cout << response.body_length << std::endl;
+	std::cout << response.chunked << std::endl;
+	std::cout << response.str_uri << std::endl;
+
 	if (response.body_length > 0)
 	{
 		if (!response._res.is_open())
