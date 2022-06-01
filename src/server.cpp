@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 11:32:35 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/01 13:06:39 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 		if (FD_ISSET(socket->first, &cp_wset))
 		{
 			
-			int ret = sen(socket->first, socket->second, _responses[socket->first]);
+			int ret = sen(socket->first, socket->second, _responses.at(socket->first));
 			if (ret == -1)
 			{
 				std::cout << "send() failed" << std::endl;
@@ -172,7 +172,8 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 				std::cout << "recv() success" << std::endl;
 				FD_CLR(socket->first, &fset);
 				FD_SET(socket->first, &wset);
-				_responses[socket->first] = Response(socket->first);
+				Response rc(socket->first);
+				_responses.insert(std::make_pair(socket->first, rc));
 				++socket;
 			}
 			else

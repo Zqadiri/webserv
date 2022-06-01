@@ -2,8 +2,8 @@
 #include "MimeTypes.hpp"
 #include <sys/stat.h>
 
-Response::Response(){
-}
+// Response::Response(){
+// }
 
 Response::Response(int socket)
 {
@@ -29,13 +29,42 @@ Response::Response(int socket)
 	myfile.close();
 }
 
-Response &Response::operator=(const Response &rhs){
-	this->_status_code = rhs._status_code;
+Response &Response::operator=(const Response &cp){
+	this->_status_code = cp._status_code;
+	this->_response_string = cp._response_string;
+	this->_get_file_success_open = cp._get_file_success_open;
+	this->_file_extension = cp._file_extension;
+	this->_s = cp._s;
+	//response file get method
+	this->_file_change_get = cp._file_change_get;
+	//response file delete method
+	this->_file_change_delete = cp._file_change_delete;
+	this->_my_auto_index = cp._my_auto_index;
+	this->header = cp.header;
+	this->body_length = cp.body_length;
+	this->chunked = cp.chunked;
+	this->str_uri = cp.str_uri;
+
+	
 	return (*this);
 }
 
-Response::Response(Response &cp){
+Response::Response(const Response &cp){
 	this->_status_code = cp._status_code;
+	this->_response_string = cp._response_string;
+	this->_get_file_success_open = cp._get_file_success_open;
+	this->_file_extension = cp._file_extension;
+	this->_s = cp._s;
+	//response file get method
+	this->_file_change_get = cp._file_change_get;
+	//response file delete method
+	this->_file_change_delete = cp._file_change_delete;
+	this->_my_auto_index = cp._my_auto_index;
+	this->header = cp.header;
+	this->body_length = cp.body_length;
+	this->chunked = cp.chunked;
+	this->str_uri = cp.str_uri;
+	
 }
 
 std::string     			Response::Request_statuscode_checked(request &req, serverConfig* servconf)

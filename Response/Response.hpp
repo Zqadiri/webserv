@@ -12,11 +12,11 @@ class Response
 {
     public:
         //canonical form
-        Response();
+        // Response();
         Response(int);
         // Response(request request);
-        Response(Response &cp);
-        Response & operator=(const Response &rhs);
+        Response(const Response &);
+        Response & operator=(const Response &);
         ~Response();
 
         //Response start
