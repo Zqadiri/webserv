@@ -2,6 +2,9 @@
 #include "MimeTypes.hpp"
 #include <sys/stat.h>
 
+Response::Response(){
+}
+
 Response::Response(int socket)
 {
 	std::fstream myfile;

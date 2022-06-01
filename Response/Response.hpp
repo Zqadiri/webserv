@@ -6,10 +6,13 @@
 #include "../src/CGI/CGI.hpp"
 #include "dirent.h"
 
+class request;
+
 class Response
 {
     public:
         //canonical form
+        Response();
         Response(int);
         // Response(request request);
         Response(Response &cp);
