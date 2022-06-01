@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 22:18:48 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/01 23:36:55 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ void deleteArray(char **env)
 
 std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Response &response)
 {
-	std::cout <<  "-----> " << _filePath << std::endl;
 	FILE *fileIn = tmpfile();
 	FILE *fileOut = tmpfile();
 	std::string output;
@@ -154,11 +153,9 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 			ret = read(fdOut, buffer, GCI_BUFFERSIZE - 1);
 			output += buffer;
 		}
-		std::cout << GREEN << output << RESET << std::endl;
 		dup2(savedIn, STDIN_FILENO);
 		dup2(savedOut, STDOUT_FILENO);
 	}
-	// std::cout << GREEN <<  " == ? " << output << RESET << std::endl;
 	close(fdIn);
 	close(fdOut);
 	fclose(fileIn);
@@ -166,32 +163,41 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	close(savedIn);
 	close(savedOut);
 	deleteArray(env);
-	response.str_uri = filename;
-	response.body_length = response.File_lenght(filename);
-	return addHeader(output, response);
+	return addHeader(socket_fd, output, response);
 }
 
-std::string CGI::addHeader(std::string output, Response &response) //! error handling
+std::string CGI::addHeader(int socket_fd, std::string output, Response &response) //! error handling
 {
-	time_t rawtime;
-
-	response.header += "HTTP/1.1 200 OK\r\n";
-
+	time_t 			rawtime;
 	time(&rawtime);
+	std::string     filename(response._file_change_get);
+	std::fstream  	myfile;
+
+	filename += to_string(socket_fd);
+	response.str_uri = filename;
+	int fd = open(filename.c_str(), O_RDWR | O_CREAT | O_TRUNC);
+	response.header += OK;
 	response.header += "Date: ";
 	response.header += std::string(ctime(&rawtime));
-	response.header += "\r\n";
+
 	response.header += "Server: ";
 	response.header += "Myserver\r\n";
 
 	response.header += "Content-Type: ";
 	response.header += "text/html; charset=UTF-8";
 	response.header += "\r\n";
+
 	size_t end_headers = output.find_first_of("\n");
 	int start = output.find("Content-type", 0);
 	if (start != -1){
 		int end = output.find("\n", start);
 		output = output.erase(start, end - start + 1);
 	}
-	return output.substr(end_headers, output.length());
+	response.body_length += write (fd, output.substr(end_headers, output.length()).c_str(),  
+							output.substr(end_headers, output.length()).length());
+	close(fd);
+	response.header += "Content-Length: ";
+	response.header += to_string(response.body_length);
+	response.header += "\r\n\r\n";
+	return output;
 }

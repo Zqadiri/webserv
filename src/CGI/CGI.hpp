@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 13:30:31 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 12:01:41 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/01 22:30:05 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ class CGI
 		CGI( request &request,  serverConfig &server);
 		std::string		executeCgi(const std::string&, size_t, Response&);
 		std::string		getTheCompletePath(const std::string&);
-		std::string		addHeader(std::string, Response &);
+		std::string		addHeader(int fd, std::string, Response &);
 };
 
 #endif

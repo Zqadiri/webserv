@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 20:39:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/01 22:21:24 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,8 +127,9 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 				FD_CLR(socket->first, &fset);
 				
 				close(socket->first);
-				socket =_sockets.erase(socket);
 				_responses.erase(socket->first);
+				socket =_sockets.erase(socket);
+				
 				// break ;
 			}
 			else if (ret == 0)

@@ -467,19 +467,10 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	}
 	else
 	{
-		std::fstream  	myfile;
 		CGI				cgi_handler(req, *servconf);
 
-		str_uri = _file_change_get;
-		std::cout << "this is str uri " << str_uri << std::endl;
-		myfile.open(str_uri, std::fstream::in | std::fstream::out);
-		myfile << cgi_handler.executeCgi(str_uri, fd, *this);
-
-		body_length = File_lenght(str_uri);
-		header += "Content-Length: ";
-		header += to_string(body_length);
-		header += "\r\n\r\n";
-		std::cout << header << std::endl;
+		cgi_handler.executeCgi(str_uri, fd, *this);
+		
 	}
 }
 /*
