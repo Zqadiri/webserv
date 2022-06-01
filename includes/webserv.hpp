@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 14:01:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/01 20:10:08 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 # define RESET "\033[0m"
 
 #define TIMEOUT 20
-#define BUFFER_SIZE	2048
+#define BUFFER_SIZE	9000
 
 #define OK "HTTP/1.1 200 OK\r\n"
 #define NO_CONTENT "HTTP/1.1 204 No Content\r\n"

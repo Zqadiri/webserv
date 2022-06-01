@@ -124,15 +124,13 @@ std::string     			Response::Content_type()
     return ret;
 }
 
-int             			Response::File_lenght(request &req, serverConfig* servconf, std::string str)
+int             			Response::File_lenght(std::string str)
 {
 	// we gonna calculate the length of our file (body lenght)
 	int             ret = 0;
 	struct          stat sb;
 	// std::string		str;
 
-	(void)req;
-	(void)servconf;
 	if(!stat(str.c_str(), &sb))
 		ret = sb.st_size;
 	else
@@ -389,7 +387,7 @@ void						Response::writeResponse(request &req, serverConfig *servconf,std::stri
 		str_uri = "./Response/response_errors_pages/";
 		str_uri += to_string(_status_code);
 		str_uri += ".html";
-		body_length = File_lenght(req, servconf, str_uri);
+		body_length = File_lenght(str_uri);
 		header += "Content-Length: ";
 		header += to_string(body_length);
 		header += "\r\n";
@@ -460,7 +458,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		std::cout << GREEN << "content type here ---------" << Content_type() << RESET << std::endl;
 		header +=  content_type;
 		header +=  "\r\n";
-		body_length = File_lenght(req, servconf, str_uri);
+		body_length = File_lenght(str_uri);
 		header += "Content-Length: ";
 		header += to_string(body_length);
 		header += "\r\n\r\n";
