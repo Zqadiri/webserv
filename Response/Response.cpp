@@ -23,8 +23,8 @@ Response::Response(int socket)
 	this->_my_auto_index = false;
 	this->header = "";
 	this->body_length = 0;
-	this->chunked = false;
 	this->str_uri = "";
+	this->_handled = false;
 	myfile.open(_file_change_get, std::fstream::in | std::fstream::out | std::fstream::trunc);
 	myfile.close();
 }
@@ -34,7 +34,12 @@ Response &Response::operator=(const Response &cp){
 	this->_response_string = cp._response_string;
 	this->_get_file_success_open = cp._get_file_success_open;
 	this->_file_extension = cp._file_extension;
+	this->_pages_to_string = cp._pages_to_string;
+	this->_check_extension_mine = cp._check_extension_mine;
 	this->_s = cp._s;
+	this->_contentDisposition = cp._contentDisposition;
+	this->_boundary = cp._boundary;
+	this->_contentType = cp._contentType;
 	//response file get method
 	this->_file_change_get = cp._file_change_get;
 	//response file delete method
@@ -42,10 +47,8 @@ Response &Response::operator=(const Response &cp){
 	this->_my_auto_index = cp._my_auto_index;
 	this->header = cp.header;
 	this->body_length = cp.body_length;
-	this->chunked = cp.chunked;
 	this->str_uri = cp.str_uri;
-
-	
+	this->_handled = cp._handled;
 	return (*this);
 }
 
@@ -54,7 +57,12 @@ Response::Response(const Response &cp){
 	this->_response_string = cp._response_string;
 	this->_get_file_success_open = cp._get_file_success_open;
 	this->_file_extension = cp._file_extension;
+	this->_pages_to_string = cp._pages_to_string;
+	this->_check_extension_mine = cp._check_extension_mine;
 	this->_s = cp._s;
+	this->_contentDisposition = cp._contentDisposition;
+	this->_boundary = cp._boundary;
+	this->_contentType = cp._contentType;
 	//response file get method
 	this->_file_change_get = cp._file_change_get;
 	//response file delete method
@@ -62,8 +70,8 @@ Response::Response(const Response &cp){
 	this->_my_auto_index = cp._my_auto_index;
 	this->header = cp.header;
 	this->body_length = cp.body_length;
-	this->chunked = cp.chunked;
 	this->str_uri = cp.str_uri;
+	this->_handled = cp._handled;
 	
 }
 
@@ -129,8 +137,9 @@ int             			Response::File_lenght(request &req, serverConfig* servconf, s
 		ret = sb.st_size;
 	else
 		ret = -1;
-	std::cout << "****** " << ret << std::endl;
-	return ret;
+	std::cout << "stat ****** " << ret << std::endl;
+
+	return (ret);
 }
 
 std::vector<std::string>	Response::getFilesInDirectory(std::string path)
@@ -163,7 +172,7 @@ void						Response::AutoIndexExec(std::string s)
 	i = -1;
 	this->_my_auto_index = true;
 	s2 = "";
-	file.open("/tmp/auto_index.html",std::fstream::in | std::fstream::app);
+	file.open("/tmp/auto_index.html",std::fstream::out | std::fstream::trunc);
 	file << "<html>\n";
 	file << "<head>\n";
 	file << "<title>Index of /</title>\n";
@@ -189,7 +198,9 @@ void						Response::AutoIndexExec(std::string s)
 	}
 	// file << "</center>\n";
 	file << "</body>\n";
-	file << "/<html>";
+	file << "<html>";
+	file << std::endl;
+	file.close();
 }
 
 void            			Response::File_type(request &req, serverConfig *serverConfig)
@@ -202,7 +213,7 @@ void            			Response::File_type(request &req, serverConfig *serverConfig)
 
 	s = "";
 	str = req.getRequestURI();
-	// std::cout << YELLOW << "path is here----------" << str << RESET << std::endl;
+	std::cout << YELLOW << "path is here----------" << str << RESET << std::endl;
 	index = str.find_first_of(".");
 	str2 = str.substr(index + 1, str.length());
 	this->_check_extension_mine = str2;
@@ -445,24 +456,13 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		if(this->_status_code == 200 && this->_my_auto_index == false)
 			content_type = Content_type();
 		else
-			content_type = "text/html\r\n";
-		std::cout << RED << "content type here ---------" << Content_type() << RESET << std::endl;
+			content_type = "text/html";
+		std::cout << GREEN << "content type here ---------" << Content_type() << RESET << std::endl;
 		header +=  content_type;
 		header +=  "\r\n";
 		body_length = File_lenght(req, servconf, str_uri);
-
-		if(body_length + header.size() > BUFFER_SIZE)
-		{
-			header += "Transfer-Encoding: chuncked";
-			chunked = true;
-			
-		}
-		else
-		{
-			header += "Content-Length: ";
-			header += to_string(body_length);
-			chunked = false;
-		}
+		header += "Content-Length: ";
+		header += to_string(body_length);
 		header += "\r\n\r\n";
 	}
 	else
@@ -577,6 +577,7 @@ void						Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	Request_statuscode_checked(req, servconf);
 	Methods_exec(req, fd, servconf);
+	_handled = true;
 }
 
 Response::~Response()

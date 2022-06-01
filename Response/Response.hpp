@@ -62,8 +62,8 @@ class Response
         std::string     header;
         std::string		str_uri;
         int             body_length;
-        bool            chunked;
-        std::fstream    _res;
+        std::ifstream    _res;
+        bool            _handled;
 };
 
 #endif
