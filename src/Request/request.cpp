@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/01 16:14:18 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/06/02 16:53:23 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ std::vector<std::string>		request::init_methods()
 request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _host(""), _current_time(std::time(NULL)){
 	
 	std::fstream body;
-	std::string filename = "/tmp/body";
+	std::string filename = "./";
 	filename += to_string(socket_fd);
 	_retCode = 200;  // ? 200 OK -> Successful responses
 	_port = 80;

@@ -347,9 +347,9 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 std::string     			Response::ConvertHtml(std::string path)
 {
 	// convert Html errors pages to a string
-	std::fstream    myfile;
-	std::string     fill;
-	std::string     ret;
+	std::fstream	myfile;
+	std::string		fill;
+	std::string 	ret;
 
 	myfile.open(path);
 	while(myfile)
@@ -362,9 +362,7 @@ std::string     			Response::ConvertHtml(std::string path)
 	return (ret);
 }
 
-void						Response::writeResponse()
-{
-	// std::cout << "this is the status code :: " << this->_status_code << std::endl;
+void						Response::writeResponse(){
 	bool			is_error = 1;
 
 	if (this->_status_code == 204){
@@ -577,27 +575,28 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 
 void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
-
-	CGI				cgi_handler(req, *servconf);
+	// CGI				cgi_handler(req, *servconf);
 	std::string		complete_path;
-	std::fstream	myfile;
+	// std::fstream	myfile;
 
 	complete_path = CompletePath(req, servconf);
-	myfile.open(complete_path);
-	if(!myfile.is_open())
-	{
-		str_uri.clear();
-		this->_status_code = 404;
-		str_uri += "./Response/response_errors_pages/";
-		str_uri += to_string(this->_status_code);
-		str_uri += ".html";
-	}
-	else
-		cgi_handler.executeCgi(complete_path, fd, *this);
-	// std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
+	(void)fd;
+	// myfile.open(complete_path);
+	// if(!myfile.is_open())
+	// {
+	// 	str_uri.clear();
+	// 	this->_status_code = 404;
+	// 	str_uri += "./Response/response_errors_pages/";
+	// 	str_uri += to_string(this->_status_code);
+	// 	str_uri += ".html";
+	// }
+	// else
+	// 	cgi_handler.executeCgi(complete_path, fd, *this);
+	// std::cout << "complete path is here--------> " << complete_path << std::endl;
+	// std::string mv = "mv " + complete_path + " " + "./www/upload/newfile";
 	// system(mv.c_str());
-}
 
+}
 void						Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	Request_statuscode_checked(req, servconf);

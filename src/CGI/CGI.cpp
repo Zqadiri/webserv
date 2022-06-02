@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/02 15:11:49 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/02 16:52:47 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	int savedIn;
 	int savedOut;
 	char **env;
-	std::string filename = "/tmp/body";
+	std::string filename = "rs/zqadiri";
 	filename += to_string(socket_fd);
 	std::fstream _body;
 	std::string myline;

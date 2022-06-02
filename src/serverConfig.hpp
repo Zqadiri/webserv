@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/25 13:04:37 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/02 20:48:24 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 
 struct _location
 {
-	// location data
 	std::string				_path;
 	std::list<std::string>	_allow_methods;
 	std::string				_root;
@@ -26,6 +25,7 @@ struct _location
 	bool					_alias;
 	std::string				_pathCGI;
 	bool					_autoindex;
+	std::string				_uploadStore;
 };
 
 class serverConfig
@@ -49,7 +49,6 @@ class serverConfig
 		serverConfig(const serverConfig &obj);
 		serverConfig	&operator=(const serverConfig&);
 
-		// Accessors
 		const t_listen				 	&gethostPort(void) const;
 		const std::list<std::string>	&getServerName(void) const;
 		const std::vector<_location>	&getLocations(void) const;

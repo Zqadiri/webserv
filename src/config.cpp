@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 16:07:45 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/02 20:57:02 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,8 @@ bool exepectedTokens(std::string value)
 {
 	const char* exepectedTokens[] = {"root", "alias", "allow_methods", 
 	"client_body_buffer_size","cgi_pass", "server_names", "listen", 
-	"location", "index", "error_page", "server", "{", "}", "autoindex"};
-	for (size_t i = 0; i < 14; i++){
+	"location", "index", "error_pages", "server", "{", "}", "autoindex", "upload_store"};
+	for (size_t i = 0; i < 15; i++){
 		if (!value.compare(exepectedTokens[i]))
 			return true;
 	}
@@ -99,8 +99,10 @@ configFile		Config::slitTokens(configFile con, std::string delim)
 			if (end == std::string::npos)
 				break;
 			std::string token = removeSpace(str.substr(start, end - start));
-			if (isKey && !exepectedTokens(token))
+			if (isKey && !exepectedTokens(token)){
+				std::cout << GREEN << token  << exepectedTokens(token) << RESET << std::endl;
 				throw Config::FileNotWellFormated();
+			}
 			isKey = 0;
 			tokens.push_back(token);
 			start = str.find_first_not_of(delim, end);
@@ -263,6 +265,7 @@ void	Config::print(){
 			std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
 			std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
 			std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
+			std::cout << "uploadStore " << this->servers[i]->_locations[j]._uploadStore << std::endl;
 			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
 			std::cout << "autoindex " << this->servers[i]->_locations[j]._autoindex << std::endl;
 			std::cout << "CGIpass " << this->servers[i]->_locations[j]._pathCGI << std::endl;

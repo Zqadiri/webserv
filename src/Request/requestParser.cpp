@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   requestParser.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/01 00:12:48 by tenshi           ###   ########.fr       */
+/*   Updated: 2022/06/02 20:33:06 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,12 +145,12 @@ void				request::checkForUpload(int fd)
 		return ;
 	std::string 	line;
 	std::fstream	_body;
-	std::string filename = "/tmp/body";
+	std::string filename = "./tmp";
 	filename += to_string(fd);
 
 	std::fstream	newBody;
 	_body.open(filename, std::fstream::in);
-	newBody.open("/tmp/temp", std::fstream::in | std::fstream::app);
+	newBody.open("./tmp/temp", std::fstream::in | std::fstream::app);
 	if (_headers["Content-Type"].find("boundary") != std::string::npos)
 	{
 		while (_body){
@@ -164,17 +164,17 @@ void				request::checkForUpload(int fd)
 		newBody.close();
 	}
 	std::cout << "_uploadFileName : " << _uploadFileName << " Content-Type : " <<
-	_contentTypeUpload << " Content-Disposition : "<<  _headers["Content-Disposition"]
+	_contentTypeUpload << " Content-Disposition : "<< _headers["Content-Disposition"]
 	<< std::endl;
-	// std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
-	// system(mv.c_str());
+	std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
+	system(mv.c_str());
 }
 
 int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 {
 	std::fstream _body;
 	std::string delim("\r\n\r\n");
-	std::string filename = "/tmp/body";
+	std::string filename = "./tmp";
 	size_t bodyCursor = buff.find(delim);
 
 	reset_timer();
