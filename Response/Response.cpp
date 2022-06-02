@@ -2,14 +2,14 @@
 #include "MimeTypes.hpp"
 #include <sys/stat.h>
 
-// Response::Response(){
-// }
+Response::Response(){
+}
 
 Response::Response(int socket)
 {
 	std::fstream myfile;
 
-	this->_status_code = 0;
+	this->_status_code = 200; //! i change it to 200
 	this->_response_string = "";
 	this->_get_file_success_open = true;
 	this->_file_extension = "";
@@ -38,11 +38,8 @@ Response &Response::operator=(const Response &cp){
 	this->_check_extension_mine = cp._check_extension_mine;
 	this->_s = cp._s;
 	this->_contentDisposition = cp._contentDisposition;
-	this->_boundary = cp._boundary;
 	this->_contentType = cp._contentType;
-	//response file get method
 	this->_file_change_get = cp._file_change_get;
-	//response file delete method
 	this->_file_change_delete = cp._file_change_delete;
 	this->_my_auto_index = cp._my_auto_index;
 	this->header = cp.header;
@@ -61,7 +58,6 @@ Response::Response(const Response &cp){
 	this->_check_extension_mine = cp._check_extension_mine;
 	this->_s = cp._s;
 	this->_contentDisposition = cp._contentDisposition;
-	this->_boundary = cp._boundary;
 	this->_contentType = cp._contentType;
 	//response file get method
 	this->_file_change_get = cp._file_change_get;
@@ -72,7 +68,6 @@ Response::Response(const Response &cp){
 	this->body_length = cp.body_length;
 	this->str_uri = cp.str_uri;
 	this->_handled = cp._handled;
-	
 }
 
 std::string     			Response::Request_statuscode_checked(request &req, serverConfig* servconf)
@@ -111,7 +106,7 @@ void            			Response::Methods_exec(request &req, int fd, serverConfig *se
         if(str == "GET")
             return GET(fd, req, servconf);
         else if(str == "POST")
-            return POST(fd, req, servconf,  "./www/upload/newFile");
+            return POST(fd, req, servconf);
         else if(str == "DELETE")
             return DELETE(req, servconf);
     }
@@ -124,12 +119,11 @@ std::string     			Response::Content_type()
     return ret;
 }
 
-int             			Response::File_lenght(std::string str)
+int             			Response::File_length(std::string str)
 {
-	// we gonna calculate the length of our file (body lenght)
+	// we gonna calculate the length of our file (body length)
 	int             ret = 0;
 	struct          stat sb;
-	// std::string		str;
 
 	if(!stat(str.c_str(), &sb))
 		ret = sb.st_size;
@@ -202,7 +196,7 @@ void						Response::AutoIndexExec(std::string s)
 	file.close();
 }
 
-void            			Response::File_type(request &req, serverConfig *serverConfig)
+void            			Response::File_type(request &req)
 {
 	std::string str;
 	std::string str2;
@@ -243,7 +237,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	int						i;
 	bool					check;
 
-	str_req_uri = req.getRequestURI(); //!!!
+	str_req_uri = req.getRequestURI();
 	ve = servconfig->getLocations();
 	str_ret = "";
 	i = 0;
@@ -368,53 +362,46 @@ std::string     			Response::ConvertHtml(std::string path)
 	return (ret);
 }
 
-std::string					Response::getErrorPage(int	status)
+void						Response::writeResponse()
 {
-	std::string	filename;
-	filename += "./Response/response_errors_pages/";
-	filename += to_string(status);
-	filename += ".html";
-	return ConvertHtml(filename);
-}
-
-void						Response::writeResponse(request &req, serverConfig *servconf,std::string boby)
-{
-	// std::fstream	myfile;
+	// std::cout << "this is the status code :: " << this->_status_code << std::endl;
 	bool			is_error = 1;
 
-	// myfile.open(_file_change_get, std::fstream::in | std::fstream::app);
 	if (this->_status_code == 204){
 		is_error = 0;
 		header += NO_CONTENT;
 	}
-	else if (this->_status_code == 403)
+	if (this->_status_code == 403)
 		header += FORBIDDEN;
-	else if (this->_status_code == 201){
+	if (this->_status_code == 403)
+		header += FORBIDDEN;
+	if (this->_status_code == 201){
 		is_error = 0;
 		header += CREATED;
 		header += "Content-Length: 0\r\n";
 		body_length = 0;
 	}
-	else if (this->_status_code == 200){
+	if (this->_status_code == 200){
 		is_error = 0;
 		header += OK;
 	}
-	else if (this->_status_code == 404)
+	if (this->_status_code == 404)
 		header += NOT_FOUND;
-	 // end headers
+	if (this->_status_code == 409)
+	{
+		header += CONFLICT;
+		is_error = 0;
+		header += "Content-Length: 0\r\n";
+		body_length = 0;
+	}
 	if (is_error){
-		// header += getErrorPage(_status_code);
-		str_uri = "./Response/response_errors_pages/";
-		str_uri += to_string(_status_code);
-		str_uri += ".html";
-		body_length = File_lenght(str_uri);
+		std::cout << "this is str_uri :: " << this->str_uri << std::endl;
+		body_length = File_length(str_uri);
 		header += "Content-Length: ";
 		header += to_string(body_length);
 		header += "\r\n";
 	}
 	header += "\r\n";
-	// else
-	// 	header += boby;
 }
 
 int							Response::IsFile(const std::string& path)
@@ -458,7 +445,7 @@ void						Response::getStatusString()
 
 void            			Response::GET(int fd, request &req, serverConfig *servconf)
 {
-	File_type(req, servconf);
+	File_type(req);
 	std::string     content_type;
 	time_t          rawtime;
 	std::fstream	myfile;
@@ -491,7 +478,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 			content_type = "text/html";
 		header +=  content_type;
 		header +=  "\r\n";
-		body_length = File_lenght(str_uri);
+		body_length = File_length(str_uri);
 		header += "Content-Length: ";
 		header += to_string(body_length);
 		header += "\r\n\r\n";
@@ -545,30 +532,52 @@ int							Response::removeDir(std::string path)
 
 //!------------------------------------ DELETE ------------------------------------
 
-void						Response::DELETE(request &req, serverConfig *servconf)
+/*
+ TODO:The DELETE method
+ requests that the origin server delete the resource identified by the Request-URI
+*/
+
+void						Response::DELETE(request &req, serverConfig* servconf)
 {
 	(void)servconf;
-	std::string f = "." + req.getPath();
-	size_t isFile = IsFile(f);
-	if (isFile == 1)
+	// str_uri = CompletePath(req, servconf);	
+	str_uri = "." + req.getRequestURI();
+
+	std::cout << "str uri is here--------> " << str_uri << std::endl;
+	std::fstream	myfile;
+
+	size_t isFile = IsFile(str_uri);
+	if (isFile == 1 && _status_code == 200)
 	{
-		if (remove(f.c_str()) == 0)
+		std::cout << "remove file" << std::endl;
+		if (remove(str_uri.c_str()) == 0)
 			this->_status_code = 204;
 		else
 			this->_status_code = 403; //403 Forbidden
 	}
-	else if (isFile == 2){
-		this->_status_code = removeDir(f);
+	else if (isFile == 2 && _status_code == 200){
+		std::cout << "remove dir" << std::endl;
+		if (str_uri.back() == '/')
+			this->_status_code = removeDir(str_uri);
+		else
+			this->_status_code = 409; //409 Conflict
 	}
 	else
 		this->_status_code = 404; // 404 Not Found
-	writeResponse(req,servconf,"");
+	writeResponse();
 }
 
 //!------------------------------------ POST ------------------------------------
 
-void						Response::POST(int fd, request &req, serverConfig *servconf, std::string filePath)
+/*
+	TODO:The POST method
+	requests that the origin server accept the entity enclosed in the request as a new subordinate
+	of the resource identified by the Request-URI in the Request-Line
+*/
+
+void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
+
 	CGI				cgi_handler(req, *servconf);
 	std::string		complete_path;
 	std::fstream	myfile;

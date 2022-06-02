@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+         #
+#    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/06/01 14:18:26 by nwakour          ###   ########.fr        #
+#    Updated: 2022/06/02 14:12:45 by zqadiri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ CC			= c++
 
 FLAGS		=  -g -std=c++98
 
-# WWW			= -Wall -Wextra -Werror
+WWW			= -Wall -Wextra -Werror
 
 # WWW = -fsanitize=address -g
 

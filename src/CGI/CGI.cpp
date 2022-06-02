@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 23:36:55 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/02 15:11:49 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 /*--------- Constructors & Destructor --------*/
 
-CGI::CGI(request &request, serverConfig &config) : _scriptName("./php-cgi")
+CGI::CGI(request &request, serverConfig &config) : _scriptName("./php-cgi"), _scripNamePy("./py_cgi")
 {
 	std::map<std::string, std::string> _headers = request.getHeaders();
 	if (_headers.find("Auth-Scheme") != _headers.end() && _headers["Auth-Scheme"] != "")
@@ -87,6 +87,10 @@ void deleteArray(char **env)
 	delete[] env;
 }
 
+/*
+	main function for executing the php script
+*/
+
 std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Response &response)
 {
 	FILE *fileIn = tmpfile();
@@ -115,7 +119,6 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	savedIn = dup(STDIN_FILENO);
 	savedOut = dup(STDOUT_FILENO);
 
-	// get the integer file descriptor associated with the stream pointed to by stream.
 	long fdIn = fileno(fileIn);
 	long fdOut = fileno(fileOut);
 

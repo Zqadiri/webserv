@@ -11,10 +11,8 @@ class request;
 class Response
 {
     public:
-        //canonical form
-        // Response();
+        Response();
         Response(int);
-        // Response(request request);
         Response(const Response &);
         Response & operator=(const Response &);
         ~Response();
@@ -25,8 +23,8 @@ class Response
         void                        Return_string(request &request, serverConfig*, int fd);
         std::string                 ConvertHtml(std::string path);
         std::string                 Content_type();
-        int                         File_lenght(std::string);
-        void                        File_type(request &req, serverConfig*);
+        int                         File_length(std::string);
+        void                        File_type(request &req);
         bool                        isCGI(request &req, serverConfig *servconf);
         void                        GET(int fd, request &req, serverConfig*);
         std::string                 getfileChange();
@@ -34,16 +32,16 @@ class Response
         std::vector<std::string>    getFilesInDirectory(std::string);
         void                        AutoIndexExec(std::string);
         std::string                 new_header_str(request &req, serverConfig *servconf);
+
         //!---------------- DELETE Functions --------------------------
         void						getStatusString();
         int                         IsFile(const std::string& path);
         int				            removeDir(std::string);
-        void                        writeResponse(request &, serverConfig *,std::string);
-        std::string			        getErrorPage(int	status);
+        void                        writeResponse();
         void                        DELETE(request &req, serverConfig*);
 
         //!---------------- POST Functions --------------------------
-        void                        POST(int, request &req, serverConfig*, std::string);
+        void                        POST(int, request &req, serverConfig*);
 
     public: //!!!!! private
         std::string     _response_string;
@@ -59,7 +57,6 @@ class Response
 
         std::string     _contentDisposition;
         std::string     _contentType;
-        std::string     _boundary;
         std::string     header;
         std::string		str_uri;
         int             body_length;

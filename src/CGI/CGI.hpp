@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 13:30:31 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 22:30:05 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/02 15:05:13 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class CGI
 		std::map<std::string, std::string>	_env;
 		std::string							_filePath;
 		std::string							_scriptName;
+		std::string							_scripNamePy;
 
 	public:
 		CGI(CGI const &);

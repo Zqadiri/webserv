@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/02 00:11:49 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/02 14:09:31 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,10 @@
 #define INTERNAL_SERVER_ERROR			"HTTP/1.1 500 Internal Server Error\r\n"
 #define METHOD_NOT_ALLOWED				"HTTP/1.1 405 Method Not Allowed\r\n"
 #define PAYLOAD_TOO_LARGE				"HTTP/1.1 413 Payload Too Large\r\n"
-#define  HTTP_version_not_supported		"HTTP/1.1 505 HTTP Version Not Supported\r\n"
+#define HTTP_version_not_supported		"HTTP/1.1 505 HTTP Version Not Supported\r\n"
+#define CONFLICT						"HTTP/1.1 409 Conflict\r\n"
+
+#define URI_TOO_LONG					"HTTP/1.1 414 URI Too Long\r\n" //!NOT_IMPLEMENTED
 
 typedef	std::vector<std::string>	configFile;
 
