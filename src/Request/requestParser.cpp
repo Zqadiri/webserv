@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/02 20:33:06 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/02 21:58:39 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,77 +104,11 @@ int					request::InternalServerError(){
 	return -1;	
 }
 
-std::string				getFilename(std::string buffer)
-{
-	std::cout << buffer << std::endl;
-	std::string	delim ("filename=");
-	size_t end = buffer.find(delim);
-	if (end != std::string::npos)
-		return buffer.substr(end + delim.length() + 1, buffer.length() - 1);
-	return "error";
-}
-
-int		request::parseLine(std::string line)
-{
-	std::string key, value;
-
-	if (line.compare("\r\n"))
-	{
-		if (line.find("Content-Disposition") != std::string::npos || 
-				line.find("Content-Type") != std::string::npos)
-		{
-			key = removeSpace(getKey(line.c_str()));
-			value = removeSpace(getValue(line.c_str(), key.size()));
-			if (line.find("Content-Disposition") != std::string::npos){
-				_headers["Content-Disposition"] = value;
-				_uploadFileName = getFilename(_headers["Content-Disposition"]);
-			}
-			if (line.find("Content-Type") != std::string::npos)
-				_contentTypeUpload = value;
-			return 0;
-		}
-	}
-	if (line.find("------") != std::string::npos) ///! switch to boundary
-		return 0;
-	return 1;
-}
-
-void				request::checkForUpload(int fd)
-{
-	if (_headers["Content-Type"].find("boundary") == std::string::npos)
-		return ;
-	std::string 	line;
-	std::fstream	_body;
-	std::string filename = "./tmp";
-	filename += to_string(fd);
-
-	std::fstream	newBody;
-	_body.open(filename, std::fstream::in);
-	newBody.open("./tmp/temp", std::fstream::in | std::fstream::app);
-	if (_headers["Content-Type"].find("boundary") != std::string::npos)
-	{
-		while (_body){
-			std::getline(_body, line);
-			if (parseLine(line)){
-				newBody << line;
-				newBody << "\n";
-			}
-		}
-		_body.close();
-		newBody.close();
-	}
-	std::cout << "_uploadFileName : " << _uploadFileName << " Content-Type : " <<
-	_contentTypeUpload << " Content-Disposition : "<< _headers["Content-Disposition"]
-	<< std::endl;
-	std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
-	system(mv.c_str());
-}
-
 int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 {
 	std::fstream _body;
 	std::string delim("\r\n\r\n");
-	std::string filename = "./tmp";
+	std::string filename = "./tmp/body";
 	size_t bodyCursor = buff.find(delim);
 
 	reset_timer();
@@ -211,7 +145,6 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 		parseChunkedRequest(filename);
 	}
 	if (_status == COMPLETE){
-		checkForUpload(socket_fd);
 		return 0;
 	}
 	return 1;
@@ -219,11 +152,14 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 
 int request::parseUnchunkedRequest(std::string filename)
 {
-	std::fstream _body;
+	// std::ofstream _body;
 
-	_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
+	std::cout  << GREEN	<< filename << RESET << std::endl;
+	// _body.open (filename,std::ofstream::out | std::ofstream::in | std::ofstream::app);
+	std::ofstream _body(filename, std::ios::binary);
 	if(_body.is_open()){
 		_bodyLength += _tmp.length();
+		std::cout  << GREEN	<< _tmp << RESET << std::endl;
 		_body << _tmp.c_str();
 	}
 	else

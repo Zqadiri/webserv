@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tenshi <tenshi@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/01 00:12:36 by tenshi           ###   ########.fr       */
+/*   Updated: 2022/06/02 21:10:15 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,38 +57,35 @@ class request
 		void										setCode(int);
 		void 										reset_timer();
 
-		void									checkForUpload(int);
-		int										parseLine(std::string line);
-		void									parseAuthorization(request&);
-		void									Host(const std::string &, request&);
-		int										getFirstLine(const std::string &, request&);
-		int										ParseHeaders(std::string,  request&);
-		int										parseChunkedRequest(std::string);
-		int										parseUnchunkedRequest(std::string);
-		int										parseRquest(std::string,  request&, int);
-		std::string								getKey(const std::string&);
-		std::string								getValue(const std::string&, size_t);
-		void									getQueryString();
-		int										checkMethod();
+		void										parseAuthorization(request&);
+		void										Host(const std::string &, request&);
+		int											getFirstLine(const std::string &, request&);
+		int											ParseHeaders(std::string,  request&);
+		int											parseChunkedRequest(std::string);
+		int											parseUnchunkedRequest(std::string);
+		int											parseRquest(std::string,  request&, int);
+		std::string									getKey(const std::string&);
+		std::string									getValue(const std::string&, size_t);
+		void										getQueryString();
+		int											checkMethod();
 
-		std::string								_uploadFileName;
 	private:
-		int										_chunkSize;
-		ParseStatus 							_status;
-		chunkStatus								_chunkStatus;
-		std::string								_method;
-		std::string								_path;
-		std::string								_queryString;
-		std::string								_requestURI;
-		std::string								_version;
-		std::string								_host;
-		int										_port;
-		std::map<std::string, std::string>		_headers;
-		int										_retCode; 
-		std::string								_tmp;
-		int										_bodyLength;
-		std::time_t 							_current_time;
-		std::string								_contentTypeUpload;
+		int											_chunkSize;
+		ParseStatus 								_status;
+		chunkStatus									_chunkStatus;
+		std::string									_method;
+		std::string									_path;
+		std::string									_queryString;
+		std::string									_requestURI;
+		std::string									_version;
+		std::string									_host;
+		int											_port;
+		std::map<std::string, std::string>			_headers;
+		int											_retCode; 
+		std::string									_tmp;
+		int											_bodyLength;
+		std::time_t 								_current_time;
+		std::string									_contentTypeUpload;
 		
 		//! print function 
 		void	print_req(request &);

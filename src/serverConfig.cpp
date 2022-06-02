@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/02 20:50:07 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/02 20:59:27 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,7 @@ bool							serverConfig::getAutoIndex(void) const { return this->_autoindex; }
 
 void		checkForValue(std::string value)
 {
-	if (notAValue(value))
-	{
+	if (notAValue(value)){
 		std::cerr << RED << "every key should be followed by value!" << RESET << std::endl;
 		exit (EXIT_FAILURE);
 	}

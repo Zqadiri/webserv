@@ -541,7 +541,6 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 	// str_uri = CompletePath(req, servconf);	
 	str_uri = "." + req.getRequestURI();
 
-	std::cout << "str uri is here--------> " << str_uri << std::endl;
 	std::fstream	myfile;
 
 	size_t isFile = IsFile(str_uri);
@@ -568,6 +567,15 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 //!------------------------------------ POST ------------------------------------
 
 /*
+	get the location add check if the location support upload = if the location._uploadStore != ""
+*/
+
+bool	locationSupportUpload(request &req){
+	(void)req;
+	return true;
+}
+
+/*
 	TODO:The POST method
 	requests that the origin server accept the entity enclosed in the request as a new subordinate
 	of the resource identified by the Request-URI in the Request-Line
@@ -575,12 +583,17 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 
 void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
-	// CGI				cgi_handler(req, *servconf);
+	(void)fd;
 	std::string		complete_path;
+	// CGI				cgi_handler(req, *servconf);
 	// std::fstream	myfile;
+	std::string		location;
 
 	complete_path = CompletePath(req, servconf);
-	(void)fd;
+	if (locationSupportUpload(req))
+	{
+
+	}
 	// myfile.open(complete_path);
 	// if(!myfile.is_open())
 	// {

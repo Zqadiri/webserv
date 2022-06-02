@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/02 16:53:23 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/02 22:00:52 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ std::vector<std::string>		request::init_methods()
 request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _host(""), _current_time(std::time(NULL)){
 	
 	std::fstream body;
-	std::string filename = "./";
+	std::string filename = "./tmp/body";
 	filename += to_string(socket_fd);
 	_retCode = 200;  // ? 200 OK -> Successful responses
 	_port = 80;
@@ -60,7 +60,8 @@ request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _h
 	this->_headers["Www-Authenticate"] = "";
 	this->_headers["User-Agent"] = "";
 	this->_headers["Content-Disposition"] = "";
-	body.open (filename, std::fstream::in | std::fstream::out | std::fstream::trunc);
+	// body.open (filename, std::fstream::in | std::fstream::out | std::fstream::trunc);
+	// body.close();
 }
 
 request::~request(){
