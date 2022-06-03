@@ -41,6 +41,7 @@ class Response
         void                        DELETE(request &req, serverConfig*);
 
         //!---------------- POST Functions --------------------------
+        int			                parseLine(std::string line);
         void                        POST(int, request &req, serverConfig*);
 
     public: //!!!!! private
@@ -62,6 +63,11 @@ class Response
         int             body_length;
         std::ifstream    _res;
         bool            _handled;
+
+
+        std::string _uploadFileName;
+
+    
 };
 
 #endif

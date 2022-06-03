@@ -581,33 +581,53 @@ bool	locationSupportUpload(request &req){
 	of the resource identified by the Request-URI in the Request-Line
 */
 
+int			Response::parseLine(std::string line)
+{
+	std::string key, value;
+
+	if (line.compare("\r\n"))
+	{
+		if (line.find("Content-Disposition") != std::string::npos || 
+				line.find("Content-Type") != std::string::npos)
+		
+			return 0;
+	}
+	if (line.find("------") != std::string::npos) ///! switch to boundary
+		return 0;
+	return 1;
+}
+
 void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
 	(void)fd;
 	std::string		complete_path;
-	// CGI				cgi_handler(req, *servconf);
-	// std::fstream	myfile;
+	CGI				cgi_handler(req, *servconf);
 	std::string		location;
+	std::fstream	newBody;
 
 	complete_path = CompletePath(req, servconf);
+	newBody.open("./tmp/temp", std::fstream::in | std::fstream::app);
 	if (locationSupportUpload(req))
 	{
-
+		std::fstream reqBody;
+		std::string	line;
+		reqBody.open("./tmp/body"+ to_string(fd), std::fstream::in);
+		while (reqBody)
+		{
+			std::getline(reqBody, line);
+			if (parseLine(line)){
+				newBody << line;
+				newBody << "\n";
+			}
+			std::cout << GREEN << "line : " <<  line << RESET << std::endl;
+		}
+		newBody.close();
+		reqBody.close();
+		std::string mv = "mv ./tmp/temp ./www/upload/newfile";
+		system(mv.c_str());
 	}
-	// myfile.open(complete_path);
-	// if(!myfile.is_open())
-	// {
-	// 	str_uri.clear();
-	// 	this->_status_code = 404;
-	// 	str_uri += "./Response/response_errors_pages/";
-	// 	str_uri += to_string(this->_status_code);
-	// 	str_uri += ".html";
-	// }
-	// else
-	// 	cgi_handler.executeCgi(complete_path, fd, *this);
+	// cgi_handler.executeCgi(complete_path, fd, *this);
 	// std::cout << "complete path is here--------> " << complete_path << std::endl;
-	// std::string mv = "mv " + complete_path + " " + "./www/upload/newfile";
-	// system(mv.c_str());
 
 }
 void						Response::Return_string(request &req, serverConfig *servconf, int fd)

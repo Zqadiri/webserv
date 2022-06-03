@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/02 16:52:47 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/03 12:10:38 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,16 +91,27 @@ void deleteArray(char **env)
 	main function for executing the php script
 */
 
+std::string		randomFileName(void)
+{
+	std::string fileName("./tmp/");
+	time_t t = time(0);
+	struct tm *now = localtime(&t);
+	char buffer[80];
+	strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", now);
+	fileName += buffer;
+	return fileName;
+}
+
 std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Response &response)
 {
-	FILE *fileIn = tmpfile();
-	FILE *fileOut = tmpfile();
+	std::fstream fileIn;
+	std::fstream fileOut;	
 	std::string output;
 	pid_t pid;
 	int savedIn;
 	int savedOut;
 	char **env;
-	std::string filename = "rs/zqadiri";
+	std::string filename = "./tmp/body";
 	filename += to_string(socket_fd);
 	std::fstream _body;
 	std::string myline;
@@ -119,8 +130,9 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	savedIn = dup(STDIN_FILENO);
 	savedOut = dup(STDOUT_FILENO);
 
-	long fdIn = fileno(fileIn);
-	long fdOut = fileno(fileOut);
+	response._file_change_get = randomFileName();
+	int fdIn = open(randomFileName().c_str(), O_RDWR | O_CREAT, 0666);
+	int fdOut = open(response._file_change_get.c_str(),  O_RDWR | O_CREAT, 0666);
 
 	_body.open(filename, std::fstream::in);
 	if (!_body){
@@ -161,8 +173,6 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	}
 	close(fdIn);
 	close(fdOut);
-	fclose(fileIn);
-	fclose(fileOut);
 	close(savedIn);
 	close(savedOut);
 	deleteArray(env);
@@ -171,12 +181,12 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 
 std::string CGI::addHeader(int socket_fd, std::string output, Response &response) //! error handling
 {
+	(void)socket_fd;
 	time_t 			rawtime;
 	time(&rawtime);
 	std::string     filename(response._file_change_get);
 	std::fstream  	myfile;
 
-	filename += to_string(socket_fd);
 	response.str_uri = filename;
 	int fd = open(filename.c_str(), O_RDWR | O_CREAT | O_TRUNC);
 	response.header += OK;
@@ -202,5 +212,6 @@ std::string CGI::addHeader(int socket_fd, std::string output, Response &response
 	response.header += "Content-Length: ";
 	response.header += to_string(response.body_length);
 	response.header += "\r\n\r\n";
+	std::cout << "str_uri : "  << response.str_uri << std::endl;	
 	return output;
 }
