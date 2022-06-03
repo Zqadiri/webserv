@@ -1,3 +1,6 @@
+------WebKitFormBoundaryYrYC8HZ4laOb989h
+Content-Disposition: form-data; name="newfile"; filename="tsconfig.json"
+Content-Type: application/json
 
 {
   "compilerOptions": {
@@ -21,7 +24,11 @@
   }
 }
 
+------WebKitFormBoundaryYrYC8HZ4laOb989h--
 
+------WebKitFormBoundaryYrYC8HZ4laOb989h
+Content-Disposition: form-data; name="newfile"; filename="tsconfig.json"
+Content-Type: application/json
 
 {
   "compilerOptions": {
@@ -45,5 +52,5 @@
   }
 }
 
-
+------WebKitFormBoundaryYrYC8HZ4laOb989h--
 

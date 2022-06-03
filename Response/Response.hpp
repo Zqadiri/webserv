@@ -41,6 +41,7 @@ class Response
         void                        DELETE(request &req, serverConfig*);
 
         //!---------------- POST Functions --------------------------
+        bool		                supportUpload(request &req,  serverConfig *servconf);
         int			                parseLine(std::string line);
         void                        POST(int, request &req, serverConfig*);
 
@@ -63,10 +64,10 @@ class Response
         int             body_length;
         std::ifstream    _res;
         bool            _handled;
-        bool            check_location_upload;
+        std::string     check_location_upload;
 
 
-        std::string _uploadFileName;
+        std::string     _uploadFileName;
 
     
 };

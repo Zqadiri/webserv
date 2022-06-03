@@ -14,7 +14,7 @@ Response::Response(int socket)
 	this->_get_file_success_open = true;
 	this->_file_extension = "";
 	this->_s = "";
-	this->check_location_upload = false;
+	this->check_location_upload = "";
 	//response file get method
 	this->_file_change_get = "/tmp/response_file_get_";
 	this->_file_change_get += to_string(socket);
@@ -247,6 +247,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	if(IsFile(this->_s) == 2)
 	{
 		std::cout << RED << "im a folder here-------------" << RESET << std::endl;
+		std::cout << "CompletePath: " << str_req_uri << std::endl;
 		i = -1;
 		check = false;
 		while (++i < (int)ve.size()	)
@@ -254,8 +255,6 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			if(ve[i]._path == str_req_uri)
 			{
 				check = true;
-				if(ve[i]._uploadStore != "")
-					check_location_upload = true;
 				if(ve[i]._root == "")
 					str_ret += servconfig->_root + ve[i]._index;
 				else if((ve[i]._index == "" && ve[i]._autoindex == false))
@@ -290,7 +289,6 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			}
 			else
 			{
-				puts("enter auto index--------------------");
 				this->_my_auto_index = true;
 				AutoIndexExec(this->_s);
 				str_ret = "/tmp/auto_index.html";
@@ -299,6 +297,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	}
 	else if(IsFile(servconfig->_root + str_req_uri) == 1)
 	{
+		// puts("enter auto index--------------------");
 		i = -1;
 		check = false;
 		while (++i < (int)ve.size())
@@ -306,6 +305,8 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			if(ve[i]._index == str_req_uri)
 			{
 				check = true;
+				if(ve[i]._uploadStore != "")
+					check_location_upload = ve[i]._uploadStore;	
 				if(ve[i]._root == "")
 					str_ret += servconfig->_root + ve[i]._index;
 				else if((ve[i]._index == "" && ve[i]._autoindex == false))
@@ -343,7 +344,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 		str_ret += to_string(this->_status_code);
 		str_ret += ".html";
 	}
-	// std::cout << GREEN << "this is str req---------------------- " << str_req_uri << RESET << std::endl;
+	std::cout << GREEN << "this is str req---------------------- " << str_req_uri << RESET << std::endl;
 	return str_ret;
 }
 
@@ -570,19 +571,25 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 //!------------------------------------ POST ------------------------------------
 
 /*
-	get the location add check if the location support upload = if the location._uploadStore != ""
-*/
-
-bool	locationSupportUpload(request &req){
-	(void)req;
-	return true;
-}
-
-/*
 	TODO:The POST method
 	requests that the origin server accept the entity enclosed in the request as a new subordinate
 	of the resource identified by the Request-URI in the Request-Line
 */
+
+bool		Response::supportUpload(request &req,  serverConfig *servconf)
+{
+	std::vector<_location> ve = servconf->getLocations();
+	std::string uri = req.getRequestURI();
+	std::string loc = uri.substr(0, uri.find("newfile"));
+	for (std::vector<_location>::iterator it = ve.begin(); it != ve.end(); ++it)
+	{
+		if (it->_path == loc){
+			_uploadFileName = it->_uploadStore;
+			return true;
+		}
+	}
+	return false;
+}
 
 int			Response::parseLine(std::string line)
 {
@@ -590,9 +597,17 @@ int			Response::parseLine(std::string line)
 
 	if (line.compare("\r\n"))
 	{
-		if (line.find("Content-Disposition") != std::string::npos || 
+		if (line.find("Content-Disposition") != std::string::npos ||
 				line.find("Content-Type") != std::string::npos)
+		{
+			if (line.find("Content-Disposition") != std::string::npos)
+			{
+				size_t end = line.find("filename=");
+				_uploadFileName = line.substr(end + 9, line.size());
+				std::cout << "upload file name: " << _uploadFileName << std::endl;
+			}
 			return 0;
+		}
 	}
 	if (line.find("------") != std::string::npos) ///! switch to boundary
 		return 0;
@@ -603,15 +618,12 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
 	(void)fd;
 	std::string		complete_path;
-	CGI				cgi_handler(req, *servconf);
 	std::string		location;
 	std::string		filename = randomFileName();
 	std::fstream	newBody;
 
-	std::cout << GREEN << filename << RESET << std::endl;
-	complete_path = CompletePath(req, servconf);
 	newBody.open(filename.c_str(), std::fstream::in | std::fstream::app);
-	if (locationSupportUpload(req))
+	if (supportUpload(req, servconf))
 	{
 		std::fstream reqBody;
 		std::string	line;
@@ -622,13 +634,14 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 				newBody << line;
 				newBody << "\n";
 			}
-			// std::cout << "line : " <<  line << std::endl;
 		}
 		newBody.close();
 		reqBody.close();
 		std::string mv = "mv " + filename  + " ./www/upload/newfile";
 		system(mv.c_str());
 	}
+	// CGI				cgi_handler(req, *servconf);
+	complete_path = CompletePath(req, servconf);
 	// cgi_handler.executeCgi(complete_path, fd, *this);
 	// std::cout << "complete path is here--------> " << complete_path << std::endl;
 
