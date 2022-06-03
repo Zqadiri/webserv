@@ -1,4 +1,4 @@
-------WebKitFormBoundaryYrYC8HZ4laOb989h
+------WebKitFormBoundary5AnWIxB2qJBerBAu
 Content-Disposition: form-data; name="newfile"; filename="tsconfig.json"
 Content-Type: application/json
 
@@ -24,33 +24,5 @@ Content-Type: application/json
   }
 }
 
-------WebKitFormBoundaryYrYC8HZ4laOb989h--
-
-------WebKitFormBoundaryYrYC8HZ4laOb989h
-Content-Disposition: form-data; name="newfile"; filename="tsconfig.json"
-Content-Type: application/json
-
-{
-  "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2017",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
-}
-
-------WebKitFormBoundaryYrYC8HZ4laOb989h--
+------WebKitFormBoundary5AnWIxB2qJBerBAu--
 

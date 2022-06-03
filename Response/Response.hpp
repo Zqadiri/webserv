@@ -32,6 +32,7 @@ class Response
         std::vector<std::string>    getFilesInDirectory(std::string);
         void                        AutoIndexExec(std::string);
         std::string                 new_header_str(request &req, serverConfig *servconf);
+        void                        File_exec(std::string *str_ret, std::string str_req_uri, std::string my_root_find);
 
         //!---------------- DELETE Functions --------------------------
         void						getStatusString();
@@ -55,7 +56,6 @@ class Response
         std::string     _check_extension_mine;
         bool            _get_file_success_open;
         bool            _my_auto_index;
-        std::string     _s;
 
         std::string     _contentDisposition;
         std::string     _contentType;
@@ -64,12 +64,9 @@ class Response
         int             body_length;
         std::ifstream    _res;
         bool            _handled;
-        std::string     check_location_upload;
+	    static  std::string		my_root;
+        std::string       _uploadFileName;
 
-
-        std::string     _uploadFileName;
-
-    
 };
 
 #endif
