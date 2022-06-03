@@ -14,6 +14,7 @@ Response::Response(int socket)
 	this->_get_file_success_open = true;
 	this->_file_extension = "";
 	this->_s = "";
+	this->check_location_upload = false;
 	//response file get method
 	this->_file_change_get = "/tmp/response_file_get_";
 	this->_file_change_get += to_string(socket);
@@ -253,6 +254,8 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			if(ve[i]._path == str_req_uri)
 			{
 				check = true;
+				if(ve[i]._uploadStore != "")
+					check_location_upload = true;
 				if(ve[i]._root == "")
 					str_ret += servconfig->_root + ve[i]._index;
 				else if((ve[i]._index == "" && ve[i]._autoindex == false))

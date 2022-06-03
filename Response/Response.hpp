@@ -63,6 +63,7 @@ class Response
         int             body_length;
         std::ifstream    _res;
         bool            _handled;
+        bool            check_location_upload;
 
 
         std::string _uploadFileName;
