@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 16:07:46 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/02 20:52:14 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ class Config
 			public:
 				virtual const char* what() const throw();
 		};
+
 		class	FileNotWellFormated : public std::exception{
 			public:
 				virtual const char* what() const throw();

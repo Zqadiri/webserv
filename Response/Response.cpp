@@ -255,6 +255,8 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			if(ve[i]._path == str_req_uri)
 			{
 				check = true;
+				if(ve[i]._uploadStore != "")
+					check_location_upload = true;
 				if(ve[i]._root == "")
 				{
 					str_ret += servconfig->_root + ve[i]._index;
@@ -323,9 +325,9 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 std::string     			Response::ConvertHtml(std::string path)
 {
 	// convert Html errors pages to a string
-	std::fstream    myfile;
-	std::string     fill;
-	std::string     ret;
+	std::fstream	myfile;
+	std::string		fill;
+	std::string 	ret;
 
 	myfile.open(path);
 	while(myfile)
@@ -338,9 +340,7 @@ std::string     			Response::ConvertHtml(std::string path)
 	return (ret);
 }
 
-void						Response::writeResponse()
-{
-	// std::cout << "this is the status code :: " << this->_status_code << std::endl;
+void						Response::writeResponse(){
 	bool			is_error = 1;
 
 	if (this->_status_code == 204){
@@ -530,7 +530,6 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 	// str_uri = CompletePath(req, servconf);	
 	str_uri = "." + req.getRequestURI();
 
-	std::cout << "str uri is here--------> " << str_uri << std::endl;
 	std::fstream	myfile;
 
 	size_t isFile = IsFile(str_uri);
@@ -557,34 +556,69 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 //!------------------------------------ POST ------------------------------------
 
 /*
+	get the location add check if the location support upload = if the location._uploadStore != ""
+*/
+
+bool	locationSupportUpload(request &req){
+	(void)req;
+	return true;
+}
+
+/*
 	TODO:The POST method
 	requests that the origin server accept the entity enclosed in the request as a new subordinate
 	of the resource identified by the Request-URI in the Request-Line
 */
 
-void						Response::POST(int fd, request &req, serverConfig *servconf)
+int			Response::parseLine(std::string line)
 {
+	std::string key, value;
 
-	CGI				cgi_handler(req, *servconf);
-	std::string		complete_path;
-	std::fstream	myfile;
-
-	complete_path = CompletePath(req, servconf);
-	myfile.open(complete_path);
-	if(!myfile.is_open())
+	if (line.compare("\r\n"))
 	{
-		str_uri.clear();
-		this->_status_code = 404;
-		str_uri += "./Response/response_errors_pages/";
-		str_uri += to_string(this->_status_code);
-		str_uri += ".html";
+		if (line.find("Content-Disposition") != std::string::npos || 
+				line.find("Content-Type") != std::string::npos)
+		
+			return 0;
 	}
-	else
-		cgi_handler.executeCgi(complete_path, fd, *this);
-	// std::string mv = "mv " + filename + " " + "./www/upload/newfile.json";
-	// system(mv.c_str());
+	if (line.find("------") != std::string::npos) ///! switch to boundary
+		return 0;
+	return 1;
 }
 
+void						Response::POST(int fd, request &req, serverConfig *servconf)
+{
+	(void)fd;
+	std::string		complete_path;
+	CGI				cgi_handler(req, *servconf);
+	std::string		location;
+	std::fstream	newBody;
+
+	complete_path = CompletePath(req, servconf);
+	newBody.open("./tmp/temp", std::fstream::in | std::fstream::app);
+	if (locationSupportUpload(req))
+	{
+		std::fstream reqBody;
+		std::string	line;
+		reqBody.open("./tmp/body"+ to_string(fd), std::fstream::in);
+		while (reqBody)
+		{
+			std::getline(reqBody, line);
+			if (parseLine(line)){
+				newBody << line;
+				newBody << "\n";
+			}
+			std::cout << GREEN << "line : " <<  line << RESET << std::endl;
+		}
+		newBody.close();
+		reqBody.close();
+		std::string mv = "mv ./tmp/temp ./www/upload/newfile";
+		system(mv.c_str());
+	}
+	// cgi_handler.executeCgi(complete_path, fd, *this);
+	// std::cout << "complete path is here--------> " << complete_path << std::endl;
+
+}
 void						Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	Request_statuscode_checked(req, servconf);

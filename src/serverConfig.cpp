@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 15:02:01 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/02 20:59:27 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,14 @@ const char* keys[] = {
 };
 
 const char* locationKeys[] = {
-	"root", 
+	"root",
 	"alias", 
 	"allow_methods", 
 	"client_body_buffer_size", 
 	"index",
 	"cgi_pass",
-	"autoindex"
+	"autoindex",
+	"upload_store"
 };
 
 bool notAValue(std::string value){
@@ -43,7 +44,7 @@ bool notAValue(std::string value){
 }
 
 bool notAValueL(std::string value){
-	for (size_t i = 0; i < 7; i++){
+	for (size_t i = 0; i < 8; i++){
 		if (!value.compare(locationKeys[i]))
 			return true;
 	}
@@ -93,8 +94,7 @@ bool							serverConfig::getAutoIndex(void) const { return this->_autoindex; }
 
 void		checkForValue(std::string value)
 {
-	if (notAValue(value))
-	{
+	if (notAValue(value)){
 		std::cerr << RED << "every key should be followed by value!" << RESET << std::endl;
 		exit (EXIT_FAILURE);
 	}
@@ -118,6 +118,11 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 		if (!con[index].compare("root")){ 
 			index++;
 			l._root = con[index];
+			index++;
+		}
+		else if (!con[index].compare("upload_store")){
+			index++;
+			l._uploadStore = con[index];
 			index++;
 		}
 		else if (!con[index].compare("index")){ 

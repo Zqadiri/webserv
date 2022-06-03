@@ -42,6 +42,7 @@ class Response
         void                        DELETE(request &req, serverConfig*);
 
         //!---------------- POST Functions --------------------------
+        int			                parseLine(std::string line);
         void                        POST(int, request &req, serverConfig*);
 
     public: //!!!!! private

@@ -6,7 +6,7 @@
 #    By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/07 10:09:38 by zqadiri           #+#    #+#              #
-#    Updated: 2022/06/02 14:12:45 by zqadiri          ###   ########.fr        #
+#    Updated: 2022/06/03 12:12:26 by zqadiri          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,5 +46,6 @@ fclean:		clean
 			@ rm -f $(NAME)
 
 re:			fclean $(NAME)
+			@rm -rf ./tmp/*
 
 .PHONY: 	all fclean clean re
