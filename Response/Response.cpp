@@ -627,10 +627,12 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		reqBody.close();
 		std::string mv = "mv " + filename  + " ./www/upload/newfile";
 		system(mv.c_str());
+		//! 201	Created
 		return ;
 	}
 	else if (isCGI(req, servconf) && _status_code == 200)
 	{
+		//! support cgi  403 Forbidden
 		std::cout << GREEN << "------------------- CGI -----------------------" << RESET << std::endl;
 		CGI				cgi_handler(req, *servconf);
 		cgi_handler.executeCgi(complete_path, fd, *this);
