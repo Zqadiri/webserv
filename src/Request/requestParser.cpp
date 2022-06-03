@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/02 21:58:39 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/03 15:05:23 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,14 +152,10 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 
 int request::parseUnchunkedRequest(std::string filename)
 {
-	// std::ofstream _body;
-
-	std::cout  << GREEN	<< filename << RESET << std::endl;
-	// _body.open (filename,std::ofstream::out | std::ofstream::in | std::ofstream::app);
-	std::ofstream _body(filename, std::ios::binary);
+	std::cout << "Unchunked" << std::endl;
+	std::fstream _body(filename, std::fstream::in | std::fstream::out | std::fstream::app);
 	if(_body.is_open()){
 		_bodyLength += _tmp.length();
-		std::cout  << GREEN	<< _tmp << RESET << std::endl;
 		_body << _tmp.c_str();
 	}
 	else
@@ -175,6 +171,7 @@ int request::parseUnchunkedRequest(std::string filename)
 
 int request::parseChunkedRequest(std::string filename)
 {
+	std::cout << "Chunked" << std::endl;
 	size_t end;
 	std::fstream _body;
 

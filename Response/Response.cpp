@@ -589,7 +589,6 @@ int			Response::parseLine(std::string line)
 	{
 		if (line.find("Content-Disposition") != std::string::npos || 
 				line.find("Content-Type") != std::string::npos)
-		
 			return 0;
 	}
 	if (line.find("------") != std::string::npos) ///! switch to boundary
@@ -603,27 +602,28 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	std::string		complete_path;
 	CGI				cgi_handler(req, *servconf);
 	std::string		location;
+	std::string		filename = randomFileName();
 	std::fstream	newBody;
 
+	std::cout << GREEN << filename << RESET << std::endl;
 	complete_path = CompletePath(req, servconf);
-	newBody.open("./tmp/temp", std::fstream::in | std::fstream::app);
+	newBody.open(filename.c_str(), std::fstream::in | std::fstream::app);
 	if (locationSupportUpload(req))
 	{
 		std::fstream reqBody;
 		std::string	line;
 		reqBody.open("./tmp/body"+ to_string(fd), std::fstream::in);
-		while (reqBody)
-		{
+		while (reqBody){
 			std::getline(reqBody, line);
 			if (parseLine(line)){
 				newBody << line;
 				newBody << "\n";
 			}
-			std::cout << GREEN << "line : " <<  line << RESET << std::endl;
+			// std::cout << "line : " <<  line << std::endl;
 		}
 		newBody.close();
 		reqBody.close();
-		std::string mv = "mv ./tmp/temp ./www/upload/newfile";
+		std::string mv = "mv " + filename  + " ./www/upload/newfile";
 		system(mv.c_str());
 	}
 	// cgi_handler.executeCgi(complete_path, fd, *this);

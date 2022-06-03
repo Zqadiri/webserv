@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/02 20:57:02 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/03 14:49:51 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,6 @@ configFile		Config::slitTokens(configFile con, std::string delim)
 				break;
 			std::string token = removeSpace(str.substr(start, end - start));
 			if (isKey && !exepectedTokens(token)){
-				std::cout << GREEN << token  << exepectedTokens(token) << RESET << std::endl;
 				throw Config::FileNotWellFormated();
 			}
 			isKey = 0;

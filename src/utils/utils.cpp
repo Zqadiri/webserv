@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 14:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/30 17:43:37 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/03 14:42:30 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,15 @@ std::string			getNextLine(const std::string &buff, size_t &cursor)
 		i++;
 	cursor = i;
 	return ret;
+}
+
+std::string		randomFileName(void)
+{
+	std::string fileName("./tmp/");
+	time_t t = time(0);
+	struct tm *now = localtime(&t);
+	char buffer[80];
+	strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", now);
+	fileName += buffer;
+	return fileName;
 }

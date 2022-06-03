@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/03 12:10:38 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/03 15:13:48 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,17 +91,6 @@ void deleteArray(char **env)
 	main function for executing the php script
 */
 
-std::string		randomFileName(void)
-{
-	std::string fileName("./tmp/");
-	time_t t = time(0);
-	struct tm *now = localtime(&t);
-	char buffer[80];
-	strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", now);
-	fileName += buffer;
-	return fileName;
-}
-
 std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Response &response)
 {
 	std::fstream fileIn;
@@ -171,6 +160,8 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 		dup2(savedIn, STDIN_FILENO);
 		dup2(savedOut, STDOUT_FILENO);
 	}
+	fileIn.close();
+	fileOut.close();
 	close(fdIn);
 	close(fdOut);
 	close(savedIn);
