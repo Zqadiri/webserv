@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/03 17:49:05 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 18:50:03 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,14 +99,14 @@ int server::rec(int &socket, request& req)
 		std::cout << "Client disconnected" << std::endl;
 		return (-1);
 	}
-	buff[ret] = '\0';
+	// buff[ret] = '\0';
 	std::string str(buff, ret);
+	std::cout << YELLOW <<  str << RESET << std::endl;
 	int ret_parse = req.parseRquest(str, req, socket);
-	std::cout << YELLOW <<  buff << RESET << std::endl;
-	// std::cout << "{ret} " <<  ret_parse << std::endl;
-	if (ret_parse < -1){ //! return -1 if the content length header is absent
+	std::cout << "{ret} " <<  ret_parse << std::endl;
+	if (ret_parse < -1){
 		std::cout << "BAD REQUEST" << std::endl;
-		return -1;
+		exit(1);
 	}
 	return (ret_parse);
 }
@@ -295,11 +295,11 @@ int server::sen(int &socket, request& req, Response &response)
 		over = true;
 	}
 	
-	std::cout << YELLOW << ">" << buff << "<" << RESET << std::endl;
+	// std::cout << YELLOW << ">" << buff << "<" << RESET << std::endl;
 
-	std::cout << "*********** "  << socket <<  " "<< size << std::endl;
+	// std::cout << "*********** "  << socket <<  " "<< size << std::endl;
 	ret = send(socket, buff, size, 0);
-	std::cout << "***********" << std::endl;
+	// std::cout << "***********" << std::endl;
 
 	if (ret == -1){
 		std::cout << "send() failed !!!!" << std::endl;

@@ -564,12 +564,18 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 bool						Response::supportUpload(request &req,  serverConfig *servconf)
 {
 	std::vector<_location> ve = servconf->getLocations();
+	bool	new_file = false;
 	std::string uri = req.getRequestURI();
-	std::string loc = uri.substr(0, uri.find("newfile"));
-	std::cout << "loc is " << loc << std::endl;
+	size_t end = uri.find("newfile");
+	std::string loc = uri.substr(0, end);
+	if (end == std::string::npos)
+		new_file = true;
 	for (std::vector<_location>::iterator it = ve.begin(); it != ve.end(); ++it){
-		std::string path = it->_path += "/";
+		std::string path = it->_path;
+		if (!new_file)
+			path += "/";
 		if (path == loc){
+			std::cout << "loc is " << loc << std::endl;
 			_uploadFileName = it->_uploadStore;
 			return true;
 		}
@@ -644,28 +650,29 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		}
 		newBody.close();
 		reqBody.close();
-		std::string mv = "mv " + filename  + " ./www/upload/newfile";
-		system(mv.c_str());
+		std::string mv = "mv " + filename  + " ./www/upload/file2.jpg";
+		if (system(mv.c_str())){
+			std::cout << "error" << std::endl;
+		}
 		
 		//header start
-		header += "HTTP1.1 ";
-		header += "201 OK";
+		header += CREATED;
 
 		time(&rawtime);
 		header += "Date: ";
 		header += std::string(ctime(&rawtime));
 
 		header += "Server: ";
-		header += "Myserver\r\n";
+		header += "Myserver";
 
-		header +=  "Content-Type: ";
-		content_type = Content_type();
-		header +=  content_type;
-		header +=  "\r\n";
+		// header +=  "Content-Type: ";
+		// content_type = Content_type();
+		// header +=  content_type;
+		// header +=  "\r\n";
 
-		body_length = File_length(str_uri);
-		header += "Content-Length: ";
-		header += to_string(body_length);
+		// body_length = File_length(str_uri);
+		// header += "Content-Length: ";
+		// header += to_string(body_length);
 		header += "\r\n\r\n";
 		//! 201	Created
 		return ;

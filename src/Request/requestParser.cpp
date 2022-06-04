@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/03 15:05:23 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 19:06:26 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,15 +129,18 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 		req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length()));
 		buff.clear();
 		if (_headers["Transfer-Encoding"].compare("chunked")){
+			std::cout << GREEN  <<"Chunked"<< RESET << std::endl;
 			_status = BODY;
 		}
 		else if (!_headers["Transfer-Encoding"].compare("chunked")){
+			std::cout << GREEN  <<"Unchunked" << RESET << std::endl;
 			_status = CHUNKS;
 			_chunkStatus = SIZE_LINE;
 		}
 	}
 	if (_status == BODY){
-		this->_tmp += buff;
+		// this->_tmp += buff;
+		this->_tmp.append(buff);
 		parseUnchunkedRequest(filename);
 	}
 	if (_status == CHUNKS){
@@ -145,6 +148,7 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 		parseChunkedRequest(filename);
 	}
 	if (_status == COMPLETE){
+		std::cout << "COMPLETE "  << _bodyLength << std::endl;
 		return 0;
 	}
 	return 1;
@@ -152,15 +156,15 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 
 int request::parseUnchunkedRequest(std::string filename)
 {
-	std::cout << "Unchunked" << std::endl;
 	std::fstream _body(filename, std::fstream::in | std::fstream::out | std::fstream::app);
 	if(_body.is_open()){
 		_bodyLength += _tmp.length();
-		_body << _tmp.c_str();
+		_body << _tmp;
 	}
 	else
 		InternalServerError();
 	_tmp.clear();
+	std::cout << "lenght is " << _bodyLength << " and check with " << stoi(_headers["Content-Length"]) << std::endl;
 	if (_headers["Content-Length"].compare("") && _bodyLength >= stoi(_headers["Content-Length"])){
 		_body << "\n";
 		_body.close();
@@ -171,7 +175,6 @@ int request::parseUnchunkedRequest(std::string filename)
 
 int request::parseChunkedRequest(std::string filename)
 {
-	std::cout << "Chunked" << std::endl;
 	size_t end;
 	std::fstream _body;
 
