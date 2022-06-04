@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 21:42:44 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 22:02:32 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,8 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 	this->_root = obj._root;
 	this->_index = obj._index;
 	this->_hostPort = obj._hostPort;
-	this->_error_pages = obj._error_pages;
+	this->_errorPages.code = obj._errorPages.code;
+	this->_errorPages.path = obj._errorPages.path;
 	this->_allow_methods = obj._allow_methods;
 	this->_locations = obj._locations;
 	return *this;
@@ -84,7 +85,7 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 /*---- Accessors ----*/
 
 const std::list<std::string>	&serverConfig::getAllowMethods(void) const{ return this->_allow_methods; }
-const std::list<std::string>	&serverConfig::getErrorsPages(void) const{ return this->_error_pages; }
+const t_error_pages				&serverConfig::getErrorsPages(void) const{ return this->_errorPages; }
 const t_listen				 	&serverConfig::gethostPort(void) const{ return this->_hostPort; }
 int								serverConfig::getlimitBodySize(void) const {return this->_limitBodySize; }
 const std::list<std::string>	&serverConfig::getServerName(void) const { return this->_server_name;}
@@ -274,10 +275,8 @@ unsigned int	serverConfig::limitBodySize(serverConfig &serv, configFile con, uns
 unsigned int	serverConfig::errorPages(serverConfig &serv, configFile con, unsigned int &index){
 	index++;
 	checkForValue(con[index]);
-	while (!notAValue(con[index])){
-		serv._error_pages.push_back(con[index]);
-		index++;
-	}
+	serv._errorPages.code = stoi(con[index++]);
+	serv._errorPages.path = con[index];
 	index--;
 	return index;
 }

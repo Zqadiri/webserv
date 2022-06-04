@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 21:43:20 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 22:04:48 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,9 +252,8 @@ void	Config::print(){
 		puts("[autoindex]");
 		std::cout << this->servers[i]->_autoindex << std::endl;
 		puts("[errorPages]");
-		for (std::list<std::string>::iterator it = this->servers[i]->_error_pages.begin(); 
-				it != this->servers[i]->_error_pages.end(); ++it)
-			std::cout << " > " << *it << std::endl;
+		std::cout << this->servers[i]->_errorPages.code << std::endl;
+		std::cout << this->servers[i]->_errorPages.path << std::endl;
 		puts("[allow_methods]");
 		for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
 				it != this->servers[i]->_allow_methods.end(); ++it)

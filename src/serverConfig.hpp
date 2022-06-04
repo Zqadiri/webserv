@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 21:02:56 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 22:02:54 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ class serverConfig
 		t_listen					_hostPort;
 		bool						_autoindex;
 		int							_limitBodySize;
-		std::list<std::string>		_error_pages;
+		t_error_pages				_errorPages;
 		std::list<std::string>		_allow_methods;
 		std::vector<_location>		_locations; // vector of locations
 		  
@@ -55,7 +55,7 @@ class serverConfig
 		const t_listen				 	&gethostPort(void) const;
 		const std::list<std::string>	&getServerName(void) const;
 		const std::vector<_location>	&getLocations(void) const;
-		const std::list<std::string> 	&getErrorsPages(void) const;
+		const t_error_pages 			&getErrorsPages(void) const;
 		int								getlimitBodySize(void) const;
 		bool							getAutoIndex(void) const;
 		const std::list<std::string> 	&getAllowMethods(void) const;

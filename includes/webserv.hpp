@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 21:16:30 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 21:55:03 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,11 @@ typedef struct s_redirect{
 	int				code;
 	std::string		path;
 }	t_redirect;
+
+typedef struct _error_pages{
+	int				code;
+	std::string		path;
+}	t_error_pages;
 
 //* Request
 enum ParseStatus {
