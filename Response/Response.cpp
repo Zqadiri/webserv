@@ -278,6 +278,14 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 				{
 					if(str_req_uri.find(".") != std::string::npos)
 						File_exec(&str_ret, str_req_uri, ve[i]._root);
+					else if(IsFile(str_ret + str_req_uri) == 0)
+					{
+						this->_status_code = 404;
+						str_ret = "";
+						str_ret += "./Response/response_errors_pages/";
+						str_ret += to_string(this->_status_code);
+						str_ret += ".html";
+					}
 					else
 					{
 						AutoIndexExec(str_ret);
@@ -312,10 +320,20 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 				}
 				else
 				{
-					puts("heree----------------------");
-					std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
-					AutoIndexExec(str_ret + str_req_uri);
-					str_ret = "/tmp/auto_index.html";
+					if(IsFile(str_ret + str_req_uri) == 0)
+					{
+						this->_status_code = 404;
+						str_ret = "";
+						str_ret += "./Response/response_errors_pages/";
+						str_ret += to_string(this->_status_code);
+						str_ret += ".html";
+					}
+					else
+					{
+						std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
+						AutoIndexExec(str_ret + str_req_uri);
+						str_ret = "/tmp/auto_index.html";
+					}
 				}
 			}
 		}
@@ -432,7 +450,6 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	myfile.open(str_uri);
 	if(!myfile.is_open())
 	{
-		std::cout << GREEN << "my root is here--------" << my_root << RESET << std::endl;
 		if(_check_auto_index)
 		{
 			str_uri = "/tmp/auto_index.html";
