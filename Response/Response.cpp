@@ -22,6 +22,7 @@ Response::Response(int socket)
 	this->_file_change_delete = "/tmp/response_file_delete_";
 	this->_file_change_delete += to_string(socket);
 	this->_my_auto_index = false;
+	this->_check_auto_index = false;
 	this->header = "";
 	this->body_length = 0;
 	this->str_uri = "";
@@ -255,6 +256,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			if(ve[i]._path == str_req_uri)
 			{
 				check = true;
+				_check_auto_index = ve[i]._autoindex;
 				if(ve[i]._root == "")
 				{
 					str_ret += servconfig->_root + ve[i]._index;
@@ -286,6 +288,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 		}
 		if(check == false)
 		{
+			_check_auto_index = servconfig->_autoindex;
 			if(servconfig->_autoindex == false && servconfig->_index == "")
 			{
 				this->_status_code = 403;
@@ -429,23 +432,22 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	myfile.open(str_uri);
 	if(!myfile.is_open())
 	{
-		std::cout << GREEN << "str check is here--------" << servconf->_root + req.getRequestURI() << RESET << std::endl;
-		another_file.open(servconf->_root + req.getRequestURI());
-		if(another_file.is_open())
-			str_uri = servconf->_root + req.getRequestURI();
+		std::cout << GREEN << "my root is here--------" << my_root << RESET << std::endl;
+		if(_check_auto_index)
+		{
+			str_uri = "/tmp/auto_index.html";
+			AutoIndexExec(my_root);
+		}
 		else
 		{
+			this->_status_code = 403;
 			str_uri = "";
-			this->_status_code = 404;
 			str_uri += "./Response/response_errors_pages/";
 			str_uri += to_string(this->_status_code);
 			str_uri += ".html";
 		}
-
 	}
-	std::cout << GREEN << "str uri is here--------" << str_uri << RESET << std::endl;
 	myfile.close();
-	another_file.close();
 	if(!isCGI(req, servconf))
 	{
 		getStatusString();

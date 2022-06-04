@@ -57,6 +57,7 @@ class Response
         std::string             _check_extension_mine;
         bool                    _get_file_success_open;
         bool                    _my_auto_index;
+        bool                    _check_auto_index;
 
         std::string             _contentDisposition;
         std::string             _contentType;
