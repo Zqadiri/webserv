@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/02 14:09:31 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 21:16:30 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,11 @@ typedef struct s_listen{
 	unsigned int	host;
 	int				port;
 }   t_listen;
+
+typedef struct s_redirect{
+	int				code;
+	std::string		path;
+}	t_redirect;
 
 //* Request
 enum ParseStatus {

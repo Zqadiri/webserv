@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/03 15:13:48 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 21:19:53 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	return addHeader(socket_fd, output, response);
 }
 
-std::string CGI::addHeader(int socket_fd, std::string output, Response &response) //! error handling
+std::string CGI::addHeader(int socket_fd, std::string output, Response &response)
 {
 	(void)socket_fd;
 	time_t 			rawtime;

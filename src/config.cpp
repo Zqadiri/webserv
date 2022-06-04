@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/03 14:49:51 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 21:43:20 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,8 @@ bool exepectedTokens(std::string value)
 {
 	const char* exepectedTokens[] = {"root", "alias", "allow_methods", 
 	"client_body_buffer_size","cgi_pass", "server_names", "listen", 
-	"location", "index", "error_pages", "server", "{", "}", "autoindex", "upload_store"};
-	for (size_t i = 0; i < 15; i++){
+	"location", "index", "error_pages", "server", "{", "}", "autoindex", "upload_store", "return"};
+	for (size_t i = 0; i < 16; i++){
 		if (!value.compare(exepectedTokens[i]))
 			return true;
 	}
@@ -100,6 +100,8 @@ configFile		Config::slitTokens(configFile con, std::string delim)
 				break;
 			std::string token = removeSpace(str.substr(start, end - start));
 			if (isKey && !exepectedTokens(token)){
+				puts("here");
+				std::cout << "Error: " << token << " is not a valid token" << std::endl;
 				throw Config::FileNotWellFormated();
 			}
 			isKey = 0;
@@ -264,6 +266,8 @@ void	Config::print(){
 			std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
 			std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
 			std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
+			std::cout << "redirect " << this->servers[i]->_locations[j]._redirect.code << std::endl;
+			std::cout << "redirect path " << this->servers[i]->_locations[j]._redirect.path << std::endl;
 			std::cout << "uploadStore " << this->servers[i]->_locations[j]._uploadStore << std::endl;
 			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
 			std::cout << "autoindex " << this->servers[i]->_locations[j]._autoindex << std::endl;

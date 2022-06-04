@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/02 20:59:27 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 21:42:44 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ const char* locationKeys[] = {
 	"index",
 	"cgi_pass",
 	"autoindex",
-	"upload_store"
+	"upload_store",
+	"return"
 };
 
 bool notAValue(std::string value){
@@ -44,7 +45,7 @@ bool notAValue(std::string value){
 }
 
 bool notAValueL(std::string value){
-	for (size_t i = 0; i < 8; i++){
+	for (size_t i = 0; i < 9; i++){
 		if (!value.compare(locationKeys[i]))
 			return true;
 	}
@@ -125,6 +126,13 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 			l._uploadStore = con[index];
 			index++;
 		}
+		else if (!con[index].compare("return")){
+			index++;
+			l._redirect.code = stoi(con[index]);
+			index++;
+			l._redirect.path = con[index];
+			index++;
+		}
 		else if (!con[index].compare("index")){ 
 			index++;
 			l._index = con[index];
@@ -180,6 +188,8 @@ unsigned int	serverConfig::parseLocation(serverConfig &serv, configFile con, uns
 	l._path = con[index++];
 	l._alias = false;
 	l._limitBodySize = -1;
+	l._redirect.code = 0;
+	l._redirect.path = "";
 	if (!con[index++].compare("{"))
 		index = location(l, con, index);
 	else

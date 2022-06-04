@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/02 20:48:24 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 21:02:56 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,10 @@ struct _location
 	std::string				_pathCGI;
 	bool					_autoindex;
 	std::string				_uploadStore;
+	t_redirect				_redirect;
 };
+
+//return STATUS_CODE PATH_TO_REDIRECT
 
 class serverConfig
 {
