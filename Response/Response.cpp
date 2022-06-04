@@ -559,7 +559,7 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 	of the resource identified by the Request-URI in the Request-Line
 */
 
-bool		Response::supportUpload(request &req,  serverConfig *servconf)
+bool						Response::supportUpload(request &req,  serverConfig *servconf)
 {
 	std::vector<_location> ve = servconf->getLocations();
 	std::string uri = req.getRequestURI();
@@ -575,7 +575,22 @@ bool		Response::supportUpload(request &req,  serverConfig *servconf)
 	return false;
 }
 
-int			Response::parseLine(std::string line)
+bool						Response::supportCGI(request &req, serverConfig *servconf)
+{
+	std::vector<_location> ve = servconf->getLocations();
+	std::string uri = req.getRequestURI();
+	std::string loc = uri.substr(0, uri.find("newfile"));
+	std::cout << "loc is " << loc << std::endl;
+	for (std::vector<_location>::iterator it = ve.begin(); it != ve.end(); ++it){
+		std::string path = it->_path += "/";
+		if (path == loc){
+			return true;
+		}
+	}
+	return false;
+}
+
+int							Response::parseLine(std::string line)
 {
 	std::string key, value;
 
@@ -605,6 +620,8 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	std::string		location;
 	std::string		filename = randomFileName();
 	std::fstream	newBody;
+	time_t          rawtime;
+	std::string		content_type;
 
 	complete_path = CompletePath(req, servconf);
 	newBody.open(filename.c_str(), std::fstream::in | std::fstream::app);
@@ -627,15 +644,46 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		reqBody.close();
 		std::string mv = "mv " + filename  + " ./www/upload/newfile";
 		system(mv.c_str());
+		
+		//header start
+		header += "HTTP1.1 ";
+		header += "201 OK";
+
+		time(&rawtime);
+		header += "Date: ";
+		header += std::string(ctime(&rawtime));
+
+		header += "Server: ";
+		header += "Myserver\r\n";
+
+		header +=  "Content-Type: ";
+		content_type = Content_type();
+		header +=  content_type;
+		header +=  "\r\n";
+
+		body_length = File_length(str_uri);
+		header += "Content-Length: ";
+		header += to_string(body_length);
+		header += "\r\n\r\n";
 		//! 201	Created
 		return ;
 	}
-	else if (isCGI(req, servconf) && _status_code == 200)
+	else if (isCGI(req, servconf) && _status_code == 201)
 	{
 		//! support cgi  403 Forbidden
-		std::cout << GREEN << "------------------- CGI -----------------------" << RESET << std::endl;
-		CGI				cgi_handler(req, *servconf);
-		cgi_handler.executeCgi(complete_path, fd, *this);
+		if(supportCGI(req, servconf))
+		{
+			this->_status_code = 403;
+			str_uri += "./Response/response_errors_pages/";
+			str_uri += to_string(this->_status_code);
+			str_uri += ".html";
+		}
+		else
+		{
+			std::cout << GREEN << "------------------- CGI -----------------------" << RESET << std::endl;
+			CGI				cgi_handler(req, *servconf);
+			cgi_handler.executeCgi(complete_path, fd, *this);
+		}
 	}
 	else
 	{
@@ -647,6 +695,7 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	}
 
 }
+
 void						Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	Request_statuscode_checked(req, servconf);

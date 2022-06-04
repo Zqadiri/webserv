@@ -43,30 +43,30 @@ class Response
 
         //!---------------- POST Functions --------------------------
         bool		                supportUpload(request &req,  serverConfig *servconf);
+        bool                        supportCGI(request &req, serverConfig *servconf);
         int			                parseLine(std::string line);
         void                        POST(int, request &req, serverConfig*);
 
     public: //!!!!! private
-        std::string     _response_string;
-        int             _status_code;
-        std::string     _pages_to_string;
-        std::string     _file_change_get;
-        std::string     _file_change_delete;
-        std::string     _file_extension;
-        std::string     _check_extension_mine;
-        bool            _get_file_success_open;
-        bool            _my_auto_index;
+        std::string             _response_string;
+        int                     _status_code;
+        std::string             _pages_to_string;
+        std::string             _file_change_get;
+        std::string             _file_change_delete;
+        std::string             _file_extension;
+        std::string             _check_extension_mine;
+        bool                    _get_file_success_open;
+        bool                    _my_auto_index;
 
-        std::string     _contentDisposition;
-        std::string     _contentType;
-        std::string     header;
-        std::string		str_uri;
-        int             body_length;
-        std::ifstream    _res;
-        bool            _handled;
-	    static  std::string		my_root;
-        std::string       _uploadFileName;
-
+        std::string             _contentDisposition;
+        std::string             _contentType;
+        std::string             header;
+        std::string		        str_uri;
+        int                     body_length;
+        std::ifstream           _res;
+        bool                    _handled;
+	    static std::string		my_root;
+        std::string             _uploadFileName;
 };
 
 #endif
