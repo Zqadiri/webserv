@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 22:02:54 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 22:30:00 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ struct _location
 	std::string				_pathCGI;
 	bool					_autoindex;
 	std::string				_uploadStore;
-	t_redirect				_redirect;
 };
 
 //return STATUS_CODE PATH_TO_REDIRECT
@@ -44,6 +43,7 @@ class serverConfig
 		t_error_pages				_errorPages;
 		std::list<std::string>		_allow_methods;
 		std::vector<_location>		_locations; // vector of locations
+		t_redirect					_redirect;
 		  
 	public:
 		serverConfig();
@@ -67,6 +67,7 @@ class serverConfig
 		unsigned int	root(serverConfig &, configFile, unsigned int&);
 		unsigned int	index(serverConfig &, configFile, unsigned int&);
 		unsigned int	errorPages(serverConfig &, configFile, unsigned int&);
+		unsigned int	redirect(serverConfig &, configFile, unsigned int&);
 		unsigned int	autoIndex(serverConfig &, configFile, unsigned int&);
 		unsigned int	cgiPass(serverConfig &, configFile, unsigned int&);
 

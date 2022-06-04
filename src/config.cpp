@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 22:04:48 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 22:36:41 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,13 +210,13 @@ void				Config::checkForDup(void){
 size_t		Config::parseServer(configFile con, unsigned int &index){
 	serverConfig *server = new serverConfig();
 	bool isLocation = 0;
-	Ptr values[9] = {&serverConfig::serverName, &serverConfig::root,
+	Ptr values[10] = {&serverConfig::serverName, &serverConfig::root,
 	&serverConfig::listen, &serverConfig::parseLocation, &serverConfig::allowMethods,
-	&serverConfig::index, &serverConfig::errorPages, &serverConfig::autoIndex, &serverConfig::limitBodySize};
+	&serverConfig::index, &serverConfig::errorPages, &serverConfig::autoIndex, &serverConfig::limitBodySize,  &serverConfig::redirect};
 	while (true)
 	{
 		index++;
-		for (size_t i = 0; i < 9; i++)
+		for (size_t i = 0; i < 10; i++)
 		{
 			if (i == 3)
 				isLocation = 1;
@@ -254,6 +254,8 @@ void	Config::print(){
 		puts("[errorPages]");
 		std::cout << this->servers[i]->_errorPages.code << std::endl;
 		std::cout << this->servers[i]->_errorPages.path << std::endl;
+		std::cout << "redirect " << this->servers[i]->_redirect.code << std::endl;
+		std::cout << "redirect path " << this->servers[i]->_redirect.path << std::endl;
 		puts("[allow_methods]");
 		for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
 				it != this->servers[i]->_allow_methods.end(); ++it)
@@ -265,8 +267,6 @@ void	Config::print(){
 			std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
 			std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
 			std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
-			std::cout << "redirect " << this->servers[i]->_locations[j]._redirect.code << std::endl;
-			std::cout << "redirect path " << this->servers[i]->_locations[j]._redirect.path << std::endl;
 			std::cout << "uploadStore " << this->servers[i]->_locations[j]._uploadStore << std::endl;
 			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
 			std::cout << "autoindex " << this->servers[i]->_locations[j]._autoindex << std::endl;

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 22:02:32 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/04 22:35:17 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ const char* keys[] = {
 	"index", 
 	"error_pages",
 	"autoindex",
-	"client_body_buffer_size"
+	"client_body_buffer_size",
+	"return"
 };
 
 const char* locationKeys[] = {
@@ -32,12 +33,11 @@ const char* locationKeys[] = {
 	"index",
 	"cgi_pass",
 	"autoindex",
-	"upload_store",
-	"return"
+	"upload_store"
 };
 
 bool notAValue(std::string value){
-	for (size_t i = 0; i < 9; i++){
+	for (size_t i = 0; i < 10; i++){
 		if (!value.compare(keys[i]))
 			return true;
 	}
@@ -45,7 +45,7 @@ bool notAValue(std::string value){
 }
 
 bool notAValueL(std::string value){
-	for (size_t i = 0; i < 9; i++){
+	for (size_t i = 0; i < 8; i++){
 		if (!value.compare(locationKeys[i]))
 			return true;
 	}
@@ -56,6 +56,8 @@ bool notAValueL(std::string value){
 
 serverConfig::serverConfig() : _root(""), _index(""), _hostPort(t_listen()){
 	_hostPort.host = 0;
+	_redirect.code = 0;
+	_redirect.path = "";
 	_autoindex = false;
 	_hostPort.port = -1;
 	_limitBodySize = -1;
@@ -127,13 +129,6 @@ unsigned int	serverConfig::location(_location &l, configFile con, unsigned int &
 			l._uploadStore = con[index];
 			index++;
 		}
-		else if (!con[index].compare("return")){
-			index++;
-			l._redirect.code = stoi(con[index]);
-			index++;
-			l._redirect.path = con[index];
-			index++;
-		}
 		else if (!con[index].compare("index")){ 
 			index++;
 			l._index = con[index];
@@ -188,9 +183,6 @@ unsigned int	serverConfig::parseLocation(serverConfig &serv, configFile con, uns
 	_location l;
 	l._path = con[index++];
 	l._alias = false;
-	l._limitBodySize = -1;
-	l._redirect.code = 0;
-	l._redirect.path = "";
 	if (!con[index++].compare("{"))
 		index = location(l, con, index);
 	else
@@ -257,6 +249,15 @@ unsigned int	serverConfig::index(serverConfig &serv, configFile con, unsigned in
 	index++;
 	checkForValue(con[index]);
 	serv._index = con[index];
+	return index;
+}
+
+unsigned int	serverConfig::redirect(serverConfig &serv, configFile con, unsigned int &index){
+	index++;
+	serv._redirect.code = stoi(con[index]);
+	index++;
+	serv._redirect.path = con[index];
+	index++;
 	return index;
 }
 
