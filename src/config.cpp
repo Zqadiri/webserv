@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 22:36:41 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/05 12:48:13 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ void					Config::parseFile(const char *fileName)
 		else
 			throw	Config::FileNotWellFormated();
 	}
-	// print();
+	print();
 	checkForDup();
 }
 
@@ -222,8 +222,10 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 				isLocation = 1;
 			if (index >= con.size())
 				break;
-			if (con[index] == keys[i])
+			if (con[index] == keys[i]){
+				std::cout << "found " << con[index] << std::endl;
 				index = (server->*values[i])(*server, con, index);
+			}
 		}
 		if (index >= con.size() || (con[index] == "}" && !isLocation) || !con[index].compare("server"))
 			break;

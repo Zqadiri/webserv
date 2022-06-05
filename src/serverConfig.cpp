@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 22:35:17 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/05 12:53:54 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,7 +257,6 @@ unsigned int	serverConfig::redirect(serverConfig &serv, configFile con, unsigned
 	serv._redirect.code = stoi(con[index]);
 	index++;
 	serv._redirect.path = con[index];
-	index++;
 	return index;
 }
 
