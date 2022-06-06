@@ -273,6 +273,11 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 				{
 					my_root = ve[i]._root;
 					str_ret += ve[i]._root + ve[i]._index;
+					if(servconfig->_redirect.path != "")
+					{
+						this->_status_code = servconfig->_redirect.code;
+						str_ret = ve[i]._root + servconfig->_redirect.path;
+					}
 				}
 				if(ve[i]._autoindex == true && ve[i]._index == "")
 				{
@@ -304,6 +309,12 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 				str_ret += to_string(this->_status_code);
 				str_ret += ".html";
 			}
+			else if(servconfig->_redirect.path != "")
+			{
+				str_ret = "";
+				this->_status_code = servconfig->_redirect.code;
+				str_ret = servconfig->_root + servconfig->_redirect.path;
+			}
 			else
 			{
 				str_ret += servconfig->_root;
@@ -311,7 +322,6 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			}
 			if(servconfig->_autoindex == true && (servconfig->_index == "" || IsFile(servconfig->_root + servconfig->_index) == 0))
 			{
-				puts("hhhhhhhhhhhhhhhh");
 				if(str_req_uri.find(".") != std::string::npos)
 				{
 					if(my_root != "")
@@ -321,22 +331,11 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 				}
 				else
 				{
-					// if(IsFile(str_ret + str_req_uri) == 0)
-					// {
-					// 	this->_status_code = 404;
-					// 	str_ret = "";
-					// 	str_ret += "./Response/response_errors_pages/";
-					// 	str_ret += to_string(this->_status_code);
-					// 	str_ret += ".html";
-					// }
-					// else
-					// {
-						str_ret = "";
-						str_ret += servconfig->_root ; 
-						std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
-						AutoIndexExec(str_ret + str_req_uri);
-						str_ret = "/tmp/auto_index.html";
-					// }
+					str_ret = "";
+					str_ret += servconfig->_root ; 
+					std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
+					AutoIndexExec(str_ret + str_req_uri);
+					str_ret = "/tmp/auto_index.html";
 				}
 			}
 		}
@@ -468,6 +467,19 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		}
 	}
 	myfile.close();
+	if(servconf->_errorPages.code == this->_status_code)
+	{
+		str_uri = servconf->_errorPages.path;
+		myfile.open(str_uri);
+		if(!myfile.is_open())
+		{
+			this->_status_code = 403;
+			str_uri = "";
+			str_uri += "./Response/response_errors_pages/";
+			str_uri += to_string(this->_status_code);
+			str_uri += ".html";
+		}
+	}
 	if(!isCGI(req, servconf))
 	{
 		getStatusString();
