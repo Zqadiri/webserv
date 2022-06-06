@@ -309,8 +309,9 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 				str_ret += servconfig->_root;
 				str_ret += servconfig->_index;
 			}
-			if(servconfig->_autoindex == true && servconfig->_index == "")
+			if(servconfig->_autoindex == true && (servconfig->_index == "" || IsFile(servconfig->_root + servconfig->_index) == 0))
 			{
+				puts("hhhhhhhhhhhhhhhh");
 				if(str_req_uri.find(".") != std::string::npos)
 				{
 					if(my_root != "")
@@ -320,20 +321,22 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 				}
 				else
 				{
-					if(IsFile(str_ret + str_req_uri) == 0)
-					{
-						this->_status_code = 404;
+					// if(IsFile(str_ret + str_req_uri) == 0)
+					// {
+					// 	this->_status_code = 404;
+					// 	str_ret = "";
+					// 	str_ret += "./Response/response_errors_pages/";
+					// 	str_ret += to_string(this->_status_code);
+					// 	str_ret += ".html";
+					// }
+					// else
+					// {
 						str_ret = "";
-						str_ret += "./Response/response_errors_pages/";
-						str_ret += to_string(this->_status_code);
-						str_ret += ".html";
-					}
-					else
-					{
+						str_ret += servconfig->_root ; 
 						std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
 						AutoIndexExec(str_ret + str_req_uri);
 						str_ret = "/tmp/auto_index.html";
-					}
+					// }
 				}
 			}
 		}
