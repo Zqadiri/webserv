@@ -534,7 +534,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 				str_uri = "/tmp/auto_index.html";
 				AutoIndexExec(my_root);
 			}
-			else if(IsFile(my_root + servconf->getRedirectPath()) == 0)
+			else if(IsFile(my_root + servconf->getRedirectPath()) == 0 && servconf->getRedirectPath() != "")
 				Errors_write(404, &str_uri);
 			else
 				Errors_write(403, &str_uri);
