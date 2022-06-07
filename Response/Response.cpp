@@ -486,6 +486,22 @@ bool						Response::Allow_Methods(request &req, serverConfig *servconf, std::str
 	return false;
 }
 
+int                         Response::get_body_length(){return body_length;}
+
+std::string                 Response::get_header(){return header;}
+
+std::string		            Response::get_str_uri(){return str_uri;}
+
+bool                        Response::get_handled(){return _handled;}
+
+std::string                 Response::get_file_change_get(){return _file_change_get;}
+
+int							Response::get_status_code(){return _status_code;}
+
+void                       	Response::set_body_length(int value){this->body_length = value;}
+
+void                        Response::set_status_code(int value){this->_status_code = value;}
+
 //!------------------------------------ GET ------------------------------------
 
 void						Response::Errors_write(int status, std::string *str_uri)
@@ -740,8 +756,7 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	complete_path = CompletePath(req, servconf);
 	newBody.open(filename.c_str(), std::fstream::in | std::fstream::app);
 	File_type(req);
-	std::cout << "POST: " << _status_code  << supportUpload(req, servconf) << std::endl;
-	if (supportUpload(req, servconf) && _status_code == 200)
+	if (supportUpload(req, servconf))
 	{
 		std::cout << "---------------------------------------------upload file" << std::endl;
 		std::fstream reqBody;
@@ -803,8 +818,7 @@ void						Response::Return_string(request &req, serverConfig *servconf, int fd)
 	_handled = true;
 }
 
-Response::~Response()
-{
+Response::~Response(){
 	if(this->_my_auto_index == true)
 		remove("/tmp/auto_index.html");
 }

@@ -125,16 +125,16 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	savedIn = dup(STDIN_FILENO);
 	savedOut = dup(STDOUT_FILENO);
 
-	response._file_change_get = randomFileName();
+	response.get_file_change_get() = randomFileName();
 	int fdIn = open(randomFileName().c_str(), O_RDWR | O_CREAT, 0666);
-	int fdOut = open(response._file_change_get.c_str(),  O_RDWR | O_CREAT, 0666);
+	int fdOut = open(response.get_file_change_get().c_str(),  O_RDWR | O_CREAT, 0666);
 
 	if (this->_env["REQUEST_METHOD"] == "POST")
 	{
 		_body.open(filename, std::fstream::in);
 		if (!_body){
 			std::cerr << "Error" << std::endl;
-			response._status_code = 500;
+			response.set_status_code(500);
 		}
 		while (_body){
 			std::getline(_body, myline);
@@ -145,13 +145,13 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	pid = fork();
 	if (pid == -1){
 		std::cerr << "Fork Error" << std::endl;
-		response._status_code = 500;
+		response.set_status_code(500);
 	}
 	else if (pid == 0){
 		dup2(fdIn, STDIN_FILENO);
 		dup2(fdOut, STDOUT_FILENO);
 		execve(_scriptName.c_str(), argv, env);
-		response._status_code = 500;
+		response.set_status_code(500);
 	}
 	else
 	{
@@ -183,32 +183,32 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 std::string CGI::addHeader(int socket_fd, std::string output, Response &response, request &request)
 {
 	if (output == ""){
-		std::cerr << "Empty" << response._status_code << std::endl;
+		std::cerr << "Empty" << response.get_status_code() << std::endl;
 		exit(1);
 	}
 	(void)socket_fd;
 	time_t 			rawtime;
 	time(&rawtime);
-	std::string     filename(response._file_change_get);
+	std::string     filename(response.get_file_change_get());
 	std::fstream  	myfile;
 
-	response.str_uri = filename;
+	response.get_str_uri() = filename;
 	int fd = open(filename.c_str(), O_RDWR | O_CREAT | O_TRUNC);
-	response.header += OK;
-	response.header += "Date: ";
-	response.header += std::string(ctime(&rawtime));
+	response.get_header() += OK;
+	response.get_header() += "Date: ";
+	response.get_header() += std::string(ctime(&rawtime));
 
-	response.header += "Server: ";
-	response.header += "Myserver\r\n";
+	response.get_header() += "Server: ";
+	response.get_header() += "Myserver\r\n";
 
-	response.header += "Content-Type: ";
-	response.header += "text/html; charset=UTF-8";
-	response.header += "\r\n";
+	response.get_header() += "Content-Type: ";
+	response.get_header() += "text/html; charset=UTF-8";
+	response.get_header() += "\r\n";
 
 	if (request.getHeaders().find("Cookie") == request.getHeaders().end())
 	{
-		response.header += "Set-Cookie: ";
-		response.header += "name=value; expires=Thu, 18 Dec 2013 12:00:00 GMT; path=/\r\n";
+		response.get_header() += "Set-Cookie: ";
+		response.get_header() += "name=value; expires=Thu, 18 Dec 2013 12:00:00 GMT; path=/\r\n";
 	}
 	size_t end_headers = output.find_first_of("\n");
 	int start = output.find("Content-type", 0);
@@ -216,12 +216,12 @@ std::string CGI::addHeader(int socket_fd, std::string output, Response &response
 		int end = output.find("\n", start); 
 		output = output.erase(start, end - start + 1);
 	}
-	response.body_length += write (fd, output.substr(end_headers, output.length()).c_str(),  
-							output.substr(end_headers, output.length()).length());
+	response.set_body_length(response.get_body_length() + write (fd, output.substr(end_headers, output.length()).c_str(),  
+							output.substr(end_headers, output.length()).length()));
 	close(fd);
-	response.header += "Content-Length: ";
-	response.header += to_string(response.body_length);
-	response.header += "\r\n\r\n";
-	std::cout << "str_uri : "  << response.str_uri << std::endl;	
+	response.get_header() += "Content-Length: ";
+	response.get_header() += to_string(response.get_body_length());
+	response.get_header() += "\r\n\r\n";
+	std::cout << "get_str_uri() : "  << response.get_str_uri() << std::endl;	
 	return output;
 }

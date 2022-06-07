@@ -262,37 +262,37 @@ int server::sen(int &socket, request& req, Response &response)
 	bool over = false;
 	std::cout << "trying send to " << socket << "\n";
 	req.reset_timer();
-	if (response._handled == false)
+	if (response.get_handled() == false)
 		response.Return_string(req, _config, socket);
-	std::cout << RED << "body lenght = "  << response.body_length << RESET << std::endl;
-	if (response.body_length > 0)
+	std::cout << RED << "body lenght = "  << response.get_body_length() << RESET << std::endl;
+	if (response.get_body_length() > 0)
 	{
-		std::cout << response.str_uri << std::endl;
+		std::cout << response.get_str_uri() << std::endl;
 		if (!response._res.is_open())
 		{
 			std::cout << "open()" << std::endl;
-			response._res.open(response.str_uri, std::ifstream::in | std::ifstream::binary);
+			response._res.open(response.get_str_uri(), std::ifstream::in | std::ifstream::binary);
 		}
 		if(!response._res.is_open()){
 			std::cout << "open() failed !!!!" << std::endl;
 			return (-1);
 		}
-		if (!response.header.empty())
+		if (!response.get_header().empty())
 		{
-			string_to_char(response.header, buff);
-			size = response.header.size();
-			response.header.clear();
+			string_to_char(response.get_header(), buff);
+			size = response.get_header().size();
+			response.get_header().clear();
 		}
 		response._res.read(buff + size, (BUFFER_SIZE - size));
-		response.body_length -= response._res.gcount();
+		response.set_body_length(response.get_body_length() - response._res.gcount());
 		size +=  response._res.gcount();
-		if (response.body_length == 0)
+		if (response.get_body_length() == 0)
 			over = true;
 	}
 	else
 	{
-		string_to_char(response.header, buff);
-		size = response.header.size();
+		string_to_char(response.get_header(), buff);
+		size = response.get_header().size();
 		over = true;
 	}
 	
