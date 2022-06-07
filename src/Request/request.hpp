@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:20:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/02 21:10:15 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/08 00:49:29 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ class request
 	
 	public:
 		request(int);
+		request &operator=(request const &);
+		request(request const &);
 		~request();
 
 		enum ParseStatus {
@@ -86,6 +88,8 @@ class request
 		int											_bodyLength;
 		std::time_t 								_current_time;
 		std::string									_contentTypeUpload;
+		std::fstream 								_body;
+		std::string									_name;
 		
 		//! print function 
 		void	print_req(request &);

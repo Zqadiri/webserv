@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   requestParser.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/07 23:16:29 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/08 00:37:22 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ int					request::InternalServerError(){
 
 int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 {
-	std::fstream _body;
+	// std::fstream _body;
 	std::string delim("\r\n\r\n");
 	std::string filename = "./tmp/body";
 	size_t bodyCursor = buff.find(delim);
@@ -148,6 +148,7 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 	}
 	if (_status == COMPLETE){
 		std::cout << "COMPLETE "  << _bodyLength << std::endl;
+		_body.close();
 		return 0;
 	}
 	return 1;
@@ -155,7 +156,8 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 
 int request::parseUnchunkedRequest(std::string filename)
 {
-	std::fstream _body(filename, std::fstream::in | std::fstream::out | std::fstream::app);
+	(void)filename;
+	// std::fstream _body(filename, std::fstream::in | std::fstream::out | std::fstream::app);
 	if(_body.is_open()){
 		_bodyLength += _tmp.length();
 		_body << _tmp;
@@ -174,7 +176,8 @@ int request::parseUnchunkedRequest(std::string filename)
 int request::parseChunkedRequest(std::string filename)
 {
 	size_t end;
-	std::fstream _body;
+	(void)filename;
+	// std::fstream _body;
 
 	while ((end = _tmp.find("\r\n")) != std::string::npos)
 	{
@@ -193,7 +196,7 @@ int request::parseChunkedRequest(std::string filename)
 				_status = COMPLETE;
 				return 1;
 			}
-			_body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
+			// _body.open (filename, std::fstream::in | std::fstream::out | std::fstream::app);
 			if(_body.is_open()){
 				_bodyLength += _tmp.length();
 				_body << _tmp.substr(0, end);

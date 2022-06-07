@@ -66,7 +66,7 @@ int MimeTypes::strcmpi(const char *s1, const char *s2) {
 }
 
 // Source: https://raw.githubusercontent.com/broofa/node-mime/master/types/standard.json
-MimeTypes::entry MimeTypes::types[348] =  {
+MimeTypes::entry MimeTypes::types[349] =  {
   {"*3gpp", "audio/3gpp"},
   {"*jpm", "video/jpm"},
   {"*mp3", "audio/mp3"},
@@ -415,4 +415,5 @@ MimeTypes::entry MimeTypes::types[348] =  {
   {"yin", "application/yin+xml"},
   {"yml", "text/yaml"},
   {"zip", "application/zip"},
+  {"txt", "plain/text"},
 };

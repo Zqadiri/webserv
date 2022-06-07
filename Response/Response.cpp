@@ -681,7 +681,10 @@ std::string 		getTargetPath(request &req, serverConfig *servconf, std::string lo
 	ret += "/";
 	ret += FileName();
 	ret += ".";
-	ret += MimeTypes::getExtension(head["Content-Type"].c_str());
+	if (MimeTypes::getExtension(head["Content-Type"].c_str()) == NULL)
+		ret += "UNKOWN";
+	else
+		ret += MimeTypes::getExtension(head["Content-Type"].c_str());
 	std::cout << "target path: " << ret << std::endl;
 	return ret;
 }
