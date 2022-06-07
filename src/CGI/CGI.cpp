@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/07 15:27:13 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 20:26:26 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ CGI::CGI(request &request, serverConfig &config) : _scriptName("./cgi_bin/php-cg
 	this->_env["SERVER_PROTOCOL"] = "HTTP/1.1";
 	this->_env["SERVER_SOFTWARE"] = "Weebserv/1.0";
 	// HTTP_*
-	this->_env["HTTP_COOKIE"] = _headers["Set-Cookie"];
+	this->_env["HTTP_COOKIE"] = _headers["Cookie"];
 	this->_env["HTTP_ACCEPT"] = _headers["Accept"];
 	this->_env["HTTP_ACCEPT_CHARSET"] = _headers["Accept-Charset"];
 	this->_env["HTTP_ACCEPT_ENCODING"] = _headers["Accept-Encoding"];
@@ -213,7 +213,7 @@ std::string CGI::addHeader(int socket_fd, std::string output, Response &response
 	size_t end_headers = output.find_first_of("\n");
 	int start = output.find("Content-type", 0);
 	if (start != -1){
-		int end = output.find("\n", start);
+		int end = output.find("\n", start); 
 		output = output.erase(start, end - start + 1);
 	}
 	response.body_length += write (fd, output.substr(end_headers, output.length()).c_str(),  

@@ -684,6 +684,10 @@ std::string 		getTargetPath(request &req, serverConfig *servconf)
 {
 	(void)req;
 	std::string ret = servconf->getRoot();
+	ret += "/";
+	ret += req.getRequestURI();
+	ret += randomFileName();
+	
 	return ret;
 }
 
@@ -715,8 +719,8 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		}
 		newBody.close();
 		reqBody.close();
-		
-		std::string mv = "mv " + filename  + getTargetPath(req, servconf);
+		getTargetPath(req, servconf);
+		std::string mv = "mv " + filename  + " ./www/upload/file.mp4";
 		if (system(mv.c_str())){
 			std::cout << "error" << std::endl;
 		}

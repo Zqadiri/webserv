@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/07 16:00:12 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 19:14:22 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ void				Config::checkForDup(void){
 
 	for (size_t i = 0; i < listens.size(); i++){
 		for (size_t j = i + 1; j < listens.size(); j++){
-			if (listens[i].port == listens[j].port)
+			if (listens[i].port == listens[j].port && listens[i].host == listens[j].host)
 				throw Config::FileNotWellFormated();
 		}
 	}
