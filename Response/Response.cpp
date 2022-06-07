@@ -124,6 +124,7 @@ void            			Response::Methods_exec(request &req, int fd, serverConfig *se
 std::string     			Response::Content_type()
 {
     std::string ret;
+
     ret = std::string(this->_file_extension); //! read-memory-access (const char * to std::string)
     return ret;
 }
@@ -204,16 +205,15 @@ void						Response::AutoIndexExec(std::string s)
 	file.close();
 }
 
-void            			Response::File_type(request &req)
+void            			Response::File_type(std::string str)
 {
-	std::string str;
 	std::string str2;
 	std::string	s;
 	int         index;
 	const char	*type;
 
 	s = "";
-	str = req.getRequestURI();
+	std::cout << YELLOW << "what the fuuuck " << str << RESET << std::endl;
 	index = str.find_first_of(".");
 	str2 = str.substr(index + 1, str.length());
 	this->_check_extension_mine = str2;
@@ -262,6 +262,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 		if(ve[i]._path == str_req_uri)
 		{
 			check = true;
+			File_type(ve[i]._index);
 			_check_auto_index = ve[i]._autoindex;
 			if(ve[i]._root == "")
 			{
@@ -297,6 +298,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	if(check == false)
 	{
 		_check_auto_index = servconfig->getAutoIndex();
+		File_type(servconfig->getIndex());
 		if(servconfig->getAutoIndex() == false && servconfig->getIndex() == "")
 			Errors_write(403, &str_ret);
 		else if(servconfig->getRedirectPath() != "")
@@ -486,11 +488,11 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	std::fstream	myfile;
 	std::fstream	another_file;
 
+	// File_type(req);
 	if(Allow_Methods(req, servconf, "GET"))
 	{
-		File_type(req);
+		puts("hhhhhhhhhhhhhhh");
 		str_uri = CompletePath(req, servconf);
-		std::cout << "str_uri is here " << str_uri << std::endl;
 		myfile.open(str_uri);
 		if(!myfile.is_open())
 		{
@@ -499,8 +501,8 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 				str_uri = "/tmp/auto_index.html";
 				AutoIndexExec(my_root);
 			}
-			else if(IsFile(my_root + servconf->getRedirectPath()) == 0)
-				Errors_write(404, &str_uri);
+			// else if(IsFile(my_root + servconf->getRedirectPath()) == 0)
+			// 	Errors_write(404, &str_uri);
 			else
 				Errors_write(403, &str_uri);
 		}
@@ -514,7 +516,10 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		}
 	}
 	else
+	{
+		this->_status_code = 405;
 		str_uri = "./Response/response_errors_pages/no_method_page.html";
+	}
 	if(!isCGI(req, servconf))
 	{
 		getStatusString();
@@ -530,6 +535,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 			content_type = Content_type();
 		else
 			content_type = "text/html";
+		std::cout << "content Type here : " << content_type << std::endl;
 		header +=  content_type;
 		header +=  "\r\n";
 		body_length = File_length(str_uri);
@@ -696,7 +702,7 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	complete_path = CompletePath(req, servconf);
 	newBody.open(filename.c_str(), std::fstream::in | std::fstream::app);
 	std::cout << "POST: " << _status_code << std::endl;
-	File_type(req);
+	// File_type(req);
 	if (supportUpload(req, servconf) && _status_code == 200)
 	{
 		std::cout << GREEN << "------------------- UPLOAD -----------------------" << RESET << std::endl;
