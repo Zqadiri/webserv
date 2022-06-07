@@ -420,6 +420,42 @@ void						Response::getStatusString()
 		header += 	FORBIDDEN;
 }
 
+bool						Response::Allow_Methods(request &req, serverConfig *servconf, std::string method)
+{
+	std::vector<_location>	ve;
+	int						i;
+	std::list<std::string>	allow;
+	bool					check;
+
+	i = -1;
+	ve = servconf->getLocations();
+	check = false;
+
+	while (++i < (int)ve.size())
+	{
+		if(ve[i]._path == req.getRequestURI())
+		{
+			allow = ve[i]._allow_methods;
+			check = true;
+			for(std::list<std::string>::const_iterator i = allow.begin(); i != allow.end(); ++i)
+			{
+				if(i->c_str() == method)
+					return true;
+			}
+		}
+	}
+	if(check == false)
+	{
+		allow = servconf->_allow_methods;
+		for(std::list<std::string>::const_iterator i = allow.begin(); i != allow.end(); ++i)
+		{
+			if(i->c_str() == method)
+				return true;
+		}
+	}
+	return false;
+}
+
 //!------------------------------------ GET ------------------------------------
 
 void						Response::Errors_write(int status, std::string *str_uri)
@@ -438,30 +474,36 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	std::fstream	myfile;
 	std::fstream	another_file;
 
-	File_type(req);
-	str_uri = CompletePath(req, servconf);
-	std::cout << "str_uri is here " << str_uri << std::endl;
-	myfile.open(str_uri);
-	if(!myfile.is_open())
+	if(Allow_Methods(req, servconf, "GET"))
 	{
-		if(_check_auto_index && servconf->_redirect.path == "")
-		{
-			str_uri = "/tmp/auto_index.html";
-			AutoIndexExec(my_root);
-		}
-		else if(IsFile(my_root + servconf->_redirect.path) == 0)
-			Errors_write(404, &str_uri);
-		else
-			Errors_write(403, &str_uri);
-	}
-	myfile.close();
-	if(servconf->_errorPages.code == this->_status_code)
-	{
-		str_uri = servconf->_errorPages.path;
+		File_type(req);
+		str_uri = CompletePath(req, servconf);
+		std::cout << "str_uri is here " << str_uri << std::endl;
 		myfile.open(str_uri);
 		if(!myfile.is_open())
-			Errors_write(404, &str_uri);
+		{
+			if(_check_auto_index && servconf->_redirect.path == "")
+			{
+				str_uri = "/tmp/auto_index.html";
+				AutoIndexExec(my_root);
+			}
+			else if(IsFile(my_root + servconf->_redirect.path) == 0)
+				Errors_write(404, &str_uri);
+			else
+				Errors_write(403, &str_uri);
+		}
+		myfile.close();
+		if(servconf->_errorPages.code == this->_status_code)
+		{
+			puts("hhhhhhhhhhhhhhh");
+			str_uri = servconf->_errorPages.path;
+			myfile.open(str_uri);
+			if(!myfile.is_open())
+				Errors_write(404, &str_uri);
+		}
 	}
+	else
+		str_uri = "./Response/response_errors_pages/no_method_page.html";
 	if(!isCGI(req, servconf))
 	{
 		getStatusString();
