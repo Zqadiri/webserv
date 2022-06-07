@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/05 12:55:48 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 14:53:31 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,48 +236,48 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 }
 
 void	Config::print(){
-	std::cout << "[Servers n: " << this->servers.size() << "]"<< std::endl;
-	for (size_t i = 0; i < this->servers.size(); i++)
-	{
-		std::cout << "-------------------------------------" << std::endl;
-		puts("[serverName]");
-		for (std::list<std::string>::iterator it = this->servers[i]->_server_name.begin(); 
-				it != this->servers[i]->_server_name.end(); ++it)
-			std::cout << " > " << *it << std::endl;
-		puts("[root]");
-		std::cout << this->servers[i]->_root << std::endl;
-		puts("[index]");
-		std::cout << this->servers[i]->_index << std::endl;
-		puts("[listen]");
-		std::cout << this->servers[i]->_hostPort.host << std::endl;
-		std::cout << this->servers[i]->_hostPort.port << std::endl;
-		puts("[autoindex]");
-		std::cout << this->servers[i]->_autoindex << std::endl;
-		puts("[errorPages]");
-		std::cout << this->servers[i]->_errorPages.code << std::endl;
-		std::cout << this->servers[i]->_errorPages.path << std::endl;
-		std::cout << "redirect " << this->servers[i]->_redirect.code << std::endl;
-		std::cout << "redirect path " << this->servers[i]->_redirect.path << std::endl;
-		puts("[allow_methods]");
-		for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
-				it != this->servers[i]->_allow_methods.end(); ++it)
-		std::cout << " > " <<*it << std::endl;
-		std::cout << "[locations n: " << this->servers[i]->_locations.size()  << "]"<< std::endl;
-		for (size_t j = 0; j < this->servers[i]->_locations.size(); j++)
-		{
-			std::cout << "[location "<< j << "]"<< std::endl;
-			std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
-			std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
-			std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
-			std::cout << "uploadStore " << this->servers[i]->_locations[j]._uploadStore << std::endl;
-			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
-			std::cout << "autoindex " << this->servers[i]->_locations[j]._autoindex << std::endl;
-			std::cout << "CGIpass " << this->servers[i]->_locations[j]._pathCGI << std::endl;
-			std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
-			puts("allow_methods");
-			for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
-				it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
-					std::cout << " > " << *it << std::endl;
-		}
-	}
+	// std::cout << "[Servers n: " << this->servers.size() << "]"<< std::endl;
+	// for (size_t i = 0; i < this->servers.size(); i++)
+	// {
+	// 	std::cout << "-------------------------------------" << std::endl;
+	// 	puts("[serverName]");
+	// 	for (std::list<std::string>::iterator it = this->servers[i]->_server_name.begin(); 
+	// 			it != this->servers[i]->_server_name.end(); ++it)
+	// 		std::cout << " > " << *it << std::endl;
+	// 	puts("[root]");
+	// 	std::cout << this->servers[i]->_root << std::endl;
+	// 	puts("[index]");
+	// 	std::cout << this->servers[i]->_index << std::endl;
+	// 	puts("[listen]");
+	// 	std::cout << this->servers[i]->_hostPort.host << std::endl;
+	// 	std::cout << this->servers[i]->_hostPort.port << std::endl;
+	// 	puts("[autoindex]");
+	// 	std::cout << this->servers[i]->_autoindex << std::endl;
+	// 	puts("[errorPages]");
+	// 	std::cout << this->servers[i]->_errorPages.code << std::endl;
+	// 	std::cout << this->servers[i]->_errorPages.path << std::endl;
+	// 	std::cout << "redirect " << this->servers[i]->_redirect.code << std::endl;
+	// 	std::cout << "redirect path " << this->servers[i]->_redirect.path << std::endl;
+	// 	puts("[allow_methods]");
+	// 	for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
+	// 			it != this->servers[i]->_allow_methods.end(); ++it)
+	// 	std::cout << " > " <<*it << std::endl;
+	// 	std::cout << "[locations n: " << this->servers[i]->_locations.size()  << "]"<< std::endl;
+	// 	for (size_t j = 0; j < this->servers[i]->_locations.size(); j++)
+	// 	{
+	// 		std::cout << "[location "<< j << "]"<< std::endl;
+	// 		std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
+	// 		std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
+	// 		std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
+	// 		std::cout << "uploadStore " << this->servers[i]->_locations[j]._uploadStore << std::endl;
+	// 		std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
+	// 		std::cout << "autoindex " << this->servers[i]->_locations[j]._autoindex << std::endl;
+	// 		std::cout << "CGIpass " << this->servers[i]->_locations[j]._pathCGI << std::endl;
+	// 		std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
+	// 		puts("allow_methods");
+	// 		for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
+	// 			it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
+	// 				std::cout << " > " << *it << std::endl;
+	// 	}
+	// }
 }

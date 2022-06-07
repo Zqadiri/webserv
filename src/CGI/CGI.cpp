@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/07 12:09:04 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 14:52:03 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 /*--------- Constructors & Destructor --------*/
 
-CGI::CGI(request &request, serverConfig &config) : _scriptName("./php-cgi"), _scripNamePy("./py_cgi") //!
+CGI::CGI(request &request, serverConfig &config) : _scriptName("./cgi_bin/php-cgi"), _scripNamePy("./cgi_bin/py_cgi")
 {
 	std::map<std::string, std::string> _headers = request.getHeaders();
 	if (_headers.find("Auth-Scheme") != _headers.end() && _headers["Auth-Scheme"] != "")
@@ -37,7 +37,7 @@ CGI::CGI(request &request, serverConfig &config) : _scriptName("./php-cgi"), _sc
 	this->_env["SERVER_PORT"] = to_string(config.gethostPort().port);
 	this->_env["SERVER_PROTOCOL"] = "HTTP/1.1";
 	this->_env["SERVER_SOFTWARE"] = "Weebserv/1.0";
-	// Cookies
+	// HTTP_*
 	this->_env["HTTP_COOKIE"] = _headers["Set-Cookie"];
 	this->_env["HTTP_ACCEPT"] = _headers["Accept"];
 	this->_env["HTTP_ACCEPT_CHARSET"] = _headers["Accept-Charset"];
@@ -97,7 +97,7 @@ void deleteArray(char **env)
 	main function for executing cgi
 */
 
-std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Response &response)
+std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Response &response, request &request)
 {
 	std::fstream fileIn;
 	std::fstream fileOut;	
@@ -177,10 +177,10 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	close(savedIn);
 	close(savedOut);
 	deleteArray(env);
-	return addHeader(socket_fd, output, response);
+	return addHeader(socket_fd, output, response, request);
 }
 
-std::string CGI::addHeader(int socket_fd, std::string output, Response &response)
+std::string CGI::addHeader(int socket_fd, std::string output, Response &response, request &request)
 {
 	if (output == ""){
 		std::cerr << "Empty" << response._status_code << std::endl;
@@ -205,10 +205,12 @@ std::string CGI::addHeader(int socket_fd, std::string output, Response &response
 	response.header += "text/html; charset=UTF-8";
 	response.header += "\r\n";
 
-	// Set-Cookie: <cookie-name>=<cookie-value>
-	response.header += "Set-Cookie: ";
-	response.header += "name=value; expires=Thu, 18 Dec 2013 12:00:00 GMT; path=/\r\n";
-
+	if (request.getHeaders().find("Cookie") != request.getHeaders().end())
+	{
+		response.header += "Set-Cookie: ";
+		response.header += "name=value; expires=Thu, 18 Dec 2013 12:00:00 GMT; path=/\r\n";
+		response.header += "\r\n";
+	}
 	size_t end_headers = output.find_first_of("\n");
 	int start = output.find("Content-type", 0);
 	if (start != -1){

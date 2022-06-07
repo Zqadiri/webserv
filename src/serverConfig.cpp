@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/05 12:53:54 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 15:10:00 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,27 @@ serverConfig	&serverConfig::operator=(const serverConfig &obj){
 
 /*---- Accessors ----*/
 
+std::string	serverConfig::getRoot(void){
+	return this->_root;
+}
+std::string	serverConfig::getIndex(void){
+	return this->_index;
+}
+bool	serverConfig::getAutoindex(void){
+	return this->_autoindex;
+}
+std::string						serverConfig::getRedirectPath(void){
+	return this->_redirect.path;
+}
+int			 					serverConfig::getRedirectCode(void){
+	return this->_redirect.code;
+}
+std::string						serverConfig::getErrorPagePath(void){
+	return this->_errorPages.path;
+}
+int								serverConfig::getErrorPageCode(void){
+	return this->_errorPages.code;
+}
 const std::list<std::string>	&serverConfig::getAllowMethods(void) const{ return this->_allow_methods; }
 const t_error_pages				&serverConfig::getErrorsPages(void) const{ return this->_errorPages; }
 const t_listen				 	&serverConfig::gethostPort(void) const{ return this->_hostPort; }
