@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/07 14:53:31 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 16:00:12 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,6 @@ void					Config::parseFile(const char *fileName)
 		else
 			throw	Config::FileNotWellFormated();
 	}
-	// print();
 	checkForDup();
 }
 
@@ -174,36 +173,12 @@ configFile::iterator	Config::curlLevel(configFile con){
 
 void				Config::checkForDup(void){
 	std::vector<t_listen>				listens = this->getAllListenDir();
-	std::list<std::list<std::string> > 	servNames = this->getAllServerNames();
 
-	size_t  k = 0;
-	std::map<std::list<std::string> ,int> pairs;
-	for (std::list<std::list<std::string> >::iterator i = servNames.begin(); 
-					i != servNames.end(); i++)
-	{
-		std::list<std::string> inerList = *i;
-		pairs.insert(std::make_pair(*i, listens.at(k).port));
-		k++;
-	}
-	k = 0;
-	for (std::map<std::list<std::string> ,int>::iterator i = pairs.begin(); 
-					i != pairs.end(); ++i)
-	{
-		if (k >= pairs.size() - 1)
-			break;
-		std::list<std::string> inerList = i->first;
-		std::map<std::list<std::string>,int >::iterator tmp = i;
-		tmp++;
-		std::list<std::string> NinerList = tmp->first;
-		for (std::list<std::string>::iterator it = inerList.begin(); 
-					it != inerList.end(); ++it){
-			for (std::list<std::string>::iterator itn = NinerList.begin(); 
-				itn != NinerList.end(); ++itn){
-				if (*it == *itn && i->second == tmp->second)
-					throw "duplicate Servers";
-			}
+	for (size_t i = 0; i < listens.size(); i++){
+		for (size_t j = i + 1; j < listens.size(); j++){
+			if (listens[i].port == listens[j].port)
+				throw Config::FileNotWellFormated();
 		}
-		k++;
 	}
 }
 
@@ -223,7 +198,6 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 			if (index >= con.size())
 				break;
 			if (con[index] == keys[i]){
-				std::cout << "found " << con[index] << std::endl;
 				index = (server->*values[i])(*server, con, index);
 			}
 		}
@@ -233,51 +207,4 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 	this->servers.push_back(server);
 	index--;
 	return index;
-}
-
-void	Config::print(){
-	// std::cout << "[Servers n: " << this->servers.size() << "]"<< std::endl;
-	// for (size_t i = 0; i < this->servers.size(); i++)
-	// {
-	// 	std::cout << "-------------------------------------" << std::endl;
-	// 	puts("[serverName]");
-	// 	for (std::list<std::string>::iterator it = this->servers[i]->_server_name.begin(); 
-	// 			it != this->servers[i]->_server_name.end(); ++it)
-	// 		std::cout << " > " << *it << std::endl;
-	// 	puts("[root]");
-	// 	std::cout << this->servers[i]->_root << std::endl;
-	// 	puts("[index]");
-	// 	std::cout << this->servers[i]->_index << std::endl;
-	// 	puts("[listen]");
-	// 	std::cout << this->servers[i]->_hostPort.host << std::endl;
-	// 	std::cout << this->servers[i]->_hostPort.port << std::endl;
-	// 	puts("[autoindex]");
-	// 	std::cout << this->servers[i]->_autoindex << std::endl;
-	// 	puts("[errorPages]");
-	// 	std::cout << this->servers[i]->_errorPages.code << std::endl;
-	// 	std::cout << this->servers[i]->_errorPages.path << std::endl;
-	// 	std::cout << "redirect " << this->servers[i]->_redirect.code << std::endl;
-	// 	std::cout << "redirect path " << this->servers[i]->_redirect.path << std::endl;
-	// 	puts("[allow_methods]");
-	// 	for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
-	// 			it != this->servers[i]->_allow_methods.end(); ++it)
-	// 	std::cout << " > " <<*it << std::endl;
-	// 	std::cout << "[locations n: " << this->servers[i]->_locations.size()  << "]"<< std::endl;
-	// 	for (size_t j = 0; j < this->servers[i]->_locations.size(); j++)
-	// 	{
-	// 		std::cout << "[location "<< j << "]"<< std::endl;
-	// 		std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
-	// 		std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
-	// 		std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
-	// 		std::cout << "uploadStore " << this->servers[i]->_locations[j]._uploadStore << std::endl;
-	// 		std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
-	// 		std::cout << "autoindex " << this->servers[i]->_locations[j]._autoindex << std::endl;
-	// 		std::cout << "CGIpass " << this->servers[i]->_locations[j]._pathCGI << std::endl;
-	// 		std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
-	// 		puts("allow_methods");
-	// 		for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
-	// 			it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
-	// 				std::cout << " > " << *it << std::endl;
-	// 	}
-	// }
 }

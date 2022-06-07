@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/07 14:52:03 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 15:27:13 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,11 +205,10 @@ std::string CGI::addHeader(int socket_fd, std::string output, Response &response
 	response.header += "text/html; charset=UTF-8";
 	response.header += "\r\n";
 
-	if (request.getHeaders().find("Cookie") != request.getHeaders().end())
+	if (request.getHeaders().find("Cookie") == request.getHeaders().end())
 	{
 		response.header += "Set-Cookie: ";
 		response.header += "name=value; expires=Thu, 18 Dec 2013 12:00:00 GMT; path=/\r\n";
-		response.header += "\r\n";
 	}
 	size_t end_headers = output.find_first_of("\n");
 	int start = output.find("Content-type", 0);

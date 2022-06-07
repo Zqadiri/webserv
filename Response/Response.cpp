@@ -584,7 +584,6 @@ bool						Response::supportUpload(request &req,  serverConfig *servconf)
 		if (!new_file)
 			path += "/";
 		if (path == loc){
-			std::cout << "loc is " << loc << std::endl;
 			_uploadFileName = it->_uploadStore;
 			return true;
 		}
@@ -597,12 +596,10 @@ bool						Response::supportCGI(request &req, serverConfig *servconf)
 	std::vector<_location> ve = servconf->getLocations();
 	std::string uri = req.getRequestURI();
 	std::string loc = uri.substr(0, uri.find("newfile"));
-	std::cout << "loc is " << loc << std::endl;
 	for (std::vector<_location>::iterator it = ve.begin(); it != ve.end(); ++it){
 		std::string path = it->_path += "/";
-		if (path == loc){
+		if (path == loc)
 			return true;
-		}
 	}
 	return false;
 }
@@ -630,6 +627,13 @@ int							Response::parseLine(std::string line)
 	return 1;
 }
 
+std::string 		getTargetPath(request &req, serverConfig *servconf)
+{
+	(void)req;
+	std::string ret = servconf->getRoot();
+	return ret;
+}
+
 void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
 	(void)fd;
@@ -646,7 +650,6 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	File_type(req);
 	if (supportUpload(req, servconf) && _status_code == 200)
 	{
-		std::cout << GREEN << "------------------- UPLOAD -----------------------" << RESET << std::endl;
 		std::fstream reqBody;
 		std::string	line;
 		reqBody.open("./tmp/body"+ to_string(fd), std::fstream::in);
@@ -659,11 +662,12 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		}
 		newBody.close();
 		reqBody.close();
-		std::string mv = "mv " + filename  + " ./www/upload/file2.jpg";
+		
+		std::string mv = "mv " + filename  + getTargetPath(req, servconf);
 		if (system(mv.c_str())){
 			std::cout << "error" << std::endl;
 		}
-		
+
 		//header start
 		header += CREATED;
 
