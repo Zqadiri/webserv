@@ -686,6 +686,29 @@ std::string 		getTargetPath(request &req, serverConfig *servconf, std::string lo
 	return ret;
 }
 
+void						Response::Error_headers(std::string status_str)
+{
+	time_t          rawtime;
+
+	header += status_str;
+	time(&rawtime);
+	header += "Date: ";
+	header += std::string(ctime(&rawtime));
+
+	header += "Server: ";
+	header += "Myserver";
+
+	// header +=  "Content-Type: ";
+	// content_type = Content_type();
+	// header +=  content_type;
+	// header +=  "\r\n";
+
+	body_length = File_length(str_uri);
+	header += "Content-Length: ";
+	header += to_string(body_length);
+	header += "\r\n\r\n";
+}
+
 bool						Response::supportUpload(request &req,  serverConfig *servconf)
 {
 	std::vector<_location> ve = servconf->getLocations();
@@ -783,9 +806,15 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		header += std::string(ctime(&rawtime));
 		header += "Server: ";
 		header += "Myserver";
-		header += "\r\n";
+
+		// header +=  "Content-Type: ";
+		// content_type = Content_type();
+		// header +=  content_type;
+		// header +=  "\r\n";
+
+		body_length = File_length(str_uri);
 		header += "Content-Length: ";
-		header += "0";
+		header += to_string(body_length);
 		header += "\r\n\r\n";
 		//! 201	Created
 		return ;
@@ -794,12 +823,16 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	{
 		this->_status_code = 413;
 		str_uri = "./Response/response_errors_pages/413.html";
+		Error_headers(PAYLOAD_TOO_LARGE);
 	}
 	else if (isCGI(req, servconf))
 	{
 		//! support cgi  403 Forbidden
 		if(supportCGI(req, servconf))
+		{
 			Errors_write(403, &str_uri);
+			Error_headers(FORBIDDEN);
+		}
 		else
 		{
 			std::cout << GREEN << "------------------- CGI -----------------------" << RESET << std::endl;
@@ -807,8 +840,10 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 			cgi_handler.executeCgi(complete_path, fd, *this, req);
 		}
 	}
-	else{
+	else
+	{
 		Errors_write(404, &str_uri);
+		Error_headers(NOT_FOUND);
 	}
 }
 

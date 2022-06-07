@@ -62,7 +62,7 @@ class Response
         bool                        supportCGI(request &req, serverConfig *servconf);
         int			                parseLine(std::string line);
         void                        POST(int, request &req, serverConfig*);
-        
+        void						Error_headers(std::string);
 
     private: //!!!!! private
         std::string             _response_string;
