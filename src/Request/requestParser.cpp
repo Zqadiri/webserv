@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 20:26:45 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 23:16:29 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int			badRequest(request& req){
 	req.setCode(400);
-	std::cerr << "BAD REQUEST" << std::endl;
+	// std::cerr << "BAD REQUEST" << std::endl;
 	return -1;
 }
 

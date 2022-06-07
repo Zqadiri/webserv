@@ -645,6 +645,29 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 
 //!------------------------------------ POST ------------------------------------
 
+std::string		FileName(void)
+{
+	std::string fileName("");
+	time_t t = time(0);
+	struct tm *now = localtime(&t);
+	char buffer[80];
+	strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", now);
+	fileName += buffer;
+	return fileName;
+}
+
+std::string 		getTargetPath(request &req, serverConfig *servconf, std::string loc)
+{
+	(void)servconf;
+	std::map<std::string, std::string>	head = req.getHeaders();
+	std::string ret = loc;
+	ret += "/";
+	ret += FileName();
+	ret += ".";
+	ret += MimeTypes::getExtension(head["Content-Type"].c_str());
+	std::cout << "target path: " << ret << std::endl;
+	return ret;
+}
 
 bool						Response::supportUpload(request &req,  serverConfig *servconf)
 {
@@ -661,6 +684,7 @@ bool						Response::supportUpload(request &req,  serverConfig *servconf)
 			path += "/";
 		if (path == loc){
 			_uploadFileName = it->_uploadStore;
+			_uploadFileName = getTargetPath(req, servconf, it->_uploadStore);
 			return true;
 		}
 	}
@@ -703,17 +727,6 @@ int							Response::parseLine(std::string line)
 	return 1;
 }
 
-std::string 		getTargetPath(request &req, serverConfig *servconf)
-{
-	(void)req;
-	std::string ret = servconf->getRoot();
-	ret += "/";
-	ret += req.getRequestURI();
-	ret += randomFileName();
-	ret 
-	return ret;
-}
-
 void						Response::POST(int fd, request &req, serverConfig *servconf)
 {
 	(void)fd;
@@ -726,10 +739,11 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 
 	complete_path = CompletePath(req, servconf);
 	newBody.open(filename.c_str(), std::fstream::in | std::fstream::app);
-	std::cout << "POST: " << _status_code << std::endl;
 	File_type(req);
+	std::cout << "POST: " << _status_code  << supportUpload(req, servconf) << std::endl;
 	if (supportUpload(req, servconf) && _status_code == 200)
 	{
+		std::cout << "---------------------------------------------upload file" << std::endl;
 		std::fstream reqBody;
 		std::string	line;
 		reqBody.open("./tmp/body"+ to_string(fd), std::fstream::in);
@@ -742,30 +756,20 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		}
 		newBody.close();
 		reqBody.close();
-		getTargetPath(req, servconf);
-		std::string mv = "mv " + filename  + " ./www/upload/file.mp4";
+		std::string mv = "mv " + filename  + " " + _uploadFileName;
 		if (system(mv.c_str())){
 			std::cout << "error" << std::endl;
 		}
-
 		//header start
 		header += CREATED;
-
 		time(&rawtime);
 		header += "Date: ";
 		header += std::string(ctime(&rawtime));
-
 		header += "Server: ";
 		header += "Myserver";
-
-		// header +=  "Content-Type: ";
-		// content_type = Content_type();
-		// header +=  content_type;
-		// header +=  "\r\n";
-
-		// body_length = File_length(str_uri);
-		// header += "Content-Length: ";
-		// header += to_string(body_length);
+		header += "\r\n";
+		header += "Content-Length: ";
+		header += "0";
 		header += "\r\n\r\n";
 		//! 201	Created
 		return ;
@@ -790,7 +794,6 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	else{
 		Errors_write(404, &str_uri);
 	}
-
 }
 
 void						Response::Return_string(request &req, serverConfig *servconf, int fd)
