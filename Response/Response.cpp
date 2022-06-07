@@ -103,15 +103,22 @@ void            			Response::Methods_exec(request &req, int fd, serverConfig *se
 
 	i = 0;
     str = req.getMethod();
-    if (this->_status_code == 200)
-    {
-        if(str == "GET")
-            return GET(fd, req, servconf);
-        else if(str == "POST")
-            return POST(fd, req, servconf);
-        else if(str == "DELETE")
-            return DELETE(req, servconf);
-    }
+	if(str != "GET" && str != "POST" && str != "DELETE"){
+		this->_status_code = 405;
+		str_uri = "./Response/response_errors_pages/405.html";
+	}
+	else
+	{
+		if (this->_status_code == 200)
+		{
+			if(str == "GET")
+				return GET(fd, req, servconf);
+			else if(str == "POST")
+				return POST(fd, req, servconf);
+			else if(str == "DELETE")
+				return DELETE(req, servconf);
+		}
+	}
 }
 
 std::string     			Response::Content_type()
@@ -314,11 +321,16 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			}
 			else
 			{
-				str_ret = "";
-				str_ret += servconfig->getRoot() ; 
-				std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
-				AutoIndexExec(str_ret + str_req_uri);
-				str_ret = "/tmp/auto_index.html";
+				if(IsFile(servconfig->getRoot() + str_req_uri) == 0)
+					Errors_write(404, &str_ret);
+				else
+				{
+					str_ret = "";
+					str_ret += servconfig->getRoot() ; 
+					std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
+					AutoIndexExec(str_ret + str_req_uri);
+					str_ret = "/tmp/auto_index.html";
+				}
 			}
 		}
 	}
@@ -495,7 +507,6 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		myfile.close();
 		if(servconf->getErrorPageCode()== this->_status_code)
 		{
-			puts("hhhhhhhhhhhhhhh");
 			str_uri = servconf->getErrorPagePath();
 			myfile.open(str_uri);
 			if(!myfile.is_open())
@@ -727,6 +738,11 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		header += "\r\n\r\n";
 		//! 201	Created
 		return ;
+	}
+	else if(servconf->getlimitBodySize() != -1 && req.getBodyLength() > servconf->getlimitBodySize())
+	{
+		this->_status_code = 413;
+		str_uri = "./Response/response_errors_pages/413.html";
 	}
 	else if (isCGI(req, servconf) && _status_code == 201)
 	{
