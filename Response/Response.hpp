@@ -38,13 +38,13 @@ class Response
         bool                        Allow_Methods(request &req, serverConfig*, std::string);
 
         //!---------------- GETTERS --------------------------
-        std::ifstream               getRes();
-        int                         get_body_length();
-        std::string                 get_header();
-        std::string		            get_str_uri();
-        bool                        get_handled();
-        std::string                 get_file_change_get();
-        int                         get_status_code();
+        std::ifstream               &getRes();
+        int                         &get_body_length();
+        std::string                 &get_header();
+        std::string		            &get_str_uri();
+        bool                        &get_handled();
+        std::string                 &get_file_change_get();
+        int                         &get_status_code();
 
         //!---------------- SETTERS --------------------------
         void                        set_body_length(int);
@@ -62,7 +62,7 @@ class Response
         bool                        supportCGI(request &req, serverConfig *servconf);
         int			                parseLine(std::string line);
         void                        POST(int, request &req, serverConfig*);
-        std::ifstream               _res;
+        
 
     private: //!!!!! private
         std::string             _response_string;
@@ -75,7 +75,6 @@ class Response
         bool                    _get_file_success_open;
         bool                    _my_auto_index;
         bool                    _check_auto_index;
-
         std::string             _contentDisposition;
         std::string             _contentType;
         std::string             header;
@@ -85,6 +84,7 @@ class Response
 	    static std::string		my_root;
         std::string             my_index;
         std::string             _uploadFileName;
+        std::ifstream               _res;
 };
 
 #endif

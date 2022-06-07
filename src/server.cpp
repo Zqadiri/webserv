@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/07 23:19:16 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 23:40:54 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,11 @@ int server::setup(void)
 		return (-1);
 	}
 	int one = 1;
-	setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
+	if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int)) == -1)
+	{
+		std::cout << "setsockopt() failed" << std::endl;
+		return (-1);
+	}
 	if (fcntl(_fd, F_SETFL, O_NONBLOCK) == -1)
 	{
 		std::cout << "fcntl() failed" << std::endl;
@@ -60,7 +64,7 @@ int server::setup(void)
 		std::cout << "bind() failed" << std::endl;
 		return (-1);
 	}
-	if (listen(_fd, 20) == -1)
+	if (listen(_fd, 1024) == -1)
 	{
 		std::cout << "listen() failed" << std::endl;
 		return (-1);
@@ -74,6 +78,11 @@ int server::acc(void)
 	if (socket == -1)
 	{
 		std::cout << "accept() failed" << std::endl;
+		return (-1);
+	}
+	if (fcntl(socket, F_SETFL, O_NONBLOCK) == -1)
+	{
+		std::cout << "fcntl() failed" << std::endl;
 		return (-1);
 	}
 	return socket;
@@ -103,11 +112,10 @@ int server::rec(int &socket, request& req)
 	// buff[ret] = '\0';
 	std::string str(buff, ret);
 	int ret_parse = req.parseRquest(str, req, socket);
-	// std::cout << YELLOW <<  str << RESET << std::endl;
-	// std::cout << "{ret} " <<  ret_parse << std::endl;
-	if (ret_parse < -1){
+	std::cout << "{ret} " <<  ret_parse << std::endl;
+	if (ret_parse < 0){
 		std::cout << "BAD REQUEST" << std::endl;
-		exit(1);
+		// exit(1);
 	}
 	return (ret_parse);
 }
@@ -119,55 +127,58 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 	{
 		if (FD_ISSET(socket->first, &cp_wset))
 		{
-			
-			int ret = sen(socket->first, socket->second, _responses.at(socket->first));
-			if (ret == -1)
+			std::map<int, Response>::iterator resp = _responses.find(socket->first);
+			if (resp == _responses.end())
 			{
-				std::cout << "send() failed" << std::endl;
 				FD_CLR(socket->first, &wset);
-				FD_CLR(socket->first, &fset);
-				
 				close(socket->first);
-				_responses.erase(socket->first);
 				socket =_sockets.erase(socket);
-				// break ;
-			}
-			else if (ret == 0)
-			{
-				FD_CLR(socket->first, &wset);
-				if (socket->second.getContentFromMap("Connection").compare("keep-alive"))
-				{
-					close(socket->first);
-					_responses.erase(socket->first);
-					socket =_sockets.erase(socket);
-					std::cout << "close socket" << std::endl;
-				}
-				else
-				{
-					int sock = socket->first;
-					FD_SET(sock, &fset);
-					// std::cout << GREEN << "keep-alive-delete " << _responses.erase(sock) << RESET << std::endl;
-					_responses.erase(sock);
-					socket =_sockets.erase(socket);
-					socket = _sockets.insert(socket, std::make_pair(sock, request(sock)));
-					++socket;
-					std::cout << "keep socket alive" << std::endl;
-				}
-				
 			}
 			else
 			{
-				std::cout << "not done !!" << std::endl;
-				++socket;
+				int ret = sen(socket->first, socket->second, resp->second);
+				if (ret == -1)
+				{
+					std::cout << "send() failed" << std::endl;
+					FD_CLR(socket->first, &wset);
+					close(socket->first);
+					if (resp->second.getRes().is_open())
+						resp->second.getRes().close();
+					_responses.erase(resp);
+					socket =_sockets.erase(socket);
+				}
+				else if (ret == 0)
+				{
+					FD_CLR(socket->first, &wset);
+					if (resp->second.getRes().is_open())
+						resp->second.getRes().close();
+					if (socket->second.getContentFromMap("Connection").compare("keep-alive"))
+					{
+						close(socket->first);
+						_responses.erase(resp);
+						socket =_sockets.erase(socket);
+						std::cout << "close socket" << std::endl;
+					}
+					else
+					{
+						int sock = socket->first;
+						FD_SET(sock, &fset);
+						_responses.erase(resp);
+						socket =_sockets.erase(socket);
+						socket = _sockets.insert(socket, std::make_pair(sock, request(sock)));
+						++socket;
+						std::cout << "keep socket alive" << std::endl;
+					}
+					
+				}
+				else
+				{
+					std::cout << "not done !!" << std::endl;
+					++socket;
+				}
 			}
 		}
-		else
-			++socket;
-	}
-	socket = _sockets.begin();
-	while (socket != _sockets.end())
-	{
-		if (FD_ISSET(socket->first, &cp_fset))
+		else if (FD_ISSET(socket->first, &cp_fset))
 		{
 			int ret = rec(socket->first, socket->second);
 			if (ret == -1)
@@ -175,7 +186,6 @@ void server::handle_sockets(fd_set &cp_fset, fd_set &cp_wset, fd_set& fset, fd_s
 				FD_CLR(socket->first, &fset);
 				close(socket->first);
 				socket =_sockets.erase(socket);
-				// break;
 			}
 			else if (ret == 0)
 			{
@@ -201,11 +211,6 @@ int server::add_socket(fd_set &cp_fset,fd_set &fset, int &max_fd)
 		int sock = acc();
 		if (sock != -1)
 		{
-			if (fcntl(sock, F_SETFL, O_NONBLOCK) == -1)
-			{
-				std::cout << "fcntl() failed" << std::endl;
-				return (-1);
-			}
 			std::cout << sock << " accepted" << std::endl;
 			FD_SET(sock, &fset);
 			_sockets.push_back(std::make_pair(sock, request(sock)));
@@ -234,7 +239,6 @@ void 	server::check_timeout(fd_set& fdset, const std::time_t& current_time, fd_s
 			close(socket->first);
 			_responses.erase(socket->first);
 			socket = _sockets.erase(socket);
-			
 		}
 		else
 			++socket;
@@ -254,8 +258,8 @@ void string_to_char(std::string str, char *s)
 }
 int server::sen(int &socket, request& req, Response &response)
 {
-	char			buff[BUFFER_SIZE];
-	bzero(buff, BUFFER_SIZE);
+	char			buff[BUFFER_SIZE + 1];
+
 	std::string		myline;
 	int size = 0;
 	int				ret = 0;
@@ -268,12 +272,12 @@ int server::sen(int &socket, request& req, Response &response)
 	if (response.get_body_length() > 0)
 	{
 		std::cout << response.get_str_uri() << std::endl;
-		if (!response._res.is_open())
+		if (!response.getRes().is_open())
 		{
 			std::cout << "open()" << std::endl;
-			response._res.open(response.get_str_uri(), std::ifstream::in | std::ifstream::binary);
+			response.getRes().open(response.get_str_uri(), std::ifstream::in | std::ifstream::binary);
 		}
-		if(!response._res.is_open()){
+		if(!response.getRes().is_open()){
 			std::cout << "open() failed !!!!" << std::endl;
 			return (-1);
 		}
@@ -283,9 +287,9 @@ int server::sen(int &socket, request& req, Response &response)
 			size = response.get_header().size();
 			response.get_header().clear();
 		}
-		response._res.read(buff + size, (BUFFER_SIZE - size));
-		response.set_body_length(response.get_body_length() - response._res.gcount());
-		size +=  response._res.gcount();
+		response.getRes().read(buff + size, (BUFFER_SIZE - size));
+		response.set_body_length(response.get_body_length() - response.getRes().gcount());
+		size +=  response.getRes().gcount();
 		if (response.get_body_length() == 0)
 			over = true;
 	}
@@ -295,9 +299,9 @@ int server::sen(int &socket, request& req, Response &response)
 		size = response.get_header().size();
 		over = true;
 	}
+	buff[size] = '\0';
 	
-	// std::cout << YELLOW << ">" << buff << "<" << RESET << std::endl;
-
+	std::cout << YELLOW << ">" << buff << "<" << RESET << std::endl;
 	// std::cout << "*********** "  << socket <<  " "<< size << std::endl;
 	ret = send(socket, buff, size, 0);
 	// std::cout << "***********" << std::endl;
