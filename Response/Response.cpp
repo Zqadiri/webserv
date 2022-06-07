@@ -220,7 +220,7 @@ bool            			Response::isCGI(request &req, serverConfig *servconf)
 	(void)req;
 	(void)servconf;
 	// that means that the cgi pass variable is in the server config file
-	if (this->_check_extension_mine == "php")
+	if (this->_check_extension_mine == "php" || this->_check_extension_mine == "py")
 		return true;
 	// check if the the file is a php one and config.conf hav a cgi_pass variable
 	return false;
@@ -258,8 +258,8 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			_check_auto_index = ve[i]._autoindex;
 			if(ve[i]._root == "")
 			{
-				str_ret += servconfig->_root + ve[i]._index;
-				my_root = servconfig->_root;
+				str_ret += servconfig->getRoot() + ve[i]._index;
+				my_root = servconfig->getRoot();
 			}
 			else if((ve[i]._index == "" && ve[i]._autoindex == false))
 				Errors_write(403, &str_ret);
@@ -267,10 +267,10 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			{
 				my_root = ve[i]._root;
 				str_ret += ve[i]._root + ve[i]._index;
-				if(servconfig->_redirect.path != "")
+				if(servconfig->getRedirectPath() != "")
 				{
-					this->_status_code = servconfig->_redirect.code;
-					str_ret = ve[i]._root + servconfig->_redirect.path;
+					this->_status_code = servconfig->getRedirectCode();
+					str_ret = ve[i]._root + servconfig->getRedirectPath();
 				}
 			}
 			if(ve[i]._autoindex == true && ve[i]._index == "")
@@ -289,33 +289,33 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	}
 	if(check == false)
 	{
-		_check_auto_index = servconfig->_autoindex;
-		if(servconfig->_autoindex == false && servconfig->_index == "")
+		_check_auto_index = servconfig->getAutoIndex();
+		if(servconfig->getAutoIndex() == false && servconfig->getIndex() == "")
 			Errors_write(403, &str_ret);
-		else if(servconfig->_redirect.path != "")
+		else if(servconfig->getRedirectPath() != "")
 		{
 			str_ret = "";
-			this->_status_code = servconfig->_redirect.code;
-			str_ret = servconfig->_root + servconfig->_redirect.path;
+			this->_status_code = servconfig->getRedirectCode();
+			str_ret = servconfig->getRoot() + servconfig->getRedirectPath();
 		}
 		else
 		{
-			str_ret += servconfig->_root;
-			str_ret += servconfig->_index;
+			str_ret += servconfig->getRoot();
+			str_ret += servconfig->getIndex();
 		}
-		if(servconfig->_autoindex == true && (servconfig->_index == "" || IsFile(servconfig->_root + servconfig->_index) == 0))
+		if(servconfig->getAutoIndex() == true && (servconfig->getIndex() == "" || IsFile(servconfig->getRoot() + servconfig->getIndex()) == 0))
 		{
 			if(str_req_uri.find(".") != std::string::npos)
 			{
 				if(my_root != "")
 					File_exec(&str_ret, str_req_uri, my_root);
 				else
-					File_exec(&str_ret, str_req_uri, servconfig->_root);
+					File_exec(&str_ret, str_req_uri, servconfig->getRoot());
 			}
 			else
 			{
 				str_ret = "";
-				str_ret += servconfig->_root ; 
+				str_ret += servconfig->getRoot() ; 
 				std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
 				AutoIndexExec(str_ret + str_req_uri);
 				str_ret = "/tmp/auto_index.html";
@@ -446,7 +446,7 @@ bool						Response::Allow_Methods(request &req, serverConfig *servconf, std::str
 	}
 	if(check == false)
 	{
-		allow = servconf->_allow_methods;
+		allow = servconf->getAllowMethods();
 		for(std::list<std::string>::const_iterator i = allow.begin(); i != allow.end(); ++i)
 		{
 			if(i->c_str() == method)
@@ -482,21 +482,21 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		myfile.open(str_uri);
 		if(!myfile.is_open())
 		{
-			if(_check_auto_index && servconf->_redirect.path == "")
+			if(_check_auto_index && servconf->getRedirectPath() == "")
 			{
 				str_uri = "/tmp/auto_index.html";
 				AutoIndexExec(my_root);
 			}
-			else if(IsFile(my_root + servconf->_redirect.path) == 0)
+			else if(IsFile(my_root + servconf->getRedirectPath()) == 0)
 				Errors_write(404, &str_uri);
 			else
 				Errors_write(403, &str_uri);
 		}
 		myfile.close();
-		if(servconf->_errorPages.code == this->_status_code)
+		if(servconf->getErrorPageCode()== this->_status_code)
 		{
 			puts("hhhhhhhhhhhhhhh");
-			str_uri = servconf->_errorPages.path;
+			str_uri = servconf->getErrorPagePath();
 			myfile.open(str_uri);
 			if(!myfile.is_open())
 				Errors_write(404, &str_uri);
@@ -529,7 +529,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	else
 	{
 		CGI				cgi_handler(req, *servconf);
-		cgi_handler.executeCgi(str_uri, fd, *this);
+		cgi_handler.executeCgi(str_uri, fd, *this, req);
 	}
 }
 
@@ -737,7 +737,7 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		{
 			std::cout << GREEN << "------------------- CGI -----------------------" << RESET << std::endl;
 			CGI				cgi_handler(req, *servconf);
-			cgi_handler.executeCgi(complete_path, fd, *this);
+			cgi_handler.executeCgi(complete_path, fd, *this, req);
 		}
 	}
 	else

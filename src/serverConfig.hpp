@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 22:30:00 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 15:08:24 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,9 @@ struct _location
 	std::string				_uploadStore;
 };
 
-//return STATUS_CODE PATH_TO_REDIRECT
-
 class serverConfig
 {
-	public:
+	private:
 		// server data
 		std::list<std::string>		_server_name;
 		std::string					_root;
@@ -42,7 +40,7 @@ class serverConfig
 		int							_limitBodySize;
 		t_error_pages				_errorPages;
 		std::list<std::string>		_allow_methods;
-		std::vector<_location>		_locations; // vector of locations
+		std::vector<_location>		_locations;
 		t_redirect					_redirect;
 		  
 	public:
@@ -52,6 +50,13 @@ class serverConfig
 		serverConfig(const serverConfig &obj);
 		serverConfig	&operator=(const serverConfig&);
 
+		std::string						getRoot();
+		std::string						getIndex();
+		bool							getAutoindex();
+		std::string						getRedirectPath();
+		int			 					getRedirectCode();
+		std::string						getErrorPagePath();
+		int								getErrorPageCode();
 		const t_listen				 	&gethostPort(void) const;
 		const std::list<std::string>	&getServerName(void) const;
 		const std::vector<_location>	&getLocations(void) const;

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 14:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/03 14:42:30 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 10:28:05 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,12 @@ std::string		randomFileName(void)
 	strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", now);
 	fileName += buffer;
 	return fileName;
+}
+
+std::string toUpper(std::string init)
+{
+	std::string ret;
+	for (int i = 1; i < init[i]; i++)
+		ret += std::toupper(init[i]);
+	return ret;
 }

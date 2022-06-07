@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 13:30:31 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/02 15:05:13 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 14:24:25 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ class CGI
 		~CGI(void);
 		CGI	&operator=(CGI const &src);
 		CGI( request &request,  serverConfig &server);
-		std::string		executeCgi(const std::string&, size_t, Response&);
+		std::string		executeCgi(const std::string&, size_t, Response&, request &);
 		std::string		getTheCompletePath(const std::string&);
-		std::string		addHeader(int fd, std::string, Response &);
+		std::string		addHeader(int fd, std::string, Response &, request &);
 };
 
 #endif
