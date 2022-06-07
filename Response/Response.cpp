@@ -222,6 +222,22 @@ void            			Response::File_type(request &req)
 		this->_file_extension = type;
 }
 
+void            			Response::File_type(std::string str)
+{
+	std::string str2;
+	std::string	s;
+	int         index;
+	const char	*type;
+
+	s = "";
+	index = str.find_first_of(".");
+	str2 = str.substr(index + 1, str.length());
+	this->_check_extension_mine = str2;
+	type = MimeTypes::getType(str2.c_str());
+	if(type != NULL)
+		this->_file_extension = type;
+}
+
 bool            			Response::isCGI(request &req, serverConfig *servconf)
 {
 	(void)req;
@@ -263,6 +279,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 		{
 			check = true;
 			_check_auto_index = ve[i]._autoindex;
+			my_index = ve[i]._index;
 			if(ve[i]._root == "")
 			{
 				str_ret += servconfig->getRoot() + ve[i]._index;
@@ -297,6 +314,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	if(check == false)
 	{
 		_check_auto_index = servconfig->getAutoIndex();
+		my_index = servconfig->getIndex();
 		if(servconfig->getAutoIndex() == false && servconfig->getIndex() == "")
 			Errors_write(403, &str_ret);
 		else if(servconfig->getRedirectPath() != "")
@@ -530,6 +548,11 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 			content_type = Content_type();
 		else
 			content_type = "text/html";
+		if(content_type == "")
+		{
+			File_type(my_index);
+			content_type = this->_file_extension;
+		}
 		header +=  content_type;
 		header +=  "\r\n";
 		body_length = File_length(str_uri);
@@ -687,7 +710,7 @@ std::string 		getTargetPath(request &req, serverConfig *servconf)
 	ret += "/";
 	ret += req.getRequestURI();
 	ret += randomFileName();
-	
+	ret 
 	return ret;
 }
 
@@ -752,7 +775,7 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		this->_status_code = 413;
 		str_uri = "./Response/response_errors_pages/413.html";
 	}
-	else if (isCGI(req, servconf) && _status_code == 201)
+	else if (isCGI(req, servconf))
 	{
 		//! support cgi  403 Forbidden
 		if(supportCGI(req, servconf))
@@ -764,8 +787,9 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 			cgi_handler.executeCgi(complete_path, fd, *this, req);
 		}
 	}
-	else
+	else{
 		Errors_write(404, &str_uri);
+	}
 
 }
 
