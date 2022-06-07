@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/05 22:26:25 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 12:09:04 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,12 @@ CGI::CGI(request &request, serverConfig &config) : _scriptName("./php-cgi"), _sc
 	this->_env["SERVER_PROTOCOL"] = "HTTP/1.1";
 	this->_env["SERVER_SOFTWARE"] = "Weebserv/1.0";
 	// Cookies
-	this->_env["HTTP_COOKIE"] = "name=value; expires=date; path=path; domain=domain;";
+	this->_env["HTTP_COOKIE"] = _headers["Set-Cookie"];
+	this->_env["HTTP_ACCEPT"] = _headers["Accept"];
+	this->_env["HTTP_ACCEPT_CHARSET"] = _headers["Accept-Charset"];
+	this->_env["HTTP_ACCEPT_ENCODING"] = _headers["Accept-Encoding"];
+	this->_env["HTTP_ACCEPT_LANGUAGE"] = _headers["Accept-Language"];
+	this->_env["HTTP_CONNECTION"] = _headers["Connection"];
 }
 
 CGI::CGI(CGI const &src){
@@ -201,8 +206,8 @@ std::string CGI::addHeader(int socket_fd, std::string output, Response &response
 	response.header += "\r\n";
 
 	// Set-Cookie: <cookie-name>=<cookie-value>
-	// response.header += "Set-Cookie: ";
-	// response.header += "name=value; expires=Thu, 18 Dec 2013 12:00:00 GMT; path=/\r\n";
+	response.header += "Set-Cookie: ";
+	response.header += "name=value; expires=Thu, 18 Dec 2013 12:00:00 GMT; path=/\r\n";
 
 	size_t end_headers = output.find_first_of("\n");
 	int start = output.find("Content-type", 0);

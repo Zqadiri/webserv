@@ -98,8 +98,10 @@ std::string     			Response::Request_statuscode_checked(request &req, serverConf
 
 void            			Response::Methods_exec(request &req, int fd, serverConfig *servconf)
 {
-	std::string str;
+	std::string	str;
+	int			i;
 
+	i = 0;
     str = req.getMethod();
     if (this->_status_code == 200)
     {
@@ -246,98 +248,80 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	str_req_uri = req.getRequestURI();
 	ve = servconfig->getLocations();
 	str_ret = "";
-	i = 0;
-	// if(IsFile(this->_s) == 2)
-	// {
-		i = -1;
-		check = false;
-		while (++i < (int)ve.size()	)
+	i = -1;
+	check = false;
+	while (++i < (int)ve.size()	)
+	{
+		if(ve[i]._path == str_req_uri)
 		{
-			if(ve[i]._path == str_req_uri)
+			check = true;
+			_check_auto_index = ve[i]._autoindex;
+			if(ve[i]._root == "")
 			{
-				check = true;
-				_check_auto_index = ve[i]._autoindex;
-				if(ve[i]._root == "")
+				str_ret += servconfig->_root + ve[i]._index;
+				my_root = servconfig->_root;
+			}
+			else if((ve[i]._index == "" && ve[i]._autoindex == false))
+				Errors_write(403, &str_ret);
+			else
+			{
+				my_root = ve[i]._root;
+				str_ret += ve[i]._root + ve[i]._index;
+				if(servconfig->_redirect.path != "")
 				{
-					str_ret += servconfig->_root + ve[i]._index;
-					my_root = servconfig->_root;
+					this->_status_code = servconfig->_redirect.code;
+					str_ret = ve[i]._root + servconfig->_redirect.path;
 				}
-				else if((ve[i]._index == "" && ve[i]._autoindex == false))
-				{
-					this->_status_code = 403;
-					str_ret += "./Response/response_errors_pages/";
-					str_ret += to_string(this->_status_code);
-					str_ret += ".html";
-				}
+			}
+			if(ve[i]._autoindex == true && ve[i]._index == "")
+			{
+				if(str_req_uri.find(".") != std::string::npos)
+					File_exec(&str_ret, str_req_uri, ve[i]._root);
+				else if(IsFile(str_ret + str_req_uri) == 0)
+					Errors_write(404, &str_ret);
 				else
 				{
-					my_root = ve[i]._root;
-					str_ret += ve[i]._root + ve[i]._index;
-				}
-				if(ve[i]._autoindex == true && ve[i]._index == "")
-				{
-					if(str_req_uri.find(".") != std::string::npos)
-						File_exec(&str_ret, str_req_uri, ve[i]._root);
-					else if(IsFile(str_ret + str_req_uri) == 0)
-					{
-						this->_status_code = 404;
-						str_ret = "";
-						str_ret += "./Response/response_errors_pages/";
-						str_ret += to_string(this->_status_code);
-						str_ret += ".html";
-					}
-					else
-					{
-						AutoIndexExec(str_ret);
-						str_ret = "/tmp/auto_index.html";
-					}
+					AutoIndexExec(str_ret);
+					str_ret = "/tmp/auto_index.html";
 				}
 			}
 		}
-		if(check == false)
+	}
+	if(check == false)
+	{
+		_check_auto_index = servconfig->_autoindex;
+		if(servconfig->_autoindex == false && servconfig->_index == "")
+			Errors_write(403, &str_ret);
+		else if(servconfig->_redirect.path != "")
 		{
-			_check_auto_index = servconfig->_autoindex;
-			if(servconfig->_autoindex == false && servconfig->_index == "")
+			str_ret = "";
+			this->_status_code = servconfig->_redirect.code;
+			str_ret = servconfig->_root + servconfig->_redirect.path;
+		}
+		else
+		{
+			str_ret += servconfig->_root;
+			str_ret += servconfig->_index;
+		}
+		if(servconfig->_autoindex == true && (servconfig->_index == "" || IsFile(servconfig->_root + servconfig->_index) == 0))
+		{
+			if(str_req_uri.find(".") != std::string::npos)
 			{
-				this->_status_code = 403;
-				str_ret += "./Response/response_errors_pages/";
-				str_ret += to_string(this->_status_code);
-				str_ret += ".html";
+				if(my_root != "")
+					File_exec(&str_ret, str_req_uri, my_root);
+				else
+					File_exec(&str_ret, str_req_uri, servconfig->_root);
 			}
 			else
 			{
-				str_ret += servconfig->_root;
-				str_ret += servconfig->_index;
-			}
-			if(servconfig->_autoindex == true && servconfig->_index == "")
-			{
-				if(str_req_uri.find(".") != std::string::npos)
-				{
-					if(my_root != "")
-						File_exec(&str_ret, str_req_uri, my_root);
-					else
-						File_exec(&str_ret, str_req_uri, servconfig->_root);
-				}
-				else
-				{
-					if(IsFile(str_ret + str_req_uri) == 0)
-					{
-						this->_status_code = 404;
-						str_ret = "";
-						str_ret += "./Response/response_errors_pages/";
-						str_ret += to_string(this->_status_code);
-						str_ret += ".html";
-					}
-					else
-					{
-						std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
-						AutoIndexExec(str_ret + str_req_uri);
-						str_ret = "/tmp/auto_index.html";
-					}
-				}
+				str_ret = "";
+				str_ret += servconfig->_root ; 
+				std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
+				AutoIndexExec(str_ret + str_req_uri);
+				str_ret = "/tmp/auto_index.html";
 			}
 		}
-	// }
+	}
 	return str_ret;
 }
 
@@ -438,33 +422,46 @@ void						Response::getStatusString()
 
 //!------------------------------------ GET ------------------------------------
 
+void						Response::Errors_write(int status, std::string *str_uri)
+{
+	this->_status_code = status;
+	*str_uri = "";
+	*str_uri += "./Response/response_errors_pages/";
+	*str_uri += to_string(this->_status_code);
+	*str_uri += ".html";
+}
+
 void            			Response::GET(int fd, request &req, serverConfig *servconf)
 {
-	File_type(req);
 	std::string     content_type;
 	time_t          rawtime;
 	std::fstream	myfile;
 	std::fstream	another_file;
 
+	File_type(req);
 	str_uri = CompletePath(req, servconf);
+	std::cout << "str_uri is here " << str_uri << std::endl;
 	myfile.open(str_uri);
 	if(!myfile.is_open())
 	{
-		if(_check_auto_index)
+		if(_check_auto_index && servconf->_redirect.path == "")
 		{
 			str_uri = "/tmp/auto_index.html";
 			AutoIndexExec(my_root);
 		}
+		else if(IsFile(my_root + servconf->_redirect.path) == 0)
+			Errors_write(404, &str_uri);
 		else
-		{
-			this->_status_code = 403;
-			str_uri = "";
-			str_uri += "./Response/response_errors_pages/";
-			str_uri += to_string(this->_status_code);
-			str_uri += ".html";
-		}
+			Errors_write(403, &str_uri);
 	}
 	myfile.close();
+	if(servconf->_errorPages.code == this->_status_code)
+	{
+		str_uri = servconf->_errorPages.path;
+		myfile.open(str_uri);
+		if(!myfile.is_open())
+			Errors_write(404, &str_uri);
+	}
 	if(!isCGI(req, servconf))
 	{
 		getStatusString();
@@ -572,11 +569,6 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 
 //!------------------------------------ POST ------------------------------------
 
-/*
-	TODO:The POST method
-	requests that the origin server accept the entity enclosed in the request as a new subordinate
-	of the resource identified by the Request-URI in the Request-Line
-*/
 
 bool						Response::supportUpload(request &req,  serverConfig *servconf)
 {
@@ -698,12 +690,7 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	{
 		//! support cgi  403 Forbidden
 		if(supportCGI(req, servconf))
-		{
-			this->_status_code = 403;
-			str_uri += "./Response/response_errors_pages/";
-			str_uri += to_string(this->_status_code);
-			str_uri += ".html";
-		}
+			Errors_write(403, &str_uri);
 		else
 		{
 			std::cout << GREEN << "------------------- CGI -----------------------" << RESET << std::endl;
@@ -712,13 +699,7 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		}
 	}
 	else
-	{
-		std::cout << GREEN << "------------------- ERROR -----------------------" << RESET << std::endl;
-		this->_status_code = 404;
-		str_uri += "./Response/response_errors_pages/";
-		str_uri += to_string(this->_status_code);
-		str_uri += ".html";
-	}
+		Errors_write(404, &str_uri);
 
 }
 

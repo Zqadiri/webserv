@@ -33,6 +33,7 @@ class Response
         void                        AutoIndexExec(std::string);
         std::string                 new_header_str(request &req, serverConfig *servconf);
         void                        File_exec(std::string *str_ret, std::string str_req_uri, std::string my_root_find);
+        void                        Errors_write(int, std::string *);
 
         //!---------------- DELETE Functions --------------------------
         void						getStatusString();

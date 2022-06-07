@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 14:50:52 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/03 14:42:47 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 10:29:00 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,5 +19,6 @@ std::string			removeSpace(std::string init);
 std::string         to_string(size_t n);
 std::string			getNextLine(const std::string &buff, size_t &cursor);
 std::string         randomFileName(void);
+std::string         toUpper(std::string init);
 
 #endif 
