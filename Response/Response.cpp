@@ -486,6 +486,22 @@ bool						Response::Allow_Methods(request &req, serverConfig *servconf, std::str
 	return false;
 }
 
+int                         Response::get_body_length(){return body_length;}
+
+std::string                 Response::get_header(){return header;}
+
+std::string		            Response::get_str_uri(){return str_uri;}
+
+bool                        Response::get_handled(){return _handled;}
+
+std::string                 Response::get_file_change_get(){return _file_change_get;}
+
+int							Response::get_status_code(){return _status_code;}
+
+void                       	Response::set_body_length(int value){this->body_length = value;}
+
+void                        Response::set_status_code(int value){this->_status_code = value;}
+
 //!------------------------------------ GET ------------------------------------
 
 void						Response::Errors_write(int status, std::string *str_uri)
@@ -703,14 +719,14 @@ int							Response::parseLine(std::string line)
 	return 1;
 }
 
-std::string 		getTargetPath(request &req, serverConfig *servconf)
+std::string 				getTargetPath(request &req, serverConfig *servconf)
 {
 	(void)req;
 	std::string ret = servconf->getRoot();
 	ret += "/";
 	ret += req.getRequestURI();
 	ret += randomFileName();
-	ret 
+	// ret 
 	return ret;
 }
 
@@ -728,7 +744,7 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	newBody.open(filename.c_str(), std::fstream::in | std::fstream::app);
 	std::cout << "POST: " << _status_code << std::endl;
 	File_type(req);
-	if (supportUpload(req, servconf) && _status_code == 200)
+	if (supportUpload(req, servconf))
 	{
 		std::fstream reqBody;
 		std::string	line;

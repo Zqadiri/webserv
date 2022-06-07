@@ -37,6 +37,19 @@ class Response
         void                        Errors_write(int, std::string *);
         bool                        Allow_Methods(request &req, serverConfig*, std::string);
 
+        //!---------------- GETTERS --------------------------
+        std::ifstream               getRes();
+        int                         get_body_length();
+        std::string                 get_header();
+        std::string		            get_str_uri();
+        bool                        get_handled();
+        std::string                 get_file_change_get();
+        int                         get_status_code();
+
+        //!---------------- SETTERS --------------------------
+        void                        set_body_length(int);
+        void                        set_status_code(int);
+
         //!---------------- DELETE Functions --------------------------
         void						getStatusString();
         int                         IsFile(const std::string& path);
@@ -49,8 +62,9 @@ class Response
         bool                        supportCGI(request &req, serverConfig *servconf);
         int			                parseLine(std::string line);
         void                        POST(int, request &req, serverConfig*);
+        std::ifstream               _res;
 
-    public: //!!!!! private
+    private: //!!!!! private
         std::string             _response_string;
         int                     _status_code;
         std::string             _pages_to_string;
@@ -67,7 +81,6 @@ class Response
         std::string             header;
         std::string		        str_uri;
         int                     body_length;
-        std::ifstream           _res;
         bool                    _handled;
 	    static std::string		my_root;
         std::string             my_index;
