@@ -103,15 +103,22 @@ void            			Response::Methods_exec(request &req, int fd, serverConfig *se
 
 	i = 0;
     str = req.getMethod();
-    if (this->_status_code == 200)
-    {
-        if(str == "GET")
-            return GET(fd, req, servconf);
-        else if(str == "POST")
-            return POST(fd, req, servconf);
-        else if(str == "DELETE")
-            return DELETE(req, servconf);
-    }
+	if(str != "GET" && str != "POST" && str != "DELETE"){
+		this->_status_code = 405;
+		str_uri = "./Response/response_errors_pages/405.html";
+	}
+	else
+	{
+		if (this->_status_code == 200)
+		{
+			if(str == "GET")
+				return GET(fd, req, servconf);
+			else if(str == "POST")
+				return POST(fd, req, servconf);
+			else if(str == "DELETE")
+				return DELETE(req, servconf);
+		}
+	}
 }
 
 std::string     			Response::Content_type()
@@ -314,11 +321,16 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			}
 			else
 			{
-				str_ret = "";
-				str_ret += servconfig->getRoot() ; 
-				std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
-				AutoIndexExec(str_ret + str_req_uri);
-				str_ret = "/tmp/auto_index.html";
+				if(IsFile(servconfig->getRoot() + str_req_uri) == 0)
+					Errors_write(404, &str_ret);
+				else
+				{
+					str_ret = "";
+					str_ret += servconfig->getRoot() ; 
+					std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
+					AutoIndexExec(str_ret + str_req_uri);
+					str_ret = "/tmp/auto_index.html";
+				}
 			}
 		}
 	}
@@ -420,6 +432,42 @@ void						Response::getStatusString()
 		header += 	FORBIDDEN;
 }
 
+bool						Response::Allow_Methods(request &req, serverConfig *servconf, std::string method)
+{
+	std::vector<_location>	ve;
+	int						i;
+	std::list<std::string>	allow;
+	bool					check;
+
+	i = -1;
+	ve = servconf->getLocations();
+	check = false;
+
+	while (++i < (int)ve.size())
+	{
+		if(ve[i]._path == req.getRequestURI())
+		{
+			allow = ve[i]._allow_methods;
+			check = true;
+			for(std::list<std::string>::const_iterator i = allow.begin(); i != allow.end(); ++i)
+			{
+				if(i->c_str() == method)
+					return true;
+			}
+		}
+	}
+	if(check == false)
+	{
+		allow = servconf->getAllowMethods();
+		for(std::list<std::string>::const_iterator i = allow.begin(); i != allow.end(); ++i)
+		{
+			if(i->c_str() == method)
+				return true;
+		}
+	}
+	return false;
+}
+
 //!------------------------------------ GET ------------------------------------
 
 void						Response::Errors_write(int status, std::string *str_uri)
@@ -438,30 +486,35 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 	std::fstream	myfile;
 	std::fstream	another_file;
 
-	File_type(req);
-	str_uri = CompletePath(req, servconf);
-	std::cout << "str_uri is here " << str_uri << std::endl;
-	myfile.open(str_uri);
-	if(!myfile.is_open())
+	if(Allow_Methods(req, servconf, "GET"))
 	{
-		if(_check_auto_index && servconf->getRedirectPath() == "")
-		{
-			str_uri = "/tmp/auto_index.html";
-			AutoIndexExec(my_root);
-		}
-		else if(IsFile(my_root + servconf->getRedirectPath()) == 0)
-			Errors_write(404, &str_uri);
-		else
-			Errors_write(403, &str_uri);
-	}
-	myfile.close();
-	if(servconf->getErrorPageCode() == this->_status_code)
-	{
-		str_uri = servconf->getErrorPagePath();
+		File_type(req);
+		str_uri = CompletePath(req, servconf);
+		std::cout << "str_uri is here " << str_uri << std::endl;
 		myfile.open(str_uri);
 		if(!myfile.is_open())
-			Errors_write(404, &str_uri);
+		{
+			if(_check_auto_index && servconf->getRedirectPath() == "")
+			{
+				str_uri = "/tmp/auto_index.html";
+				AutoIndexExec(my_root);
+			}
+			else if(IsFile(my_root + servconf->getRedirectPath()) == 0)
+				Errors_write(404, &str_uri);
+			else
+				Errors_write(403, &str_uri);
+		}
+		myfile.close();
+		if(servconf->getErrorPageCode()== this->_status_code)
+		{
+			str_uri = servconf->getErrorPagePath();
+			myfile.open(str_uri);
+			if(!myfile.is_open())
+				Errors_write(404, &str_uri);
+		}
 	}
+	else
+		str_uri = "./Response/response_errors_pages/no_method_page.html";
 	if(!isCGI(req, servconf))
 	{
 		getStatusString();
@@ -689,6 +742,11 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		header += "\r\n\r\n";
 		//! 201	Created
 		return ;
+	}
+	else if(servconf->getlimitBodySize() != -1 && req.getBodyLength() > servconf->getlimitBodySize())
+	{
+		this->_status_code = 413;
+		str_uri = "./Response/response_errors_pages/413.html";
 	}
 	else if (isCGI(req, servconf) && _status_code == 201)
 	{
