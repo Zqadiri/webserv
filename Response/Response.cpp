@@ -486,17 +486,18 @@ bool						Response::Allow_Methods(request &req, serverConfig *servconf, std::str
 	return false;
 }
 
-int                         Response::get_body_length(){return body_length;}
+int                         &Response::get_body_length(){return body_length;}
 
-std::string                 Response::get_header(){return header;}
+std::string                 &Response::get_header(){return header;}
 
-std::string		            Response::get_str_uri(){return str_uri;}
+std::string		            &Response::get_str_uri(){return str_uri;}
 
-bool                        Response::get_handled(){return _handled;}
+bool                        &Response::get_handled(){return _handled;}
 
-std::string                 Response::get_file_change_get(){return _file_change_get;}
+std::string                 &Response::get_file_change_get(){return _file_change_get;}
+std::ifstream               &Response::getRes(){return _res;}
 
-int							Response::get_status_code(){return _status_code;}
+int							&Response::get_status_code(){return _status_code;}
 
 void                       	Response::set_body_length(int value){this->body_length = value;}
 

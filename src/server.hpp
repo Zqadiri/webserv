@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:45:15 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/01 12:01:35 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/07 22:20:11 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,9 @@ class server
 {
 	private:
 		struct sockaddr_in		_addr;
-
 		int						_fd;
 		std::list<std::pair<int, request> >	_sockets;
 		std::map<int, Response> _responses;
-		std::vector<request*>	_requests;
 		serverConfig* _config;
 
 	public:
