@@ -33,6 +33,3 @@ webserv
 *.exe
 *.out
 *.app
-
-tmp/*
-www/upload/*
