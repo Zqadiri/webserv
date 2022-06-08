@@ -548,7 +548,10 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		}
 	}
 	else
+	{
+		this->_status_code = 405;
 		str_uri = "./Response/response_errors_pages/no_method_page.html";
+	}
 	if(!isCGI(req, servconf))
 	{
 		getStatusString();
@@ -661,7 +664,7 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 
 //!------------------------------------ POST ------------------------------------
 
-std::string		FileName(void)
+std::string					FileName(void)
 {
 	std::string fileName("");
 	time_t t = time(0);
@@ -672,7 +675,7 @@ std::string		FileName(void)
 	return fileName;
 }
 
-std::string 		getTargetPath(request &req, serverConfig *servconf, std::string loc)
+std::string 				getTargetPath(request &req, serverConfig *servconf, std::string loc)
 {
 	(void)servconf;
 	std::map<std::string, std::string>	head = req.getHeaders();
