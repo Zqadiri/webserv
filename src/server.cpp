@@ -94,11 +94,11 @@ int server::get_fd(void) const{
 
 int server::rec(int &socket, request& req)
 {
-	char				buff[BUFFER_SIZE];
+	char				buff[BUFFER_SIZE + 1];
 	int					ret;
 	
 	std::cout << "trying recv from " << socket << "\n";
-	ret = recv(socket, buff, sizeof(buff) - 1 , 0);
+	ret = recv(socket, buff, BUFFER_SIZE , 0);
 	if (ret == -1)
 	{
 		std::cout << "recv() failed" << std::endl;
@@ -109,8 +109,9 @@ int server::rec(int &socket, request& req)
 		std::cout << "Client disconnected" << std::endl;
 		return (-1);
 	}
-	// buff[ret] = '\0';
+	buff[ret] = '\0';
 	std::string str(buff, ret);
+	std::cout<< GREEN << buff << RESET << std::endl;
 	int ret_parse = req.parseRquest(str, req, socket);
 	std::cout << "{ret} " <<  ret_parse << std::endl;
 	if (ret_parse < 0){

@@ -59,11 +59,11 @@ request::request(int socket_fd) : _method(""), _requestURI(""), _version(""), _h
 	this->_headers["Www-Authenticate"] = "";
 	this->_headers["User-Agent"] = "";
 	this->_headers["Content-Disposition"] = "";
-	_body.open (_name, std::fstream::in | std::fstream::out | std::fstream::trunc);
-	_body.close();
+	// _body.open (_name, std::fstream::in | std::fstream::out | std::fstream::trunc);
+	// _body.close();
 }
 
-request::request(request const &cp) : _method(""), _requestURI(""), _version(""), _host(""), _current_time(std::time(NULL))
+request::request(request const &cp)
 {
 	*this = cp;
 }
@@ -82,7 +82,7 @@ request &request::operator=(request const &cp)
 	_bodyLength = cp._bodyLength;
 	_status = cp._status;
 	_name = cp._name;
-	_body.open (_name, std::fstream::in | std::fstream::out | std::fstream::trunc);
+	// _body.open (_name, std::fstream::in | std::fstream::out | std::fstream::trunc);
 	return *this;
 }
 request::~request(){

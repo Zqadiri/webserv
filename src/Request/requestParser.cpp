@@ -109,9 +109,14 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 	std::string delim("\r\n\r\n");
 	std::string filename = "./tmp/body";
 	size_t bodyCursor = buff.find(delim);
-
+	std::cout << RED << buff << RESET << std::endl;
 	reset_timer();
 	filename += to_string(socket_fd);
+	if (!_body.is_open())
+	{
+		_body.open (_name, std::fstream::in | std::fstream::out | std::fstream::trunc);
+		
+	}
 	if (bodyCursor == std::string::npos && _status == START_LINE)
 		req._tmp += buff;
 	else if (_status == START_LINE){
@@ -151,6 +156,7 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 		_body.close();
 		return 0;
 	}
+	std::cout << RED <<_status<< RESET <<std::endl;
 	return 1;
 }
 
