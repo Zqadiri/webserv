@@ -61,7 +61,6 @@ Response::Response(const Response &cp){
 	this->_contentType = cp._contentType;
 	//response file get method
 	this->_file_change_get = cp._file_change_get;
-	//response file delete method
 	this->_file_change_delete = cp._file_change_delete;
 	this->_my_auto_index = cp._my_auto_index;
 	this->header = cp.header;
@@ -707,6 +706,7 @@ void						Response::Error_headers(std::string status_str)
 	// header +=  "\r\n";
 
 	body_length = File_length(str_uri);
+	header +=  "\r\n";
 	header += "Content-Length: ";
 	header += to_string(body_length);
 	header += "\r\n\r\n";
@@ -815,7 +815,8 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		// header +=  content_type;
 		// header +=  "\r\n";
 
-		body_length = File_length(str_uri);
+		body_length = 0;
+		header += "\r\n";
 		header += "Content-Length: ";
 		header += to_string(body_length);
 		header += "\r\n\r\n";
