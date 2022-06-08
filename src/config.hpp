@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:24 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/07 15:52:14 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/08 13:14:23 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ class Config
 		const std::vector<serverConfig*>	&getServers(void);
 		std::vector<t_listen>				getAllListenDir(void);
 		std::list<std::list<std::string> >	getAllServerNames(void);
+		void		addDefaultServer();
 
 		class	FileCorrupted : public std::exception{
 			public:
@@ -47,6 +48,8 @@ class Config
 			public:
 				virtual const char* what() const throw();
 		};
+
+		void	print();
 };
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/07 21:18:15 by nwakour          ###   ########.fr       */
+/*   Updated: 2022/06/08 13:36:00 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,11 @@ std::vector<serverConfig*>	Servers::getServers(void){
 
 /*---- Member Functions ----*/
 
-// void	Servers::testConnection(int sock){
-// 	if (sock < 0){
-// 		write (2, "Failed To Connect\n", 18);
-// 		exit (EXIT_FAILURE);
-// 	}
-// }
-
 void		Servers::conf(char **argv){
+	if (argv[1] == NULL){
+		config.addDefaultServer();
+		return;
+	}
 	config.parseFile(argv[1]);
 }
 

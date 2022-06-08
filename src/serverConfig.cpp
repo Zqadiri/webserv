@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/07 15:16:05 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/08 13:34:52 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,12 @@ serverConfig::serverConfig(const serverConfig &obj){
 	*this = obj;
 }
 
+serverConfig::serverConfig(std::string name){
+	(void)name;
+	_hostPort.host = 0;
+	_hostPort.port = 8080;
+}
+
 /*---- Operators -------*/
 
 serverConfig	&serverConfig::operator=(const serverConfig &obj){
@@ -115,7 +121,8 @@ unsigned int	serverConfig::serverName(serverConfig &serv, configFile con, unsign
 {
 	index++;
 	checkForValue(con[index]);
-	while (!notAValue(con[index])){
+	while (!notAValue(con[index])  && con[index].compare("server") &&
+		 con[index].compare("{") && con[index].compare("}")){
 		serv._server_name.push_back(con[index]);
 		index++;
 	}

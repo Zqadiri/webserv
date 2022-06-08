@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:05:42 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/05/31 15:02:36 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/08 12:39:11 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 int ft_main(int argc, char *argv[])
 {
-	if (argc == 2)
+	if (argc == 2 || argc == 1)
 	{
 		Servers  serv;
 		try{

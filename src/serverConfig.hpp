@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/07 15:08:24 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/08 13:14:38 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ struct _location
 
 class serverConfig
 {
-	private:
+	public:
 		// server data
 		std::list<std::string>		_server_name;
 		std::string					_root;
@@ -45,11 +45,13 @@ class serverConfig
 		  
 	public:
 		serverConfig();
+		serverConfig(std::string);
 		serverConfig(std::string _root, std::string _index, std::string _host);
 		~serverConfig();
 		serverConfig(const serverConfig &obj);
 		serverConfig	&operator=(const serverConfig&);
 
+		void							setDefaultValues(const serverConfig &obj);
 		std::string						getRoot();
 		std::string						getIndex();
 		bool							getAutoindex();

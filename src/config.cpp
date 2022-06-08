@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/07 19:14:22 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/08 13:34:03 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,12 @@ bool exepectedTokens(std::string value)
 	return false;
 }
 
+void		Config::addDefaultServer()
+{
+	serverConfig *serv = new serverConfig("Default");
+	this->servers.push_back(serv);
+}
+
 configFile		Config::slitTokens(configFile con, std::string delim)
 {
 	configFile	tokens;
@@ -100,8 +106,6 @@ configFile		Config::slitTokens(configFile con, std::string delim)
 				break;
 			std::string token = removeSpace(str.substr(start, end - start));
 			if (isKey && !exepectedTokens(token)){
-				puts("here");
-				std::cout << "Error: " << token << " is not a valid token" << std::endl;
 				throw Config::FileNotWellFormated();
 			}
 			isKey = 0;
@@ -151,6 +155,7 @@ void					Config::parseFile(const char *fileName)
 		else
 			throw	Config::FileNotWellFormated();
 	}
+	print();
 	checkForDup();
 }
 
@@ -197,14 +202,57 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 				isLocation = 1;
 			if (index >= con.size())
 				break;
-			if (con[index] == keys[i]){
+			if (con[index] == keys[i])
 				index = (server->*values[i])(*server, con, index);
-			}
 		}
-		if (index >= con.size() || (con[index] == "}" && !isLocation) || !con[index].compare("server"))
+		if (index >= con.size() || (con[index] == "}" && !isLocation) || (con[index] == "{" && !isLocation) || !con[index].compare("server"))
 			break;
 	}
+	if (server->_hostPort.host == 0 && server->_hostPort.port == -1)
+		throw Config::FileNotWellFormated();
 	this->servers.push_back(server);
 	index--;
 	return index;
+}
+
+void	Config::print(){
+	std::cout << "[Servers n: " << this->servers.size() << "]"<< std::endl;
+	for (size_t i = 0; i < this->servers.size(); i++)
+	{
+		std::cout << "-------------------------------------" << std::endl;
+		puts("[serverName]");
+		for (std::list<std::string>::iterator it = this->servers[i]->_server_name.begin(); 
+				it != this->servers[i]->_server_name.end(); ++it)
+			std::cout << " > " << *it << std::endl;
+		puts("[root]");
+		std::cout << this->servers[i]->_root << std::endl;
+		puts("[index]");
+		std::cout << this->servers[i]->_index << std::endl;
+		puts("[listen]");
+		std::cout << this->servers[i]->_hostPort.host << std::endl;
+		std::cout << this->servers[i]->_hostPort.port << std::endl;
+		puts("[autoindex]");
+		std::cout << this->servers[i]->_autoindex << std::endl;
+		puts("[allow_methods]");
+		for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
+				it != this->servers[i]->_allow_methods.end(); ++it)
+		std::cout << " > " <<*it << std::endl;
+		std::cout << "[locations n: " << this->servers[i]->_locations.size()  << "]"<< std::endl;
+		for (size_t j = 0; j < this->servers[i]->_locations.size(); j++)
+		{
+			std::cout << "[location "<< j << "]"<< std::endl;
+			std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
+			std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
+			std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
+			std::cout << "uploadStore " << this->servers[i]->_locations[j]._uploadStore << std::endl;
+			std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
+			std::cout << "autoindex " << this->servers[i]->_locations[j]._autoindex << std::endl;
+			std::cout << "CGIpass " << this->servers[i]->_locations[j]._pathCGI << std::endl;
+			std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
+			puts("allow_methods");
+			for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
+				it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
+					std::cout << " > " << *it << std::endl;
+		}
+	}
 }
