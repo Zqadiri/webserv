@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/07 21:23:15 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/08 13:53:50 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,8 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	filename += to_string(socket_fd);
 	std::fstream _body;
 	std::string myline;
-
+	// int fd[2];
+	// pipe(fd);
 	char **argv = new char *[3];
 	argv[0] = new char[_scriptName.size() + 1];
 	argv[0] = strcpy(argv[0], _scriptName.c_str());
@@ -129,6 +130,8 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	int fdIn = open(randomFileName().c_str(), O_RDWR | O_CREAT, 0666);
 	int fdOut = open(response.get_file_change_get().c_str(),  O_RDWR | O_CREAT, 0666);
 
+	// int fdIn =	fd[0];
+	// int fdOut =	fd[1];
 	if (this->_env["REQUEST_METHOD"] == "POST")
 	{
 		_body.open(filename, std::fstream::in);

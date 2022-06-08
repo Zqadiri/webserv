@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/08 13:14:38 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/08 13:42:33 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ struct _location
 
 class serverConfig
 {
-	public:
+	private:
 		// server data
 		std::list<std::string>		_server_name;
 		std::string					_root;

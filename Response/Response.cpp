@@ -2,7 +2,7 @@
 #include "MimeTypes.hpp"
 #include <sys/stat.h>
 
-std::string Response::my_root = "";
+std::string my_root;
 
 Response::Response(){
 }
@@ -276,6 +276,7 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	{
 		if(ve[i]._path == str_req_uri)
 		{
+			puts("jjjjjjjjjjjjjjjjjj");
 			check = true;
 			_check_auto_index = ve[i]._autoindex;
 			my_index = ve[i]._index;
@@ -327,9 +328,14 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			str_ret += servconfig->getRoot();
 			str_ret += servconfig->getIndex();
 		}
-		if(servconfig->getAutoIndex() == true && (servconfig->getIndex() == "" || IsFile(servconfig->getRoot() + servconfig->getIndex()) == 0))
+		if(IsFile(servconfig->getRoot() + servconfig->getIndex()) == 0)
 		{
-			if(str_req_uri.find(".") != std::string::npos)
+			if(servconfig->getAutoIndex() == false)
+			{
+				puts("hhhhhhhhhhhhhhhhh");
+				Errors_write(403, &str_ret);
+			}
+			else if(str_req_uri.find(".") != std::string::npos)
 			{
 				if(my_root != "")
 					File_exec(&str_ret, str_req_uri, my_root);
@@ -526,6 +532,8 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		str_uri = CompletePath(req, servconf);
 		std::cout << "str_uri is here " << str_uri << std::endl;
 		myfile.open(str_uri);
+		// if(IsFile(my_root + req.getRequestURI()) == 0)
+		// 	Errors_write(404, &str_uri);
 		if(!myfile.is_open())
 		{
 			if(_check_auto_index && servconf->getRedirectPath() == "")

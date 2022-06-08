@@ -63,6 +63,7 @@ class Response
         int			                parseLine(std::string line);
         void                        POST(int, request &req, serverConfig*);
         void						Error_headers(std::string);
+	    // static std::string          my_root;
 
     private: //!!!!! private
         std::string                 _response_string;
@@ -81,7 +82,6 @@ class Response
         std::string		            str_uri;
         int                         body_length;
         bool                        _handled;
-	    static std::string          my_root;
         std::string                 my_index;
         std::string                 _uploadFileName;
         std::ifstream               _res;
