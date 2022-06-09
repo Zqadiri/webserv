@@ -1,0 +1,15 @@
+chrome : http://localhost:8000  ->  show index.html 200 OK
+
+chrome : http://localhost:8000/upload -> show upload_file.html 200 OK
+
+chrome : http://localhost:8000/images/building.jpg -> show building.jpg 200 OK
+
+chrome : http://localhost:8000/a -> 404 not found | show index.html 200 OK
+
+
+
+Postman : POST http://localhost:8000 -> 404 not found
+
+Postman : POST http://localhost:8000/upload -> 200 OK
+
+Postman : DELETE http://localhost:8000/upload/20220608124308.conf -> 200 OK

@@ -405,9 +405,10 @@ void						Response::writeResponse(){
 		header += NO_CONTENT;
 	}
 	if (this->_status_code == 403)
+	{
+		str_uri = "./Response/response_errors_pages/403.html";
 		header += FORBIDDEN;
-	if (this->_status_code == 403)
-		header += FORBIDDEN;
+	}
 	if (this->_status_code == 201){
 		is_error = 0;
 		header += CREATED;
@@ -419,15 +420,19 @@ void						Response::writeResponse(){
 		header += OK;
 	}
 	if (this->_status_code == 404)
+	{
+		str_uri = "./Response/response_errors_pages/404.html";
 		header += NOT_FOUND;
+	}
 	if(this->_status_code == 405)
+	{
+		str_uri = "./Response/response_errors_pages/405.html";
 		header += METHOD_NOT_ALLOWED;
+	}
 	if (this->_status_code == 409)
 	{
+		str_uri = "./Response/response_errors_pages/409.html";
 		header += CONFLICT;
-		is_error = 0;
-		header += "Content-Length: 0\r\n";
-		body_length = 0;
 	}
 	if (is_error){
 		std::cout << "this is str_uri :: " << this->str_uri << std::endl;
@@ -677,6 +682,7 @@ int							Response::removeDir(std::string path)
 	d = opendir(path.c_str());
 	if (d) 
 	{
+		std::cout << "dir is open" << std::endl;
 		while ((dir = readdir(d)) != NULL)
 		{
 			if (!strcmp(dir->d_name, ".") ||  !strcmp(dir->d_name, ".."))
@@ -685,10 +691,15 @@ int							Response::removeDir(std::string path)
 			int flag = IsFile(fname.c_str());
 			if (flag == 1)
 			{
-				if (remove(fname.c_str()) == 0)
-					this->_status_code = 204; // 204 (No content)
+				if (access(fname.c_str(), W_OK) == 0)
+				{
+					if (unlink(fname.c_str()) == 0)
+						this->_status_code = 204;
+					else
+						return 403; //403 Forbidden
+				}
 				else
-					return 403;
+					return 403; //403 Forbidden
 			}
 			else if (flag == 2)
 				this->_status_code =  removeDir(fname);
@@ -696,8 +707,13 @@ int							Response::removeDir(std::string path)
 				return 403;
 		}
 		closedir(d);
-		if (rmdir(path.c_str()) == 0)
-			return (204);
+		if (access(path.c_str(), W_OK) == 0)
+		{
+			if (rmdir(path.c_str()) == 0)
+				return (204);
+			else
+				return (403);
+		}
 		else
 			return (403);
   	}
@@ -722,11 +738,12 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 			str_uri = my_root + req.getRequestURI();
 		else
 			str_uri = servconf->getRoot() + req.getRequestURI();
-		if(IsFile(str_uri) == 0)
-		{
-			this->_status_code = 404;
-			str_uri = "./Response/response_errors_pages/404.html";
-		}
+		// if(IsFile(str_uri) == 0)
+		// {
+		// 	std::cout <<"str_uri " << str_uri << std::endl;
+		// 	this->_status_code = 404;
+		// 	str_uri = "./Response/response_errors_pages/404.html";
+		// }
 		std::fstream	myfile;
 		
 		std::cout << str_uri << std::endl;
@@ -734,20 +751,34 @@ void						Response::DELETE(request &req, serverConfig* servconf)
 		if (isFile == 1 && _status_code == 200)
 		{
 			std::cout << "remove file" << std::endl;
-			if (remove(str_uri.c_str()) == 0)
-				this->_status_code = 204;
+			if (access(str_uri.c_str(), W_OK) == 0)
+			{
+				
+				if (unlink(str_uri.c_str()) == 0)
+					this->_status_code = 204;
+				else
+					this->_status_code = 403; //403 Forbidden
+			}
 			else
 				this->_status_code = 403; //403 Forbidden
 		}
 		else if (isFile == 2 && _status_code == 200){
 			std::cout << "remove dir" << std::endl;
 			if (str_uri.back() == '/')
+			{
 				this->_status_code = removeDir(str_uri);
+
+				std::cout << "remove dir " << this->_status_code << std::endl;
+			}
 			else
+			{
 				this->_status_code = 409; //409 Conflict
+			}
 		}
-		else
+		else if (isFile == 0 && _status_code == 200)
 			this->_status_code = 404; // 404 Not Found
+		else
+			this->_status_code = 403; //403 Forbidden
 	}
 	else
 	{
@@ -825,6 +856,8 @@ bool						Response::supportUpload(request &req,  serverConfig *servconf)
 			path += "/";
 		if (path == loc){
 			_uploadFileName = it->_uploadStore;
+			if (_uploadFileName.empty())
+				return false;
 			_uploadFileName = getTargetPath(req, servconf, it->_uploadStore);
 			return true;
 		}
@@ -878,6 +911,8 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	time_t          rawtime;
 	std::string		content_type;
 
+
+	std::cout << "POST" << std::endl;
 	complete_path = CompletePath(req, servconf);
 	newBody.open(filename.c_str(), std::fstream::in | std::fstream::app);
 	File_type(req);
@@ -885,6 +920,7 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	{
 		this->_status_code = 405;
 		str_uri = "./Response/response_errors_pages/no_method_page.html";
+		Error_headers(METHOD_NOT_ALLOWED);
 	}
 	else if(req.getBodyLength() > Locations_Body_size(req, servconf))
 	{
@@ -908,8 +944,13 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		newBody.close();
 		reqBody.close();
 		std::string mv = "mv " + filename  + " " + _uploadFileName;
+
+		// std::cout << "mv: " << mv << std::endl;
 		if (system(mv.c_str())){
-			std::cout << "error" << std::endl;
+			this->_status_code = 403;
+			str_uri = "./Response/response_errors_pages/403.html";
+			Error_headers(FORBIDDEN);
+			return;
 		}
 		//header start
 		header += CREATED;

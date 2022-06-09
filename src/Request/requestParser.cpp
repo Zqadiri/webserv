@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   requestParser.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/09 18:20:20 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/09 21:40:52 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,10 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 	reset_timer();
 	filename += to_string(socket_fd);
 	if (!_body.is_open())
+	{
+		std::cout << "open file" << std::endl;
 		_body.open (_name, std::fstream::in | std::fstream::out | std::fstream::trunc);
+	}
 	if (bodyCursor == std::string::npos && _status == START_LINE)
 		req._tmp += buff;
 	else if (_status == START_LINE){
@@ -166,7 +169,9 @@ int request::parseUnchunkedRequest(std::string filename)
 		_body << _tmp;
 	}
 	else
+	{
 		return InternalServerError();
+	}
 	_tmp.clear();
 	if (_headers["Content-Length"].compare("") && _bodyLength >= stoi(_headers["Content-Length"])){
 		_body << "\n";
@@ -203,7 +208,9 @@ int request::parseChunkedRequest(std::string filename)
 				_body << _tmp.substr(0, end);
 			}
 			else
+			{
 				return InternalServerError();
+			}
 			_tmp.erase(0, end + 2);
 			_chunkSize = 0;
 			_chunkStatus = SIZE_LINE;

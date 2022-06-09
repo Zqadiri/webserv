@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/09 18:21:34 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/09 21:23:51 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,38 @@ server &server::operator=(const server &obj){
 	this->_fd = obj._fd;
 	this->_sockets = obj._sockets;
 	this->_config = obj._config;
+	this->_port = obj._port;
 	return *this;
 }
 
 
-server::server(t_listen &l, serverConfig* conf) : _fd(-1), _config(conf){
+server::server(t_listen &l, serverConfig* conf) : _port(l.port), _fd(-1){
+
+	std::vector<std::string> server_names = conf->getServerName();
+
 	bzero((char *)&_addr, sizeof(_addr));
 	_addr.sin_family = AF_INET;
 	_addr.sin_addr.s_addr = htonl(l.host);
 	_addr.sin_port = htons(l.port);
+	for (std::vector<std::string>::iterator it = server_names.begin(); it != server_names.end(); ++it){
+		_config.push_back(std::make_pair(*it, conf));
+	}
+	if (server_names.empty())
+		_config.push_back(std::make_pair("", conf));
+}
+
+int		server::get_port(void) const
+{
+	return (_port);
+}
+
+void server::add_servconf(serverConfig* conf){
+	std::vector<std::string> server_names = conf->getServerName();
+	for (std::vector<std::string>::iterator it = server_names.begin(); it != server_names.end(); ++it){
+		_config.push_back(std::make_pair(*it, conf));
+	}
+	if (server_names.empty())
+		_config.push_back(std::make_pair("", conf));
 }
 
 int server::setup(void)
@@ -269,7 +292,22 @@ int server::sen(int &socket, request& req, Response &response)
 	std::cout << "trying send to " << socket << "\n";
 	req.reset_timer();
 	if (response.get_handled() == false)
-		response.Return_string(req, _config, socket);
+	{
+		std::string host = req.getHost();
+		serverConfig* config = _config.begin()->second;
+		if (!host.empty())
+		{
+			for (std::list<std::pair<std::string, serverConfig*> >::iterator it = _config.begin(); it != _config.end(); ++it)
+			{
+				if (it->first.compare(host) == 0)
+				{
+					config = it->second;
+				}
+			}
+		}
+		response.Return_string(req, config, socket);
+	}
+
 	std::cout << RED << "body lenght = "  << response.get_body_length() << RESET << std::endl;
 	if (response.get_body_length() > 0)
 	{

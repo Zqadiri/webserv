@@ -1,0 +1,30 @@
+PORT 7000
+
+chrome : http://localhost:7000  ->  show index.html 200 OK
+
+chrome : http://localhost:7000/a -> show upload_file.html 200 OK
+
+chrome : http://localhost:7000/images/building.jpg -> show building.jpg 200 OK
+
+chrome : http://localhost:7000/b -> show upload_file.html 200 OK
+
+
+Postman : POST http://localhost:7000 -> 404 not found
+
+Postman : POST http://localhost:7000/upload -> 200 OK
+
+Postman : DELETE http://localhost:7000/upload/20220608124308.conf -> 200 OK
+
+
+
+PORT 8000
+
+chrome : http://localhost:8000  ->  show autoindex 200 OK
+
+chrome : http://localhost:8000/a -> show config.conf 200 OK
+
+chrome : http://localhost:8000/images/building.jpg -> show building.jpg 200 OK
+
+chrome : http://localhost:9000/a -> show autoindex 200 OK
+
+chrome : http://localhost:9000/b -> show 405 not allowed

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:10:13 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/08 13:36:00 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/09 20:42:27 by nwakour          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,21 +51,34 @@ void		Servers::conf(char **argv){
 void		Servers::setup(void){
 	std::vector<t_listen>	listen = config.getAllListenDir();
 	std::vector<serverConfig*> servers = config.getServers();
+
 	_max_fd = 0;
 	FD_ZERO(&_fd_set);
 	for(size_t i = 0; i < listen.size(); ++i){
-		server sev(listen[i], servers[i]);
-		if (sev.setup() != -1)
+		bool found = false;
+		for (std::list<server>::iterator it = _servers.begin(); it != _servers.end(); ++it)
 		{
-			int fd = sev.get_fd();
-			FD_SET(fd, &_fd_set);
-			if (fd > _max_fd)
-				_max_fd = fd;
-			_servers.push_back(sev);
-			std::cout << "Server: "<< fd << " " << listen[i].port << " Setup Done" << std::endl;
+			if (it->get_port() == listen[i].port)
+			{
+				found = true;
+				it->add_servconf(servers[i]);
+				break;
+			}
 		}
-		else
-			std::cout << "Server: "<< listen[i].port << " Setup Failed" << std::endl;
+		if (!found){
+			server sev(listen[i], servers[i]);
+			if (sev.setup() != -1)
+			{
+				int fd = sev.get_fd();
+				FD_SET(fd, &_fd_set);
+				if (fd > _max_fd)
+					_max_fd = fd;
+				_servers.push_back(sev);
+				std::cout << "Server: "<< fd << " " << listen[i].port << " Setup Done" << std::endl;
+			}
+			else
+				std::cout << "Server: "<< listen[i].port << " Setup Failed" << std::endl;
+		}
 	}
 }
 
@@ -87,6 +100,7 @@ void		Servers::run(void){
 			std::time_t current = std::time(NULL);
 			for (std::list<server>::iterator serv = _servers.begin(); serv != _servers.end(); ++serv)
 			{
+				
 				serv->check_timeout(_fd_set, current, write_set);
 			}
 			timeout.tv_sec  = 1;
