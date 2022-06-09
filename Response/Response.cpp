@@ -415,6 +415,8 @@ void						Response::writeResponse(){
 	}
 	if (this->_status_code == 404)
 		header += NOT_FOUND;
+	if(this->_status_code == 405)
+		header += METHOD_NOT_ALLOWED;
 	if (this->_status_code == 409)
 	{
 		header += CONFLICT;
@@ -674,38 +676,46 @@ int							Response::removeDir(std::string path)
 
 void						Response::DELETE(request &req, serverConfig* servconf)
 {
-	(void)servconf;
-	// str_uri = CompletePath(req, servconf);
-	if(my_root != "")
-		str_uri = my_root + req.getRequestURI();
-	else
-		str_uri = servconf->getRoot() + req.getRequestURI();
-	if(IsFile(str_uri) == 0)
+	if(Allow_Methods(req, servconf, "DELETE"))
 	{
-		this->_status_code = 404;
-		str_uri = "./Response/response_errors_pages/404.html";
-	}
-	std::fstream	myfile;
-	
-	std::cout << str_uri << std::endl;
-	size_t isFile = IsFile(str_uri);
-	if (isFile == 1 && _status_code == 200)
-	{
-		std::cout << "remove file" << std::endl;
-		if (remove(str_uri.c_str()) == 0)
-			this->_status_code = 204;
+		(void)servconf;
+		// str_uri = CompletePath(req, servconf);
+		if(my_root != "")
+			str_uri = my_root + req.getRequestURI();
 		else
-			this->_status_code = 403; //403 Forbidden
-	}
-	else if (isFile == 2 && _status_code == 200){
-		std::cout << "remove dir" << std::endl;
-		if (str_uri.back() == '/')
-			this->_status_code = removeDir(str_uri);
+			str_uri = servconf->getRoot() + req.getRequestURI();
+		if(IsFile(str_uri) == 0)
+		{
+			this->_status_code = 404;
+			str_uri = "./Response/response_errors_pages/404.html";
+		}
+		std::fstream	myfile;
+		
+		std::cout << str_uri << std::endl;
+		size_t isFile = IsFile(str_uri);
+		if (isFile == 1 && _status_code == 200)
+		{
+			std::cout << "remove file" << std::endl;
+			if (remove(str_uri.c_str()) == 0)
+				this->_status_code = 204;
+			else
+				this->_status_code = 403; //403 Forbidden
+		}
+		else if (isFile == 2 && _status_code == 200){
+			std::cout << "remove dir" << std::endl;
+			if (str_uri.back() == '/')
+				this->_status_code = removeDir(str_uri);
+			else
+				this->_status_code = 409; //409 Conflict
+		}
 		else
-			this->_status_code = 409; //409 Conflict
+			this->_status_code = 404; // 404 Not Found
 	}
 	else
-		this->_status_code = 404; // 404 Not Found
+	{
+		this->_status_code = 405;
+		str_uri = "./Response/response_errors_pages/no_method_page.html";
+	}
 	writeResponse();
 }
 
@@ -833,7 +843,12 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	complete_path = CompletePath(req, servconf);
 	newBody.open(filename.c_str(), std::fstream::in | std::fstream::app);
 	File_type(req);
-	if(servconf->getlimitBodySize() != -1 && req.getBodyLength() > servconf->getlimitBodySize())
+	if(!Allow_Methods(req, servconf, "POST"))
+	{
+		this->_status_code = 405;
+		str_uri = "./Response/response_errors_pages/no_method_page.html";
+	}
+	else if(servconf->getlimitBodySize() != -1 && req.getBodyLength() > servconf->getlimitBodySize())
 	{
 		this->_status_code = 413;
 		str_uri = "./Response/response_errors_pages/413.html";
