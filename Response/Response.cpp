@@ -312,11 +312,9 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	}
 	if(check == false)
 	{
-		// puts("hhhhjjjhhjhjhj");
 		_check_auto_index = servconfig->getAutoIndex();
 		my_index = servconfig->getIndex();
-		// std::cout << RED << "pchaaaaakh : " << servconfig->getAutoIndex() << RESET << std::endl; 
-		if(servconfig->getAutoIndex() == false && (servconfig->getIndex() == "" || IsFile(servconfig->getRoot() + servconfig->getIndex()) == 0))
+		if(servconfig->getAutoIndex() == false && (servconfig->getIndex() == "" || IsFile(servconfig->getRoot() + servconfig->getIndex()) == 0) && my_root == "")
 		{
 			Errors_write(403, &str_ret);
 			return str_ret;
@@ -338,6 +336,8 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 				else
 					File_exec(&str_ret, str_req_uri, servconfig->getRoot());
 			}
+			else if(IsFile(servconfig->getRoot() + str_req_uri) == 0)
+				Errors_write(404, &str_ret);
 		}
 		if(IsFile(servconfig->getRoot() + servconfig->getIndex()) == 0)
 		{
@@ -569,7 +569,6 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		if(servconf->getErrorPageCode()== this->_status_code)
 		{
 			str_uri = servconf->getErrorPagePath();
-			File_type(str_uri);
 			myfile.open(str_uri);
 			if(!myfile.is_open())
 				Errors_write(404, &str_uri);
@@ -591,7 +590,12 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		header += "Myserver\r\n";
 
 		header +=  "Content-Type: ";
-		if(this->_status_code == 200 && this->_my_auto_index == false)
+		if(servconf->getErrorPageCode()== this->_status_code)
+		{
+			File_type(str_uri);
+			content_type = this->_file_extension;
+		}
+		else if(this->_status_code == 200 && this->_my_auto_index == false)
 			content_type = Content_type();
 		else
 			content_type = "text/html";
