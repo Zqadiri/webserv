@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:38:06 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/08 13:34:52 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/08 22:20:26 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ const std::list<std::string>	&serverConfig::getAllowMethods(void) const{ return 
 const t_error_pages				&serverConfig::getErrorsPages(void) const{ return this->_errorPages; }
 const t_listen				 	&serverConfig::gethostPort(void) const{ return this->_hostPort; }
 int								serverConfig::getlimitBodySize(void) const {return this->_limitBodySize; }
-const std::list<std::string>	&serverConfig::getServerName(void) const { return this->_server_name;}
+const std::vector<std::string>	&serverConfig::getServerName(void) const { return this->_server_name;}
 const std::vector<_location>	&serverConfig::getLocations(void) const{ return this->_locations;}
 bool							serverConfig::getAutoIndex(void) const { return this->_autoindex; }
 

@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/15 11:05:42 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/08 12:39:11 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/08 22:46:12 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,28 @@ int ft_main(int argc, char *argv[])
 {
 	if (argc == 2 || argc == 1)
 	{
-		Servers  serv;
-		try{
-			signal(SIGPIPE, SIG_IGN);
-			serv.conf(argv);
-			serv.setup();
-			serv.run();
-		}
-		catch(const std::exception& e){
-			std::cerr << RED << e.what() << '\n';
+		while (1)
+		{
+			Servers  serv;
+			try{
+				signal(SIGPIPE, SIG_IGN);
+				serv.conf(argv);
+				serv.setup();
+				serv.run();
+			}
+			catch(Config::FileCorrupted& e)
+			{
+				std::cerr << RED << e.what() << '\n';
+				return (1);
+			}
+			catch(Config::FileNotWellFormated& e)
+			{
+				std::cerr << RED << e.what() << '\n';
+				return (1);
+			}
+			catch(const std::exception& e){
+				std::cerr << RED << e.what() << '\n';
+			}
 		}
 	}
 	else 

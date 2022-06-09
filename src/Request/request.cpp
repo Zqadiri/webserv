@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 00:22:03 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/08 12:34:18 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/09 17:11:33 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,11 @@ void				request::parseAuthorization(request& req){
 	(void)req;
 	size_t end = _headers["Authorization"].find_first_of(' ');
 	_headers["Auth-Scheme"] = _headers["Authorization"].substr(0, end);
+}
+
+void				request::closeStream(){
+	if (_body.is_open())
+		_body.close();
 }
 
 /*

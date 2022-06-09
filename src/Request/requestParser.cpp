@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 16:11:17 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/09 17:42:50 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/09 18:20:20 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int					request::getFirstLine(const std::string &buff, request& req)
 		return badRequest(req);
 	req._method.assign(line, 0, i);
 	if (!req.checkMethod())
-		return -1;
+		return 0;
 	if ((j = buff.find_first_not_of(' ', i)) == std::string::npos)
 		return badRequest(req);
 	if ((i = buff.find_first_of(' ', j)) == std::string::npos)
@@ -45,8 +45,7 @@ int					request::getFirstLine(const std::string &buff, request& req)
 	j += i - j;
 	if ((j = buff.find_first_not_of(' ', j)) == std::string::npos){
 		req._retCode = 400;
-		std::cerr << "No HTTP version" << std::endl;
-		return -1;
+		return 0;
 	}
 	if (buff[j] == 'H' && buff[j + 1] == 'T' && buff[j + 2] == 'T' &&
 			buff[j + 3] == 'P' && buff[j + 4] == '/'){
@@ -54,8 +53,7 @@ int					request::getFirstLine(const std::string &buff, request& req)
 	}
 	if (req._version.compare("1.0") && req._version.compare("1.1")){
 		req._retCode = 505;
-		std::cerr << "BAD VERSION" << std::endl;
-		return (-1);
+		return 0;
 	}
 	_status = PRE_HEADERS; 
 	return j;
@@ -94,7 +92,7 @@ int					request::ParseHeaders(std::string buff,  request& req)
 	}
 	if (!_headers["Content-Length"].compare("")){
 		this->_retCode = 411; 
-		return -1;
+		return 0;
 	}
 	_status = PRE_BODY;
 	return 1;
@@ -108,11 +106,9 @@ int					request::InternalServerError(){
 
 int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 {
-	// std::fstream _body;
 	std::string delim("\r\n\r\n");
 	std::string filename = "./tmp/body";
 	size_t bodyCursor = buff.find(delim);
-	std::cout << RED << buff << RESET << std::endl;
 	reset_timer();
 	filename += to_string(socket_fd);
 	if (!_body.is_open())
@@ -132,31 +128,33 @@ int					request::parseRquest(std::string buff,  request& req, int socket_fd)
 		req._tmp.clear();
 		req._tmp.append(buff.substr(bodyCursor + delim.length(), buff.length()));
 		buff.clear();
+		puts (" Implemented\n");
 		if (_headers["Transfer-Encoding"].compare("chunked")){
-			std::cout << GREEN  <<"Chunked"<< RESET << std::endl;
+			puts ("Not Implemented\n");
+			if (_headers["Transfer-Encoding"].compare("")){
+				this->_retCode = 501;
+				puts ("501 Not Implemented\n");
+				return 0;
+			}
 			_status = BODY;
 		}
 		else if (!_headers["Transfer-Encoding"].compare("chunked")){
-			std::cout << GREEN  <<"Unchunked" << RESET << std::endl;
 			_status = CHUNKS;
 			_chunkStatus = SIZE_LINE;
 		}
 	}
 	if (_status == BODY){
-		// this->_tmp += buff;
 		this->_tmp.append(buff);
 		parseUnchunkedRequest(filename);
 	}
 	if (_status == CHUNKS){
-		this->_tmp += buff;
+		this->_tmp.append(buff);
 		parseChunkedRequest(filename);
 	}
 	if (_status == COMPLETE){
-		std::cout << "COMPLETE "  << _bodyLength << std::endl;
 		_body.close();
 		return 0;
 	}
-	std::cout << RED <<_status<< RESET <<std::endl;
 	return 1;
 }
 
