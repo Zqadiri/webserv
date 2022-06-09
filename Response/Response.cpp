@@ -276,7 +276,6 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	{
 		if(ve[i]._path == str_req_uri)
 		{
-			puts("jjjjjjjjjjjjjjjjjj");
 			check = true;
 			_check_auto_index = ve[i]._autoindex;
 			my_index = ve[i]._index;
@@ -313,10 +312,15 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 	}
 	if(check == false)
 	{
+		// puts("hhhhjjjhhjhjhj");
 		_check_auto_index = servconfig->getAutoIndex();
 		my_index = servconfig->getIndex();
-		if(servconfig->getAutoIndex() == false && servconfig->getIndex() == "")
+		// std::cout << RED << "pchaaaaakh : " << servconfig->getAutoIndex() << RESET << std::endl; 
+		if(servconfig->getAutoIndex() == false && (servconfig->getIndex() == "" || IsFile(servconfig->getRoot() + servconfig->getIndex()) == 0))
+		{
 			Errors_write(403, &str_ret);
+			return str_ret;
+		}
 		else if(servconfig->getRedirectPath() != "")
 		{
 			str_ret = "";
@@ -327,15 +331,19 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 		{
 			str_ret += servconfig->getRoot();
 			str_ret += servconfig->getIndex();
+			if(str_req_uri.find(".") != std::string::npos)
+			{
+				if(my_root != "")
+					File_exec(&str_ret, str_req_uri, my_root);
+				else
+					File_exec(&str_ret, str_req_uri, servconfig->getRoot());
+			}
 		}
 		if(IsFile(servconfig->getRoot() + servconfig->getIndex()) == 0)
 		{
-			if(servconfig->getAutoIndex() == false)
-			{
-				puts("hhhhhhhhhhhhhhhhh");
-				Errors_write(403, &str_ret);
-			}
-			else if(str_req_uri.find(".") != std::string::npos)
+			// if(servconfig->getAutoIndex() == false)
+			// 	Errors_write(403, &str_ret);
+			if(str_req_uri.find(".") != std::string::npos)
 			{
 				if(my_root != "")
 					File_exec(&str_ret, str_req_uri, my_root);
@@ -344,14 +352,20 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			}
 			else
 			{
-				if(IsFile(servconfig->getRoot() + str_req_uri) == 0)
+				if(IsFile(my_root + str_req_uri) == 0 && IsFile(servconfig->getRoot() + str_req_uri) == 0)
+				{
+					puts("hhhhhhhhhhhhhh");
 					Errors_write(404, &str_ret);
+				}
 				else
 				{
 					str_ret = "";
 					str_ret += servconfig->getRoot() ; 
-					std::cout << RED << "str_ret here-------------" << str_ret << RESET << std::endl;
-					AutoIndexExec(str_ret + str_req_uri);
+					std::cout << RED << "str_ret here-------------" << str_ret + str_req_uri << RESET << std::endl;
+					if(my_root != "")
+						AutoIndexExec(my_root + str_req_uri);
+					else
+						AutoIndexExec(str_ret + str_req_uri);
 					str_ret = "/tmp/auto_index.html";
 				}
 			}
@@ -538,8 +552,13 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		{
 			if(_check_auto_index && servconf->getRedirectPath() == "")
 			{
+				// puts("hmmmmhmmmm");
 				str_uri = "/tmp/auto_index.html";
-				AutoIndexExec(my_root);
+				// std::cout << RED << "myroot is: " << my_root << RESET << std::endl;
+				if(my_root != "")
+					AutoIndexExec(my_root);
+				else
+					AutoIndexExec(servconf->getRoot() + req.getRequestURI());
 			}
 			else if(IsFile(my_root + servconf->getRedirectPath()) == 0 && servconf->getRedirectPath() != "")
 				Errors_write(404, &str_uri);
@@ -550,6 +569,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		if(servconf->getErrorPageCode()== this->_status_code)
 		{
 			str_uri = servconf->getErrorPagePath();
+			File_type(str_uri);
 			myfile.open(str_uri);
 			if(!myfile.is_open())
 				Errors_write(404, &str_uri);
