@@ -304,7 +304,10 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 				// 	Errors_write(404, &str_ret);
 				else
 				{
-					AutoIndexExec(str_ret);
+					if(servconfig->getRedirectPath() != "")
+						AutoIndexExec(ve[i]._root);
+					else
+						AutoIndexExec(str_ret);
 					str_ret = "/tmp/auto_index.html";
 				}
 			}
@@ -319,14 +322,9 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			Errors_write(403, &str_ret);
 			return str_ret;
 		}
-		else if(servconfig->getRedirectPath() != "")
-		{
-			str_ret = "";
-			this->_status_code = servconfig->getRedirectCode();
-			str_ret = servconfig->getRoot() + servconfig->getRedirectPath();
-		}
 		else
 		{
+			std::cout << "tfooooooooooooooo" << str_ret <<std::endl;
 			str_ret += servconfig->getRoot();
 			str_ret += servconfig->getIndex();
 			if(str_req_uri.find(".") != std::string::npos)
@@ -336,8 +334,15 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 				else
 					File_exec(&str_ret, str_req_uri, servconfig->getRoot());
 			}
-			else if(IsFile(servconfig->getRoot() + str_req_uri) == 0)
-				Errors_write(404, &str_ret);
+			else if(servconfig->getRedirectPath() != "" )
+			{
+				// std::cout << "tfooooooooooooooo" << str_ret <<std::endl;
+				str_ret = "";
+				this->_status_code = servconfig->getRedirectCode();
+				str_ret = servconfig->getRoot() + servconfig->getRedirectPath();
+			}
+			// else if(IsFile(servconfig->getRoot() + str_req_uri) == 0)
+			// 	Errors_write(404, &str_ret);
 		}
 		if(IsFile(servconfig->getRoot() + servconfig->getIndex()) == 0)
 		{
@@ -509,6 +514,35 @@ bool						Response::Allow_Methods(request &req, serverConfig *servconf, std::str
 	return false;
 }
 
+int							Response::Locations_Body_size(request &req, serverConfig* servconf)
+{
+	std::vector<_location>	ve;
+	int						i;
+	bool					check;
+	int 					ret;
+
+	i = -1;
+	ve = servconf->getLocations();
+	check = false;
+	ret = 0;
+
+	while (++i < (int)ve.size())
+	{
+		if(ve[i]._path == req.getRequestURI())
+		{
+			check = true;
+			ret = ve[i]._limitBodySize;
+			return ret;
+		}
+	}
+	if(check == false)
+	{
+		ret = servconf->getlimitBodySize();
+		return ret;
+	}
+	return ret;
+}					
+
 int                         &Response::get_body_length(){return body_length;}
 
 std::string                 &Response::get_header(){return header;}
@@ -564,9 +598,13 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 					AutoIndexExec(my_root);
 				else
 				{
-					if(IsFile(my_root + req.getRequestURI()) == 0)
-							Errors_write(404, &str_uri);
-					AutoIndexExec(servconf->getRoot() + req.getRequestURI());
+					std::cout << "fucccck " << my_root + req.getRequestURI() << std::endl;
+					if(IsFile(my_root + req.getRequestURI()) == 0 && my_root != "")
+						Errors_write(404, &str_uri);
+					else if(IsFile(servconf->getRoot() + req.getRequestURI()) == 0)
+						Errors_write(404, &str_uri);
+					else
+						AutoIndexExec(servconf->getRoot() + req.getRequestURI());
 				}
 			}
 			else if(IsFile(my_root + servconf->getRedirectPath()) == 0 && servconf->getRedirectPath() != "")
@@ -848,7 +886,7 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		this->_status_code = 405;
 		str_uri = "./Response/response_errors_pages/no_method_page.html";
 	}
-	else if(servconf->getlimitBodySize() != -1 && req.getBodyLength() > servconf->getlimitBodySize())
+	else if(req.getBodyLength() > Locations_Body_size(req, servconf))
 	{
 		this->_status_code = 413;
 		str_uri = "./Response/response_errors_pages/413.html";

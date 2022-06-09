@@ -36,6 +36,7 @@ class Response
         void                        File_exec(std::string *str_ret, std::string str_req_uri, std::string my_root_find);
         void                        Errors_write(int, std::string *);
         bool                        Allow_Methods(request &req, serverConfig*, std::string);
+        int                         Locations_Body_size(request &req, serverConfig*);
 
         //!---------------- GETTERS --------------------------
         std::ifstream               &getRes();
