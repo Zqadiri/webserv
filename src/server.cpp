@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/18 00:51:18 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/07 23:40:54 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/09 18:21:34 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,9 +114,9 @@ int server::rec(int &socket, request& req)
 	std::cout<< GREEN << buff << RESET << std::endl;
 	int ret_parse = req.parseRquest(str, req, socket);
 	std::cout << "{ret} " <<  ret_parse << std::endl;
+	std::cout << "{code} " <<  req.getRetCode() << std::endl;
 	if (ret_parse < 0){
 		std::cout << "BAD REQUEST" << std::endl;
-		// exit(1);
 	}
 	return (ret_parse);
 }
@@ -239,6 +239,7 @@ void 	server::check_timeout(fd_set& fdset, const std::time_t& current_time, fd_s
 			FD_CLR(socket->first, &write);
 			close(socket->first);
 			_responses.erase(socket->first);
+			socket->second.closeStream();
 			socket = _sockets.erase(socket);
 		}
 		else

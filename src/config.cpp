@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:31:27 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/08 21:43:25 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/09 18:21:12 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ std::vector<t_listen>		Config::getAllListenDir(void){
 	return listen;
 }
 
-std::list<std::list<std::string> >	Config::getAllServerNames(void){
-	std::list<std::list<std::string> > servNames;
+std::vector<std::vector<std::string> >	Config::getAllServerNames(void){
+	std::vector<std::vector<std::string> > servNames;
 	for (size_t i = 0; i < this->servers.size(); i++){
 		servNames.push_back(this->servers[i]->getServerName());
 	}
@@ -140,8 +140,9 @@ void					Config::parseFile(const char *fileName)
 {
 	configFile		confFile;
 	unsigned int	confSize;
+	int fd = open(fileName, O_RDONLY);
 
-	if (open(fileName, O_RDONLY) < 0)
+	if (fd < 0)
 		throw Config::FileCorrupted();
 	confFile = Config::readFile(fileName);
 	curlLevel(confFile);
@@ -152,10 +153,12 @@ void					Config::parseFile(const char *fileName)
 			if (!confFile[i].compare("{"))
 				i = Config::parseServer(confFile, i);
 		}
-		else
+		else{
+			close(fd);		
 			throw	Config::FileNotWellFormated();
+		}
 	}
-	// print();
+	close(fd);
 	checkForDup();
 }
 
@@ -176,16 +179,28 @@ configFile::iterator	Config::curlLevel(configFile con){
 	return it;
 }
 
+bool 	Config::matchedServ(int i, int j){
+	std::vector<std::string> servNames = this->servers[i]->getServerName();
+	std::vector<std::string> servNames2 = this->servers[j]->getServerName();
+
+	std::vector<std::string>::iterator it, ite;
+	std::vector<std::string>::iterator it2, ite2;
+	for (it = servNames.begin(), ite = servNames.end(); it != ite; it++){
+		for (it2 = servNames2.begin(), ite2 = servNames2.end(); it2 != ite2; it2++){
+			if (*it == *it2)
+				return true;
+		}
+	}
+	return false;
+}
+
 void				Config::checkForDup(void){
 
  	std::vector<t_listen>				listens = this->getAllListenDir();
-	std::list<std::list<std::string> > 	servNames = this->getAllServerNames();
 
 	for (size_t i = 0; i < listens.size(); i++){
 		for (size_t j = i + 1; j < listens.size(); j++){
-			if (listens[i].port == listens[j].port && listens[i].host == listens[j].host)
-			{
-				
+			if (listens[i].port == listens[j].port && listens[i].host == listens[j].host && matchedServ(i, j)){
 				throw Config::FileNotWellFormated();
 			}
 		}
@@ -250,46 +265,4 @@ size_t		Config::parseServer(configFile con, unsigned int &index){
 	this->servers.push_back(server);
 	index--;
 	return index;
-}
-
-void	Config::print(){
-	// std::cout << "[Servers n: " << this->servers.size() << "]"<< std::endl;
-	// for (size_t i = 0; i < this->servers.size(); i++)
-	// {
-	// 	std::cout << "-------------------------------------" << std::endl;
-	// 	puts("[serverName]");
-	// 	for (std::list<std::string>::iterator it = this->servers[i]->_server_name.begin(); 
-	// 			it != this->servers[i]->_server_name.end(); ++it)
-	// 		std::cout << " > " << *it << std::endl;
-	// 	puts("[root]");
-	// 	std::cout << this->servers[i]->_root << std::endl;
-	// 	puts("[index]");
-	// 	std::cout << this->servers[i]->_index << std::endl;
-	// 	puts("[listen]");
-	// 	std::cout << this->servers[i]->_hostPort.host << std::endl;
-	// 	std::cout << this->servers[i]->_hostPort.port << std::endl;
-	// 	puts("[autoindex]");
-	// 	std::cout << this->servers[i]->_autoindex << std::endl;
-	// 	puts("[allow_methods]");
-	// 	for (std::list<std::string>::iterator it = this->servers[i]->_allow_methods.begin(); 
-	// 			it != this->servers[i]->_allow_methods.end(); ++it)
-	// 	std::cout << " > " <<*it << std::endl;
-	// 	std::cout << "[locations n: " << this->servers[i]->_locations.size()  << "]"<< std::endl;
-	// 	for (size_t j = 0; j < this->servers[i]->_locations.size(); j++)
-	// 	{
-	// 		std::cout << "[location "<< j << "]"<< std::endl;
-	// 		std::cout << "path " << this->servers[i]->_locations[j]._path << std::endl;
-	// 		std::cout << "root " << this->servers[i]->_locations[j]._root << std::endl;
-	// 		std::cout << "index " << this->servers[i]->_locations[j]._index << std::endl;
-	// 		std::cout << "uploadStore " << this->servers[i]->_locations[j]._uploadStore << std::endl;
-	// 		std::cout << "limitBodySize " << this->servers[i]->_locations[j]._limitBodySize << std::endl;
-	// 		std::cout << "autoindex " << this->servers[i]->_locations[j]._autoindex << std::endl;
-	// 		std::cout << "CGIpass " << this->servers[i]->_locations[j]._pathCGI << std::endl;
-	// 		std::cout << "alias " << this->servers[i]->_locations[j]._alias << std::endl;
-	// 		puts("allow_methods");
-	// 		for (std::list<std::string>::iterator it = this->servers[i]->_locations[j]._allow_methods.begin(); 
-	// 			it != this->servers[i]->_locations[j]._allow_methods.end(); ++it)
-	// 				std::cout << " > " << *it << std::endl;
-	// 	}
-	// }
 }

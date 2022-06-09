@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/13 13:51:02 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/04 21:55:03 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/09 16:56:46 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@
 #define CONFLICT						"HTTP/1.1 409 Conflict\r\n"
 
 #define URI_TOO_LONG					"HTTP/1.1 414 URI Too Long\r\n" //!NOT_IMPLEMENTED
+#define NOT_IMPLEMENTED					"HTTP/1.1 501 Not Implemented\r\n"
 
 typedef	std::vector<std::string>	configFile;
 

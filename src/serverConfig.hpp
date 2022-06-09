@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/16 11:36:44 by zqadiri           #+#    #+#             */
-/*   Updated: 2022/06/08 13:42:33 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/09 18:21:03 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class serverConfig
 {
 	private:
 		// server data
-		std::list<std::string>		_server_name;
+		std::vector<std::string>		_server_name;
 		std::string					_root;
 		std::string					_index;
 		t_listen					_hostPort;
@@ -60,7 +60,7 @@ class serverConfig
 		std::string						getErrorPagePath();
 		int								getErrorPageCode();
 		const t_listen				 	&gethostPort(void) const;
-		const std::list<std::string>	&getServerName(void) const;
+		const std::vector<std::string>	&getServerName(void) const;
 		const std::vector<_location>	&getLocations(void) const;
 		const t_error_pages 			&getErrorsPages(void) const;
 		int								getlimitBodySize(void) const;

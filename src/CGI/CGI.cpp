@@ -6,7 +6,7 @@
 /*   By: zqadiri <zqadiri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 14:08:22 by nwakour           #+#    #+#             */
-/*   Updated: 2022/06/08 13:53:50 by zqadiri          ###   ########.fr       */
+/*   Updated: 2022/06/09 18:20:49 by zqadiri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,6 @@ void deleteArray(char **env)
 
 std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Response &response, request &request)
 {
-	std::fstream fileIn;
 	std::fstream fileOut;	
 	std::string output;
 	pid_t pid;
@@ -110,8 +109,6 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	filename += to_string(socket_fd);
 	std::fstream _body;
 	std::string myline;
-	// int fd[2];
-	// pipe(fd);
 	char **argv = new char *[3];
 	argv[0] = new char[_scriptName.size() + 1];
 	argv[0] = strcpy(argv[0], _scriptName.c_str());
@@ -127,23 +124,9 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 	savedOut = dup(STDOUT_FILENO);
 
 	response.get_file_change_get() = randomFileName();
-	int fdIn = open(randomFileName().c_str(), O_RDWR | O_CREAT, 0666);
+	int fdIn = open(filename.c_str(), O_RDWR | O_CREAT, 0666);
 	int fdOut = open(response.get_file_change_get().c_str(),  O_RDWR | O_CREAT, 0666);
 
-	// int fdIn =	fd[0];
-	// int fdOut =	fd[1];
-	if (this->_env["REQUEST_METHOD"] == "POST")
-	{
-		_body.open(filename, std::fstream::in);
-		if (!_body){
-			std::cerr << "Error" << std::endl;
-			response.set_status_code(500);
-		}
-		while (_body){
-			std::getline(_body, myline);
-			write(fdIn, myline.c_str(), myline.length());
-		}
-	}
 	lseek(fdIn, 0, SEEK_SET);
 	pid = fork();
 	if (pid == -1){
@@ -169,11 +152,9 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 			ret = read(fdOut, buffer, GCI_BUFFERSIZE - 1);
 			output += buffer;
 		}
-		std::cout << GREEN << "OUTPUT :  "<< output << RESET << std::endl;
 		dup2(savedIn, STDIN_FILENO);
 		dup2(savedOut, STDOUT_FILENO);
 	}
-	fileIn.close();
 	fileOut.close();
 	close(fdIn);
 	close(fdOut);
@@ -185,10 +166,6 @@ std::string CGI::executeCgi(const std::string &_filePath, size_t socket_fd, Resp
 
 std::string CGI::addHeader(int socket_fd, std::string output, Response &response, request &request)
 {
-	if (output == ""){
-		std::cerr << "Empty" << response.get_status_code() << std::endl;
-		exit(1);
-	}
 	(void)socket_fd;
 	time_t 			rawtime;
 	time(&rawtime);
