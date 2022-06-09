@@ -1,0 +1,20 @@
+if tranfer-incoding != chuncked  -> 501 Not Implemented
+
+if no content-lenght && no tranfer-incoding -> 400 Bad Request
+
+
+
+POST method not allowed
+
+POST check client_body_buffer_size of location
+
+GET location no index and autoindex on : done
+
+GET http://localhost:8080/cgi/asdasda.jpg with index and autoindex on : done
+
+GET http://localhost:8080/autoindex/some_images/ecureuil.jpg/ : done
+
+
+DELETE method not allowed
+DELETE a file : done
+DELETE a folder : done

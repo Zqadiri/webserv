@@ -300,8 +300,8 @@ std::string					Response::CompletePath(request &req, serverConfig *servconfig)
 			{
 				if(str_req_uri.find(".") != std::string::npos)
 					File_exec(&str_ret, str_req_uri, ve[i]._root);
-				else if(IsFile(str_ret + str_req_uri) == 0)
-					Errors_write(404, &str_ret);
+				// else if(IsFile(str_ret + str_req_uri) == 0)
+				// 	Errors_write(404, &str_ret);
 				else
 				{
 					AutoIndexExec(str_ret);
@@ -425,6 +425,7 @@ void						Response::writeResponse(){
 	if (is_error){
 		std::cout << "this is str_uri :: " << this->str_uri << std::endl;
 		body_length = File_length(str_uri);
+		std::cout << "this is body_length :: " << body_length << std::endl;
 		header += "Content-Length: ";
 		header += to_string(body_length);
 		header += "\r\n";
@@ -435,6 +436,7 @@ void						Response::writeResponse(){
 int							Response::IsFile(const std::string& path)
 {
 	struct stat buf;
+
 	if (stat(path.c_str(), &buf) == 0 ){
 		if (buf.st_mode & S_IFDIR) // direc
 			return 2;
@@ -514,6 +516,7 @@ std::string		            &Response::get_str_uri(){return str_uri;}
 bool                        &Response::get_handled(){return _handled;}
 
 std::string                 &Response::get_file_change_get(){return _file_change_get;}
+
 std::ifstream               &Response::getRes(){return _res;}
 
 int							&Response::get_status_code(){return _status_code;}
@@ -552,13 +555,17 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 		{
 			if(_check_auto_index && servconf->getRedirectPath() == "")
 			{
-				// puts("hmmmmhmmmm");
+				puts("hmmmmhmmmm");
 				str_uri = "/tmp/auto_index.html";
 				// std::cout << RED << "myroot is: " << my_root << RESET << std::endl;
 				if(my_root != "")
 					AutoIndexExec(my_root);
 				else
+				{
+					if(IsFile(my_root + req.getRequestURI()) == 0)
+							Errors_write(404, &str_uri);
 					AutoIndexExec(servconf->getRoot() + req.getRequestURI());
+				}
 			}
 			else if(IsFile(my_root + servconf->getRedirectPath()) == 0 && servconf->getRedirectPath() != "")
 				Errors_write(404, &str_uri);
@@ -566,7 +573,7 @@ void            			Response::GET(int fd, request &req, serverConfig *servconf)
 				Errors_write(403, &str_uri);
 		}
 		myfile.close();
-		if(servconf->getErrorPageCode()== this->_status_code)
+		if(servconf->getErrorPageCode() == this->_status_code)
 		{
 			str_uri = servconf->getErrorPagePath();
 			myfile.open(str_uri);
@@ -668,11 +675,19 @@ int							Response::removeDir(std::string path)
 void						Response::DELETE(request &req, serverConfig* servconf)
 {
 	(void)servconf;
-	// str_uri = CompletePath(req, servconf);	
-	str_uri = "." + req.getRequestURI();
-
+	// str_uri = CompletePath(req, servconf);
+	if(my_root != "")
+		str_uri = my_root + req.getRequestURI();
+	else
+		str_uri = servconf->getRoot() + req.getRequestURI();
+	if(IsFile(str_uri) == 0)
+	{
+		this->_status_code = 404;
+		str_uri = "./Response/response_errors_pages/404.html";
+	}
 	std::fstream	myfile;
-
+	
+	std::cout << str_uri << std::endl;
 	size_t isFile = IsFile(str_uri);
 	if (isFile == 1 && _status_code == 200)
 	{
@@ -818,7 +833,13 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 	complete_path = CompletePath(req, servconf);
 	newBody.open(filename.c_str(), std::fstream::in | std::fstream::app);
 	File_type(req);
-	if (supportUpload(req, servconf))
+	if(servconf->getlimitBodySize() != -1 && req.getBodyLength() > servconf->getlimitBodySize())
+	{
+		this->_status_code = 413;
+		str_uri = "./Response/response_errors_pages/413.html";
+		Error_headers(PAYLOAD_TOO_LARGE);
+	}
+	else if (supportUpload(req, servconf))
 	{
 		std::cout << "---------------------------------------------upload file" << std::endl;
 		std::fstream reqBody;
@@ -857,12 +878,6 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 		header += "\r\n\r\n";
 		//! 201	Created
 		return ;
-	}
-	else if(servconf->getlimitBodySize() != -1 && req.getBodyLength() > servconf->getlimitBodySize())
-	{
-		this->_status_code = 413;
-		str_uri = "./Response/response_errors_pages/413.html";
-		Error_headers(PAYLOAD_TOO_LARGE);
 	}
 	else if (isCGI(req, servconf))
 	{
