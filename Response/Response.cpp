@@ -75,24 +75,21 @@ std::string     			Response::Request_statuscode_checked(request &req, serverConf
 	if(this->_status_code != 200)
 	{
 		if(this->_status_code == 400)
-			_pages_to_string = ConvertHtml("./response_errors_pages/400.html");
+			str_uri = "./Response/response_errors_pages/400.html";
 		else if(this-> _status_code == 505)
-			_pages_to_string = ConvertHtml("./response_errors_pages/505.html");
+			str_uri = "./Response/response_errors_pages/505.html";
 		else if(this->_status_code == 500)
-			_pages_to_string = ConvertHtml("./response_errors_pages/500.html");
+			str_uri = "./Response/response_errors_pages/500.html";
 		else if(req.getMethod() != "GET" || req.getMethod() != "POST" || req.getMethod() != "DELETE"){
 			this->_status_code = 405;
-			_pages_to_string = ConvertHtml("./response_errors_pages/405.html");
+			str_uri = "./Response/response_errors_pages/405.html";
 		}
 		else if(servconf->getlimitBodySize() != -1 && req.getBodyLength() > servconf->getlimitBodySize())
 		{
 			this->_status_code = 413;
-			_pages_to_string = ConvertHtml("./response_errors_pages/413.html");
+			str_uri = "./Response/response_errors_pages/413.html";
 		}
 	}
-	else
-		_pages_to_string = "Successfull";
-	return _pages_to_string;
 }
 
 void            			Response::Methods_exec(request &req, int fd, serverConfig *servconf)
@@ -445,10 +442,75 @@ void						Response::writeResponse(){
 	header += "\r\n";
 }
 
+std::string					getRoot(request &req, serverConfig *servconf)
+{
+	std::vector<_location>	ve;
+	int						i;
+	bool					check;
+	std::string				ret;
+
+	i = -1;
+	ve = servconf->getLocations();
+	check = false;
+	ret = "";
+
+	while (++i < (int)ve.size())
+	{
+		if(ve[i]._path == req.getRequestURI())
+		{
+			check = true;
+			ret = ve[i]._root;
+			return ret;
+		}
+	}
+	if(check == false)
+	{
+		ret = servconf->getRoot();
+		return ret;
+	}
+	return ret;
+}
+
+int     					access_files(std::string path, std::string root, std::string method)
+{
+    std::vector<std::string> 	ve;
+	size_t 						pos = 0;
+	std::string					token;
+    int                         i = -1;
+    std::string                 str;
+    int                         flag;
+
+    str = "";
+    if(method == "GET")
+        flag = R_OK;
+    else if(method == "POST")
+        flag = W_OK;
+	while ((pos = path.find("/")) != std::string::npos)
+	{
+        // puts("hhhhhhhhhhhhhhh");
+		token = path.substr(0, pos);
+		std::cout << token << std::endl;
+		ve.push_back(token);
+        path.erase(0, pos + 1);
+	}
+    str += root;
+    std::cout << str << std::endl;
+    while(++i < ve.size())
+    {
+        str += "/" + ve[i];
+        std::cout << "str check " << str << std::endl;
+        if(access(str.c_str(), F_OK) != 0)
+            return 404;
+        if(access(str.c_str(), flag) != 0)
+            return 403;
+    }
+    return 200;
+}
+
 int							Response::IsFile(const std::string& path)
 {
-	struct stat buf;
-
+	struct stat 				buf;
+	
 	if (stat(path.c_str(), &buf) == 0 ){
 		if (buf.st_mode & S_IFDIR) // direc
 			return 2;
@@ -998,7 +1060,8 @@ void						Response::POST(int fd, request &req, serverConfig *servconf)
 void						Response::Return_string(request &req, serverConfig *servconf, int fd)
 {
 	Request_statuscode_checked(req, servconf);
-	Methods_exec(req, fd, servconf);
+	if(this->_status_code == 200 && access_files(getRoot(req, servconf), req.getRequestURI(), req.getMethod()) == 200)
+		Methods_exec(req, fd, servconf);
 	_handled = true;
 }
 
